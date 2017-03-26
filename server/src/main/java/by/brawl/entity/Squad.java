@@ -17,8 +17,12 @@ public class Squad extends NamedEntity {
     private Account owner;
 
     @ManyToMany
-    @JoinTable(name = "character_squad",
-            joinColumns = @JoinColumn(name = "character_id"),
-            inverseJoinColumns= @JoinColumn(name = "squad_id"))
-    private Set<Character> characters = new LinkedHashSet<>();
+    @JoinTable(name = "hero_squad",
+            joinColumns = @JoinColumn(name = "squad_id"),
+            inverseJoinColumns= @JoinColumn(name = "hero_id"))
+    private Set<Hero> heroes = new LinkedHashSet<>();
+
+    public Set<Hero> getHeroes() {
+        return heroes;
+    }
 }

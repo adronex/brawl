@@ -22,14 +22,14 @@ public class Account extends IdEntity implements UserDetails {
     private String password;
 
     @OneToMany(mappedBy = "owner")
-    private List<Character> characters;
+    private Set<Hero> heroes = new LinkedHashSet<>();
     @OneToMany(mappedBy = "owner")
-    private List<Squad> squads;
+    private Set<Squad> squads = new LinkedHashSet<>();
 
     @ManyToMany
     @JoinTable(name = "account_spell",
-            joinColumns = @JoinColumn(name = "spell_id"),
-            inverseJoinColumns= @JoinColumn(name = "account_id"))
+            joinColumns = @JoinColumn(name = "account_id"),
+            inverseJoinColumns= @JoinColumn(name = "spell_id"))
     private Set<Spell> availableSpells = new LinkedHashSet<>();
 
     @Override
@@ -65,5 +65,17 @@ public class Account extends IdEntity implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    public Set<Spell> getAvailableSpells() {
+        return availableSpells;
+    }
+
+    public Set<Squad> getSquads() {
+        return squads;
+    }
+
+    public Set<Hero> getHeroes() {
+        return heroes;
     }
 }
