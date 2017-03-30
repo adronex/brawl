@@ -13,17 +13,10 @@ import org.springframework.security.oauth2.config.annotation.web.configurers.Aut
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.InMemoryTokenStore;
 
-/**
- * Default class description.
- *
- * @author P.Sinitsky.
- *         Created on 30.03.2017.
- */
 @SpringBootApplication
 @Configuration
 @EnableAuthorizationServer
-public class OAuth2AuthorizationServerConfig extends
-        AuthorizationServerConfigurerAdapter {
+public class OAuth2AuthorizationServerConfig extends AuthorizationServerConfigurerAdapter {
 
     private TokenStore tokenStore = new InMemoryTokenStore();
 

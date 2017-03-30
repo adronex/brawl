@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
  *         Created on 25.03.2017.
  */
 @Service
-public class AccountServiceImpl implements AccountService {
+class AccountServiceImpl implements AccountService {
 
     private AccountRepository repository;
 

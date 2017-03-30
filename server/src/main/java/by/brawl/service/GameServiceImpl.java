@@ -14,7 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
  *         Created on 26.03.2017.
  */
 @Service
-public class GameServiceImpl implements GameService {
+class GameServiceImpl implements GameService {
 
     private Map<String, Pair<String, String>> activeRooms = new ConcurrentHashMap<>();
 
