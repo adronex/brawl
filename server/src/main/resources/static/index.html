@@ -56,7 +56,7 @@
             let response = JSON.parse(event.data);
             if (response.heroesQueue) {
                 updateQueue(response.heroesQueue);
-                updateGameState(response.gameState);
+                updateGameState(response.gameState, response.winner);
             } else {
                 writeResponse(event.data);
             }
@@ -85,12 +85,17 @@
 
     function updateQueue(queue) {
         queueDiv.innerHTML = queue.reduce(function (acc, val) {
-            return acc + ' <- ' + val.name;
+            return acc + ' <- ' + val.name + '(' + val.health + ')' + (val.enemy ? '(enemy)' : '(you)');
         }, '');
     }
 
-    function updateGameState(state) {
-        gameStateDiv.innerHTML = state;
+    function updateGameState(state, winner) {
+        let text = state;
+        if (text === 'END') {
+            text += ', ';
+            text += winner ? "YOU WIN!" : "YOU LOSE!";
+        }
+        gameStateDiv.innerHTML = text;
     }
 
 </script>

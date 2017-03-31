@@ -1,16 +1,19 @@
 package by.brawl.ws;
 
+import by.brawl.entity.Account;
 import by.brawl.entity.Hero;
 
 public class HeroDto {
     private String id;
     private String name;
-    private String owner;
+    private Boolean enemy;
+    private Integer health;
 
-    public HeroDto(Hero hero) {
+    public HeroDto(Hero hero, Account receiver) {
         id = hero.getId();
         name = hero.getName();
-        owner = hero.getOwner().getUsername();
+        enemy = !hero.getOwner().equals(receiver);
+        health = hero.getHealth();
     }
 
     public String getId() {
@@ -21,7 +24,11 @@ public class HeroDto {
         return name;
     }
 
-    public String getOwner() {
-        return owner;
+    public Boolean getEnemy() {
+        return enemy;
+    }
+
+    public Integer getHealth() {
+        return health;
     }
 }

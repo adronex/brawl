@@ -75,7 +75,7 @@ public class CounterHandler extends TextWebSocketHandler {
                 sendMessageToAll(new MessageDto("Game started!").asJson());
                 gameState = GameState.PLAYING;
                 setQueue();
-                sendMessageToAll(new GameTurnDto(gameState, heroesQueue).asJson());
+                sendQueueMessageToAll();
             } else {
                 session.sendMessage(new TextMessage
                         (new MessageDto("Opponent still choosing.").asJson())
@@ -88,11 +88,12 @@ public class CounterHandler extends TextWebSocketHandler {
                 return;
             }
             // todo: check for spell is missing
-            currentHero.hit(30);
+            currentHero.hit(15);
             heroesQueue.remove();
             heroesQueue.add(currentHero);
             checkQueue();
             checkGameIsFinished();
+            sendQueueMessageToAll();
             if (GameState.END.equals(gameState)) {
                 sendMessageToAll(new MessageDto("Game over!").asJson());
                 sessions.values().forEach(s -> {
@@ -104,8 +105,18 @@ public class CounterHandler extends TextWebSocketHandler {
                 });
                 sessions.clear();
             }
-            sendMessageToAll(new GameTurnDto(gameState, heroesQueue).asJson());
         }
+    }
+
+    private void sendQueueMessageToAll() {
+        sessions.values().forEach(s -> {
+            try {
+                Account receiver = players.get(s.getId());
+                s.sendMessage(new TextMessage(new GameTurnDto(gameState, heroesQueue, receiver).asJson()));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     private void sendMessageToAll(String message) {
