@@ -35,18 +35,14 @@ public class CounterHandler extends TextWebSocketHandler {
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws IOException {
-        if (players.containsKey(session.getId()) || players.size() >= 2) {
-            session.sendMessage(new TextMessage(new MessageDto("Access denied!").asJson()));
-            session.close();
-            throw new AccessDeniedException("huinana");
+        if (players.containsKey(session.getId()) && !GameState.END.equals(gameState)) {
+            sendQueueMessage(session);
+            return;
+        } else if (players.containsKey(session.getId()) && GameState.END.equals(gameState)) {
+            clearSessions();
         }
 
         Account account = accountService.findByEmail(session.getPrincipal().getName());
-
-        if (players.containsValue(account)) {
-            session.sendMessage(new TextMessage(new MessageDto("Access denied!").asJson()));
-            throw new AccessDeniedException("huinana");
-        }
 
         players.put(session.getId(), account);
         sessions.put(session.getId(), session);
@@ -96,27 +92,22 @@ public class CounterHandler extends TextWebSocketHandler {
             sendQueueMessageToAll();
             if (GameState.END.equals(gameState)) {
                 sendMessageToAll(new MessageDto("Game over!").asJson());
-                sessions.values().forEach(s -> {
-                    try {
-                        s.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                });
-                sessions.clear();
+                clearSessions();
             }
         }
     }
 
     private void sendQueueMessageToAll() {
-        sessions.values().forEach(s -> {
-            try {
-                Account receiver = players.get(s.getId());
-                s.sendMessage(new TextMessage(new GameTurnDto(gameState, heroesQueue, receiver).asJson()));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
+        sessions.values().forEach(this::sendQueueMessage);
+    }
+
+    private void sendQueueMessage(WebSocketSession session) {
+        Account receiver = players.get(session.getId());
+        try {
+            session.sendMessage(new TextMessage(new GameTurnDto(gameState, heroesQueue, receiver).asJson()));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void sendMessageToAll(String message) {
@@ -152,5 +143,16 @@ public class CounterHandler extends TextWebSocketHandler {
         if (stillInPlay.containsValue(false)) {
             gameState = GameState.END;
         }
+    }
+
+    private void clearSessions() {
+        sessions.values().forEach(s -> {
+            try {
+                s.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+        sessions.clear();
     }
 }
