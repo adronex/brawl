@@ -12,7 +12,7 @@ import java.util.Set;
  *         Created on 25.03.2017.
  */
 @Entity
-public class Hero extends NamedEntity implements Comparable {
+public class Hero extends NamedEntity {
 
     @ManyToOne
     private Account owner;
@@ -23,6 +23,17 @@ public class Hero extends NamedEntity implements Comparable {
             inverseJoinColumns= @JoinColumn(name = "spell_id"))
     private Set<Spell> spells = new LinkedHashSet<>();
 
+    @Transient
+    private Integer health = 30;
+
+    public void hit(Integer amount) {
+        health -= amount;
+    }
+
+    public Boolean isAlive() {
+        return health > 0;
+    }
+
     public Account getOwner() {
         return owner;
     }
@@ -31,17 +42,16 @@ public class Hero extends NamedEntity implements Comparable {
         return spells;
     }
 
-    @Override
-    public int compareTo(Object o) {
-        return 0;
+    public Integer getHealth() {
+        return health;
     }
 
     @Override
     public String toString() {
         return "Hero{" +
                 "name='" + name + '\'' +
-                ", owner=" + owner +
-                ", spells=" + spells +
+                ", owner=" + owner.getUsername() +
+                ", health=" + health +
                 '}';
     }
 }

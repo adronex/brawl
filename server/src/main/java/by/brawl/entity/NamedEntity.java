@@ -13,6 +13,10 @@ public class NamedEntity extends IdEntity {
 
     protected String name;
 
+    public String getName() {
+        return name;
+    }
+
     @Override
     public String toString() {
         return "NamedEntity{" +

@@ -86,7 +86,7 @@ public class Account extends IdEntity implements UserDetails {
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), email, password, heroes, squads, availableSpells);
+        return Objects.hash(getId(), email, password);
     }
 
     @Override
