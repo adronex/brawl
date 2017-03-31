@@ -1,7 +1,8 @@
-package by.brawl.ws;
+package by.brawl.ws.dto;
 
 import by.brawl.entity.Account;
 import by.brawl.entity.Hero;
+import by.brawl.ws.pojo.GameState;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

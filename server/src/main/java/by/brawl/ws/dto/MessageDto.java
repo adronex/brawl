@@ -1,4 +1,4 @@
-package by.brawl.ws;
+package by.brawl.ws.dto;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

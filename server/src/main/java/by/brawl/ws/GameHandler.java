@@ -3,6 +3,10 @@ package by.brawl.ws;
 import by.brawl.entity.Account;
 import by.brawl.entity.Hero;
 import by.brawl.service.AccountService;
+import by.brawl.ws.dto.GameTurnDto;
+import by.brawl.ws.dto.MessageDto;
+import by.brawl.ws.pojo.GameState;
+import by.brawl.ws.pojo.PlayerStateHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Component;
@@ -15,41 +19,36 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
-public class CounterHandler extends TextWebSocketHandler {
-
-    private GameState gameState = GameState.NOT_STARTED;
-    private List<String> history = new ArrayList<>();
-
-    private Map<String, Account> players = new HashMap<>();
-    private Map<String, WebSocketSession> sessions = new HashMap<>();
-    private Map<String, Boolean> readyForGame = new HashMap<>();
-
-    private Queue<Hero> heroesQueue = new LinkedList<>();
+public class GameHandler extends TextWebSocketHandler {
 
     private AccountService accountService;
 
+    private Map<String, PlayerStateHolder> playerStates = new HashMap<>();
+    private GameState gameState = GameState.NOT_STARTED;
+    private Queue<Hero> heroesQueue = new LinkedList<>();
+    private List<String> history = new ArrayList<>();
+
     @Autowired
-    public CounterHandler(AccountService accountService) {
+    public GameHandler(AccountService accountService) {
         this.accountService = accountService;
     }
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws IOException {
-        if (players.containsKey(session.getId()) && !GameState.END.equals(gameState)) {
-            sendQueueMessage(session);
+        if (playerStates.containsKey(session.getId()) && !GameState.END.equals(gameState)) {
+            sendGameTurn(session);
             return;
-        } else if (players.containsKey(session.getId()) && GameState.END.equals(gameState)) {
+        } else if (playerStates.containsKey(session.getId()) && GameState.END.equals(gameState)) {
             clearSessions();
         }
 
         Account account = accountService.findByEmail(session.getPrincipal().getName());
 
-        players.put(session.getId(), account);
-        sessions.put(session.getId(), session);
-        readyForGame.put(session.getId(), false);
+        playerStates.put(session.getId(), new PlayerStateHolder(account, session, false));
+
         session.sendMessage(new TextMessage(new MessageDto("Connection established - " + account.getUsername()).asJson()));
 
-        if (players.size() == 2) {
+        if (playerStates.size() == 2) {
             gameState = GameState.MULLIGAN;
             sendMessageToAll(new MessageDto("Mulligan state").asJson());
         } else {
@@ -60,18 +59,21 @@ public class CounterHandler extends TextWebSocketHandler {
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws IOException {
 
-        if (!sessions.containsKey(session.getId())) {
+        if (!playerStates.containsKey(session.getId())) {
             session.sendMessage(new TextMessage(new MessageDto("huinana").asJson()));
             throw new AccessDeniedException("huinana");
         }
 
         if (GameState.MULLIGAN.equals(gameState)) {
-            readyForGame.put(session.getId(), true);
-            if (!readyForGame.containsValue(false)) {
+            playerStates.get(session.getId()).setReadyForGame(true);
+            if (playerStates.values()
+                    .stream()
+                    .filter(s -> !s.getReadyForGame())
+                    .count() == 0) {
                 sendMessageToAll(new MessageDto("Game started!").asJson());
                 gameState = GameState.PLAYING;
                 setQueue();
-                sendQueueMessageToAll();
+                sendGameTurnToAll();
             } else {
                 session.sendMessage(new TextMessage
                         (new MessageDto("Opponent still choosing.").asJson())
@@ -79,7 +81,9 @@ public class CounterHandler extends TextWebSocketHandler {
             }
         } else if (GameState.PLAYING.equals(gameState)) {
             Hero currentHero = heroesQueue.element();
-            if (!players.get(session.getId()).equals(currentHero.getOwner())) {
+            if (!playerStates.get(session.getId())
+                    .getPlayer()
+                    .equals(currentHero.getOwner())) {
                 session.sendMessage(new TextMessage(new MessageDto("Not your turn!").asJson()));
                 return;
             }
@@ -89,7 +93,7 @@ public class CounterHandler extends TextWebSocketHandler {
             heroesQueue.add(currentHero);
             checkQueue();
             checkGameIsFinished();
-            sendQueueMessageToAll();
+            sendGameTurnToAll();
             if (GameState.END.equals(gameState)) {
                 sendMessageToAll(new MessageDto("Game over!").asJson());
                 clearSessions();
@@ -97,12 +101,15 @@ public class CounterHandler extends TextWebSocketHandler {
         }
     }
 
-    private void sendQueueMessageToAll() {
-        sessions.values().forEach(this::sendQueueMessage);
+    private void sendGameTurnToAll() {
+        playerStates.values()
+                .stream()
+                .map(PlayerStateHolder::getSession)
+                .forEach(this::sendGameTurn);
     }
 
-    private void sendQueueMessage(WebSocketSession session) {
-        Account receiver = players.get(session.getId());
+    private void sendGameTurn(WebSocketSession session) {
+        Account receiver = playerStates.get(session.getId()).getPlayer();
         try {
             session.sendMessage(new TextMessage(new GameTurnDto(gameState, heroesQueue, receiver).asJson()));
         } catch (IOException e) {
@@ -111,17 +118,22 @@ public class CounterHandler extends TextWebSocketHandler {
     }
 
     private void sendMessageToAll(String message) {
-        sessions.values().forEach(s -> {
-            try {
-                s.sendMessage(new TextMessage(message));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
+        playerStates.values()
+                .stream().map(PlayerStateHolder::getSession)
+                .forEach(s -> {
+                    try {
+                        s.sendMessage(new TextMessage(message));
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                });
     }
 
-    private void setQueue(){
-        players.values().forEach(a -> heroesQueue.addAll(a.getSquads().iterator().next().getHeroes()));
+    private void setQueue() {
+        playerStates.values()
+                .stream()
+                .map(PlayerStateHolder::getPlayer)
+                .forEach(a -> heroesQueue.addAll(a.getSquads().iterator().next().getHeroes()));
     }
 
     private void checkQueue() {
@@ -135,24 +147,31 @@ public class CounterHandler extends TextWebSocketHandler {
     private void checkGameIsFinished() {
         Map<Account, List<Hero>> splitList = heroesQueue.stream().collect(Collectors.groupingBy(Hero::getOwner));
 
-        Map<Account, Boolean> stillInPlay = new HashMap<>();
-        players.values().forEach(a -> {
-            stillInPlay.put(a, splitList.get(a) != null);
-        });
+        playerStates.values()
+                .forEach(s -> {
+                    Boolean alive = splitList.get(s.getPlayer()) != null;
+                    s.setAlive(alive);
+                });
 
-        if (stillInPlay.containsValue(false)) {
+        if (playerStates.values()
+                .stream()
+                .filter(s -> !s.getAlive()).count() > 0) {
             gameState = GameState.END;
         }
     }
 
     private void clearSessions() {
-        sessions.values().forEach(s -> {
-            try {
-                s.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
-        sessions.clear();
+        playerStates.values()
+                .stream()
+                .map(PlayerStateHolder::getSession)
+                .forEach(s -> {
+                    try {
+                        s.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                });
+        playerStates.clear();
+        heroesQueue.clear();
     }
 }

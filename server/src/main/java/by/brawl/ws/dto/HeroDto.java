@@ -1,4 +1,4 @@
-package by.brawl.ws;
+package by.brawl.ws.dto;
 
 import by.brawl.entity.Account;
 import by.brawl.entity.Hero;
