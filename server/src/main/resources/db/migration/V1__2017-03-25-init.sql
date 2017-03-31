@@ -151,21 +151,6 @@ INSERT INTO `hero_squad` VALUES ('1','1'),('2','1'),('3','2'),('4','2');
 /*!40000 ALTER TABLE `hero_squad` ENABLE KEYS */;
 UNLOCK TABLES;
 
---
--- Table structure for table `schema_version`
---
-
-DROP TABLE IF EXISTS `schema_version`;
-
---
--- Dumping data for table `schema_version`
---
-
-LOCK TABLES `schema_version` WRITE;
-/*!40000 ALTER TABLE `schema_version` DISABLE KEYS */;
-INSERT INTO `schema_version` VALUES (1,1,'1','<< Flyway Baseline >>','BASELINE','<< Flyway Baseline >>',NULL,'root','2017-03-25 19:03:46',0,1);
-/*!40000 ALTER TABLE `schema_version` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `spell`

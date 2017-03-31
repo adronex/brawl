@@ -12,4 +12,11 @@ import javax.persistence.MappedSuperclass;
 public class NamedEntity extends IdEntity {
 
     protected String name;
+
+    @Override
+    public String toString() {
+        return "NamedEntity{" +
+                "name='" + name + '\'' +
+                '}';
+    }
 }

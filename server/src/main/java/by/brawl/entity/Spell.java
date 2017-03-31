@@ -9,6 +9,5 @@ import javax.persistence.Entity;
  *         Created on 25.03.2017.
  */
 @Entity
-public class Spell extends IdEntity {
-    private String name;
+public class Spell extends NamedEntity {
 }
