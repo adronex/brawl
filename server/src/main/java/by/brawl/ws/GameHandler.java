@@ -4,9 +4,11 @@ import by.brawl.entity.Account;
 import by.brawl.entity.Hero;
 import by.brawl.service.AccountService;
 import by.brawl.ws.dto.GameTurnDto;
+import by.brawl.ws.dto.JsonDto;
 import by.brawl.ws.dto.MessageDto;
 import by.brawl.ws.pojo.GameState;
 import by.brawl.ws.pojo.PlayerStateHolder;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Component;
@@ -35,24 +37,18 @@ public class GameHandler extends TextWebSocketHandler {
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws IOException {
-        if (playerStates.containsKey(session.getId()) && !GameState.END.equals(gameState)) {
-            sendGameTurn(session);
-            return;
-        } else if (playerStates.containsKey(session.getId()) && GameState.END.equals(gameState)) {
-            clearSessions();
-        }
 
         Account account = accountService.findByEmail(session.getPrincipal().getName());
 
         playerStates.put(session.getId(), new PlayerStateHolder(account, session, false));
 
-        session.sendMessage(new TextMessage(new MessageDto("Connection established - " + account.getUsername()).asJson()));
+        sendInfoMessage(session, "Connection established - " + account.getUsername());
 
         if (playerStates.size() == 2) {
             gameState = GameState.MULLIGAN;
-            sendMessageToAll(new MessageDto("Mulligan state").asJson());
+            sendInfoMessageToAll("Mulligan state");
         } else {
-            session.sendMessage(new TextMessage(new MessageDto("Finding opponent").asJson()));
+            sendInfoMessage(session, "Finding opponent");
         }
     }
 
@@ -60,7 +56,7 @@ public class GameHandler extends TextWebSocketHandler {
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws IOException {
 
         if (!playerStates.containsKey(session.getId())) {
-            session.sendMessage(new TextMessage(new MessageDto("huinana").asJson()));
+            sendInfoMessage(session, "huinana");
             throw new AccessDeniedException("huinana");
         }
 
@@ -70,21 +66,19 @@ public class GameHandler extends TextWebSocketHandler {
                     .stream()
                     .filter(s -> !s.getReadyForGame())
                     .count() == 0) {
-                sendMessageToAll(new MessageDto("Game started!").asJson());
+                sendInfoMessageToAll("Game started!");
                 gameState = GameState.PLAYING;
                 setQueue();
                 sendGameTurnToAll();
             } else {
-                session.sendMessage(new TextMessage
-                        (new MessageDto("Opponent still choosing.").asJson())
-                );
+                sendInfoMessage(session, "Opponent is still choosing");
             }
         } else if (GameState.PLAYING.equals(gameState)) {
             Hero currentHero = heroesQueue.element();
             if (!playerStates.get(session.getId())
                     .getPlayer()
                     .equals(currentHero.getOwner())) {
-                session.sendMessage(new TextMessage(new MessageDto("Not your turn!").asJson()));
+                sendInfoMessage(session, "Not your turn!");
                 return;
             }
             // todo: check for spell is missing
@@ -95,38 +89,43 @@ public class GameHandler extends TextWebSocketHandler {
             checkGameIsFinished();
             sendGameTurnToAll();
             if (GameState.END.equals(gameState)) {
-                sendMessageToAll(new MessageDto("Game over!").asJson());
+                sendInfoMessageToAll("Game over!");
                 clearSessions();
             }
         }
     }
 
-    private void sendGameTurnToAll() {
+    private void sendInfoMessage(WebSocketSession session, String text) {
+        sendDto(session, new MessageDto(text));
+    }
+
+    private void sendInfoMessageToAll(String text) {
         playerStates.values()
                 .stream()
                 .map(PlayerStateHolder::getSession)
-                .forEach(this::sendGameTurn);
+                .forEach(s -> sendInfoMessage(s, text));
     }
 
-    private void sendGameTurn(WebSocketSession session) {
-        Account receiver = playerStates.get(session.getId()).getPlayer();
+    private void sendDto(WebSocketSession session, JsonDto dto) {
         try {
-            session.sendMessage(new TextMessage(new GameTurnDto(gameState, heroesQueue, receiver).asJson()));
+            session.sendMessage(new TextMessage(dto.asJson()));
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private void sendMessageToAll(String message) {
+    @Deprecated
+    private void sendGameTurn(WebSocketSession session) {
+        Account receiver = playerStates.get(session.getId()).getPlayer();
+        sendDto(session, new GameTurnDto(gameState, heroesQueue, receiver));
+    }
+
+    @Deprecated
+    private void sendGameTurnToAll() {
         playerStates.values()
-                .stream().map(PlayerStateHolder::getSession)
-                .forEach(s -> {
-                    try {
-                        s.sendMessage(new TextMessage(message));
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                });
+                .stream()
+                .map(PlayerStateHolder::getSession)
+                .forEach(this::sendGameTurn);
     }
 
     private void setQueue() {

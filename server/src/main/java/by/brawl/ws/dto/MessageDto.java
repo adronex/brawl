@@ -1,26 +1,11 @@
 package by.brawl.ws.dto;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.codehaus.jackson.annotate.JsonIgnore;
-
-public class MessageDto {
+public class MessageDto extends AbstractDto {
 
     private String message;
 
     public MessageDto(String message) {
         this.message = message;
-    }
-
-    @JsonIgnore
-    public String asJson() {
-        ObjectMapper mapper = new ObjectMapper();
-        try {
-            return mapper.writeValueAsString(this);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-        return "hui";
     }
 
     public String getMessage() {

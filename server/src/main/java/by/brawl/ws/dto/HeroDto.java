@@ -3,7 +3,7 @@ package by.brawl.ws.dto;
 import by.brawl.entity.Account;
 import by.brawl.entity.Hero;
 
-public class HeroDto {
+public class HeroDto extends AbstractDto {
     private String id;
     private String name;
     private Boolean enemy;
