@@ -3,32 +3,30 @@ package by.brawl.ws.dto;
 import by.brawl.entity.Account;
 import by.brawl.entity.Hero;
 
+import java.util.LinkedHashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 public class HeroDto extends AbstractDto {
-    private String id;
     private String name;
-    private Boolean enemy;
     private Integer health;
+    private Boolean enemy;
 
     public HeroDto(Hero hero, Account receiver) {
-        id = hero.getId();
         name = hero.getName();
         enemy = !hero.getOwner().equals(receiver);
         health = hero.getHealth();
-    }
-
-    public String getId() {
-        return id;
     }
 
     public String getName() {
         return name;
     }
 
-    public Boolean getEnemy() {
-        return enemy;
-    }
-
     public Integer getHealth() {
         return health;
+    }
+
+    public Boolean getEnemy() {
+        return enemy;
     }
 }

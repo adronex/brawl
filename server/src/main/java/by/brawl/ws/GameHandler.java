@@ -2,10 +2,12 @@ package by.brawl.ws;
 
 import by.brawl.entity.Account;
 import by.brawl.entity.Hero;
+import by.brawl.entity.Spell;
 import by.brawl.service.AccountService;
 import by.brawl.ws.dto.GameTurnDto;
 import by.brawl.ws.dto.JsonDto;
 import by.brawl.ws.dto.MessageDto;
+import by.brawl.ws.dto.SpellDto;
 import by.brawl.ws.pojo.GameState;
 import by.brawl.ws.pojo.PlayerStateHolder;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -28,6 +30,7 @@ public class GameHandler extends TextWebSocketHandler {
     private Map<String, PlayerStateHolder> playerStates = new HashMap<>();
     private GameState gameState = GameState.NOT_STARTED;
     private Queue<Hero> heroesQueue = new LinkedList<>();
+    private Set<SpellDto> spells = new HashSet<>();
     private List<String> history = new ArrayList<>();
 
     @Autowired
@@ -69,6 +72,7 @@ public class GameHandler extends TextWebSocketHandler {
                 sendInfoMessageToAll("Game started!");
                 gameState = GameState.PLAYING;
                 setQueue();
+                setSpells();
                 sendGameTurnToAll();
             } else {
                 sendInfoMessage(session, "Opponent is still choosing");
@@ -133,6 +137,14 @@ public class GameHandler extends TextWebSocketHandler {
                 .stream()
                 .map(PlayerStateHolder::getPlayer)
                 .forEach(a -> heroesQueue.addAll(a.getSquads().iterator().next().getHeroes()));
+    }
+
+    private void setSpells() {
+        heroesQueue.forEach(h ->
+                spells.addAll(h.getSpells()
+                        .stream()
+                        .map(s -> new SpellDto(s.getId(), h.getId()))
+                        .collect(Collectors.toList())));
     }
 
     private void checkQueue() {
