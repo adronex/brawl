@@ -1,12 +1,20 @@
 package by.brawl.ws.pojo;
 
 import by.brawl.entity.Account;
+import by.brawl.ws.dto.HeroDto;
+import by.brawl.ws.dto.SpellDto;
 import org.springframework.web.socket.WebSocketSession;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class PlayerStateHolder {
     private Account player;
     private WebSocketSession session;
     private Boolean readyForGame;
+    private Set<SpellDto> spells = new HashSet<>();
     private Boolean isAlive;
 
     public PlayerStateHolder(Account player, WebSocketSession session, Boolean readyForGame) {
@@ -29,6 +37,10 @@ public class PlayerStateHolder {
 
     public void setReadyForGame(Boolean readyForGame) {
         this.readyForGame = readyForGame;
+    }
+
+    public Set<SpellDto> getSpells() {
+        return spells;
     }
 
     public Boolean getAlive() {

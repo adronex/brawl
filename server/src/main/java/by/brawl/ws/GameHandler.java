@@ -2,15 +2,10 @@ package by.brawl.ws;
 
 import by.brawl.entity.Account;
 import by.brawl.entity.Hero;
-import by.brawl.entity.Spell;
 import by.brawl.service.AccountService;
-import by.brawl.ws.dto.GameTurnDto;
-import by.brawl.ws.dto.JsonDto;
-import by.brawl.ws.dto.MessageDto;
-import by.brawl.ws.dto.SpellDto;
+import by.brawl.ws.dto.*;
 import by.brawl.ws.pojo.GameState;
 import by.brawl.ws.pojo.PlayerStateHolder;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Component;
@@ -22,6 +17,25 @@ import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+// todo: Noisia - Machine Gun
+// todo: Noisia - Hunter Theme
+
+// todo: matchmaking service
+// todo: game service
+// steps:
+// 1. choose squad.
+// OPEN WEBSOCKET.
+// 2. send it's id in mm service
+// 3. mm service create room with 2 players and send pre-game squads DTOs.
+// MULLIGAN STATE
+// 4. player send heroes and positions (order matters).
+// 5. waiting for second player if necessary.
+// 6. send queue, enemy positions.
+// PLAYING STATE
+// 7. send valid spell id and positions array ({self: [], enemy: [0, 3]}.
+// 8. game service validates input data.
+// 9. set triggered spells as exposed.
+// 10. send updated queue, heroes through self/enemy parser.
 @Component
 public class GameHandler extends TextWebSocketHandler {
 
@@ -30,7 +44,7 @@ public class GameHandler extends TextWebSocketHandler {
     private Map<String, PlayerStateHolder> playerStates = new HashMap<>();
     private GameState gameState = GameState.NOT_STARTED;
     private Queue<Hero> heroesQueue = new LinkedList<>();
-    private Set<SpellDto> spells = new HashSet<>();
+    private Map<String, List<HeroDto>> heroes = new HashMap<>();
     private List<String> history = new ArrayList<>();
 
     @Autowired
@@ -72,7 +86,7 @@ public class GameHandler extends TextWebSocketHandler {
                 sendInfoMessageToAll("Game started!");
                 gameState = GameState.PLAYING;
                 setQueue();
-                setSpells();
+                playerStates.values().forEach(ps -> ps.getSpells().addAll(getSpells()));
                 sendGameTurnToAll();
             } else {
                 sendInfoMessage(session, "Opponent is still choosing");
@@ -139,12 +153,14 @@ public class GameHandler extends TextWebSocketHandler {
                 .forEach(a -> heroesQueue.addAll(a.getSquads().iterator().next().getHeroes()));
     }
 
-    private void setSpells() {
+    private Set<SpellDto> getSpells() {
+        Set<SpellDto> spells = new HashSet<>();
         heroesQueue.forEach(h ->
                 spells.addAll(h.getSpells()
                         .stream()
                         .map(s -> new SpellDto(s.getId(), h.getId()))
                         .collect(Collectors.toList())));
+        return spells;
     }
 
     private void checkQueue() {
