@@ -22,6 +22,10 @@ public class Squad extends NamedEntity {
             inverseJoinColumns= @JoinColumn(name = "hero_id"))
     private Set<Hero> heroes = new LinkedHashSet<>();
 
+    public Account getOwner() {
+        return owner;
+    }
+
     public Set<Hero> getHeroes() {
         return heroes;
     }

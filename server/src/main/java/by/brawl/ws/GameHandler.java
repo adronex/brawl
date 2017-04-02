@@ -3,9 +3,11 @@ package by.brawl.ws;
 import by.brawl.entity.Account;
 import by.brawl.entity.Hero;
 import by.brawl.service.AccountService;
+import by.brawl.service.SecurityService;
 import by.brawl.ws.dto.*;
 import by.brawl.ws.pojo.GameState;
 import by.brawl.ws.pojo.PlayerStateHolder;
+import by.brawl.ws.service.MatchmakingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Component;
@@ -40,6 +42,9 @@ import java.util.stream.Collectors;
 public class GameHandler extends TextWebSocketHandler {
 
     private AccountService accountService;
+    @Autowired
+    private SecurityService securityService;
+    private MatchmakingService matchmakingService;
 
     private Map<String, PlayerStateHolder> playerStates = new HashMap<>();
     private GameState gameState = GameState.NOT_STARTED;
@@ -48,14 +53,16 @@ public class GameHandler extends TextWebSocketHandler {
     private List<String> history = new ArrayList<>();
 
     @Autowired
-    public GameHandler(AccountService accountService) {
+    public GameHandler(AccountService accountService, MatchmakingService matchmakingService) {
         this.accountService = accountService;
+        this.matchmakingService = matchmakingService;
     }
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws IOException {
 
         Account account = accountService.findByEmail(session.getPrincipal().getName());
+        matchmakingService.addInPool(account, account.getSquads().iterator().next().getId());
 
         playerStates.put(session.getId(), new PlayerStateHolder(account, session, false));
 
