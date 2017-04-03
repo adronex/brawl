@@ -13,7 +13,6 @@
 <div>
     <button type="button" onclick="openSocket();">Open</button>
     <button type="button" onclick="send();">Send</button>
-    <button type="button" onclick="sendMulliganMessage();">Mulligan</button>
     <button type="button" onclick="closeSocket();">Close</button>
 </div>
 <!-- Server responses get written here -->
@@ -90,16 +89,8 @@
      * Sends the value of the text input to the server
      */
     function send() {
-        var text = document.getElementById("messageinput").value;
+        let text = document.getElementById("messageinput").value;
         webSocket.send(text);
-    }
-
-    function sendMulliganMessage() {
-        let obj = [
-            {id: "1"},
-            {id: "2"}
-        ];
-        webSocket.send(JSON.stringify(obj));
     }
 
     function closeSocket() {

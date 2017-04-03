@@ -1,14 +1,15 @@
 package by.brawl.dto;
 
-import by.brawl.entity.Squad;
+import by.brawl.entity.Spell;
 
-public class SquadToChooseDto {
+public class ExposableSpellDto {
+
     private String id;
     private String name;
 
-    public SquadToChooseDto(Squad squad) {
-        id = squad.getId();
-        name = squad.getName();
+    public ExposableSpellDto(Spell spell) {
+        id = spell.getId();
+        name = spell.getName();
     }
 
     public String getId() {

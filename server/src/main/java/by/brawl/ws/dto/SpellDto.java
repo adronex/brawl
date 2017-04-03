@@ -5,7 +5,7 @@ import java.util.Objects;
 public class SpellDto extends AbstractDto {
     private String id;
     private String heroId;
-    private Boolean exposed = false;
+    //private Boolean exposed = false;
 
     public SpellDto(String id, String heroId) {
         this.id = id;
@@ -20,13 +20,13 @@ public class SpellDto extends AbstractDto {
         return heroId;
     }
 
-    public Boolean getExposed() {
-        return exposed;
-    }
-
-    public void setExposed(Boolean exposed) {
-        this.exposed = exposed;
-    }
+//    public Boolean getExposed() {
+//        return exposed;
+//    }
+//
+//    public void setExposed(Boolean exposed) {
+//        this.exposed = exposed;
+//    }
 
     @Override
     public boolean equals(Object o) {

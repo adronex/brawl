@@ -60,16 +60,16 @@ public class GameHandler extends TextWebSocketHandler {
 
        // Account account = accountService.findByEmail(session.getPrincipal().getName());
 
-        playerStates.put(session.getId(), new PlayerStateHolder(null, session, false));
-
-        sendInfoMessage(session, "Connection established - " + null);
-
-        if (playerStates.size() == 2) {
-            gameState = GameState.MULLIGAN;
-            sendInfoMessageToAll("Mulligan state");
-        } else {
-            sendInfoMessage(session, "Finding opponent");
-        }
+//        playerStates.put(session.getId(), new PlayerStateHolder(null, session, false));
+//
+        sendInfoMessage(session, "Connected");
+//
+//        if (playerStates.size() == 2) {
+//            gameState = GameState.MULLIGAN;
+//            sendInfoMessageToAll("Mulligan state");
+//        } else {
+//            sendInfoMessage(session, "Finding opponent");
+//        }
     }
 
     @Override

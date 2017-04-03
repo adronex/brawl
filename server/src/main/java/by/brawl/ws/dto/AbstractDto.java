@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.codehaus.jackson.annotate.JsonIgnore;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-class AbstractDto implements JsonDto {
+public class AbstractDto implements JsonDto {
 
     @JsonIgnore
     @Override
