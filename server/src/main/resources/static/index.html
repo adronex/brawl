@@ -89,8 +89,7 @@
      * Sends the value of the text input to the server
      */
     function send() {
-        let text = document.getElementById("messageinput").value;
-        webSocket.send(text);
+        webSocket.send(JSON.stringify({type: 'HEROES_CHOICE', body: {heroes: ['2', '1']}}));
     }
 
     function closeSocket() {

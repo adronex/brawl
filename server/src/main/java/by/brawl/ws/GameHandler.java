@@ -7,7 +7,9 @@ import by.brawl.service.SecurityService;
 import by.brawl.ws.dto.*;
 import by.brawl.ws.pojo.GameState;
 import by.brawl.ws.pojo.PlayerStateHolder;
+import by.brawl.ws.service.GameService;
 import by.brawl.ws.service.MatchmakingService;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
@@ -43,6 +45,7 @@ import java.util.stream.Collectors;
 public class GameHandler extends TextWebSocketHandler {
 
     private MatchmakingService matchmakingService;
+    private GameService gameService;
 
     private Map<String, PlayerStateHolder> playerStates = new HashMap<>();
     private GameState gameState = GameState.NOT_STARTED;
@@ -51,8 +54,11 @@ public class GameHandler extends TextWebSocketHandler {
     private List<String> history = new ArrayList<>();
 
     @Autowired
-    public GameHandler(MatchmakingService matchmakingService) {
+    public GameHandler(MatchmakingService matchmakingService,
+                       GameService gameService) {
+
         this.matchmakingService = matchmakingService;
+        this.gameService = gameService;
     }
 
     @Override
@@ -81,6 +87,17 @@ public class GameHandler extends TextWebSocketHandler {
             JSONObject body = request.getJSONObject("body");
             String squadId = body.getString("squadId");
             matchmakingService.addInPool(session, squadId);
+        }
+
+        if (ClientRequestType.HEROES_CHOICE.equals(type)) {
+            JSONObject body = request.getJSONObject("body");
+            JSONArray requestArray = body.getJSONArray("heroes");
+
+            List<String> heroes = new ArrayList<>();
+            requestArray.toList().forEach(o -> heroes.add((String) o));
+
+
+            gameService.setHeroesPositions(session, heroes);
         }
 
         if (GameState.MULLIGAN.equals(gameState)) {

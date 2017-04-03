@@ -1,5 +1,5 @@
 package by.brawl.ws.dto;
 
 public enum ClientRequestType {
-    INITIAL
+    INITIAL, HEROES_CHOICE
 }
