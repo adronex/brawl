@@ -8,6 +8,7 @@ import by.brawl.ws.dto.*;
 import by.brawl.ws.pojo.GameState;
 import by.brawl.ws.pojo.PlayerStateHolder;
 import by.brawl.ws.service.MatchmakingService;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Component;
@@ -41,9 +42,6 @@ import java.util.stream.Collectors;
 @Component
 public class GameHandler extends TextWebSocketHandler {
 
-    private AccountService accountService;
-    @Autowired
-    private SecurityService securityService;
     private MatchmakingService matchmakingService;
 
     private Map<String, PlayerStateHolder> playerStates = new HashMap<>();
@@ -53,20 +51,18 @@ public class GameHandler extends TextWebSocketHandler {
     private List<String> history = new ArrayList<>();
 
     @Autowired
-    public GameHandler(AccountService accountService, MatchmakingService matchmakingService) {
-        this.accountService = accountService;
+    public GameHandler(MatchmakingService matchmakingService) {
         this.matchmakingService = matchmakingService;
     }
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws IOException {
 
-        Account account = accountService.findByEmail(session.getPrincipal().getName());
-        matchmakingService.addInPool(account, account.getSquads().iterator().next().getId());
+       // Account account = accountService.findByEmail(session.getPrincipal().getName());
 
-        playerStates.put(session.getId(), new PlayerStateHolder(account, session, false));
+        playerStates.put(session.getId(), new PlayerStateHolder(null, session, false));
 
-        sendInfoMessage(session, "Connection established - " + account.getUsername());
+        sendInfoMessage(session, "Connection established - " + null);
 
         if (playerStates.size() == 2) {
             gameState = GameState.MULLIGAN;
@@ -79,9 +75,12 @@ public class GameHandler extends TextWebSocketHandler {
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws IOException {
 
-        if (!playerStates.containsKey(session.getId())) {
-            sendInfoMessage(session, "huinana");
-            throw new AccessDeniedException("huinana");
+        JSONObject request = new JSONObject(message.getPayload());
+        ClientRequestType type = request.getEnum(ClientRequestType.class, "type");
+        if (ClientRequestType.INITIAL.equals(type)) {
+            JSONObject body = request.getJSONObject("body");
+            String squadId = body.getString("squadId");
+            matchmakingService.addInPool(session, squadId);
         }
 
         if (GameState.MULLIGAN.equals(gameState)) {

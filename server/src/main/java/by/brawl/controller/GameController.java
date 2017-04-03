@@ -23,6 +23,5 @@ import org.springframework.stereotype.Controller;
  *
  * THE GAME IN PLAY STATE NOW
  */
-@Controller
 public class GameController {
 }

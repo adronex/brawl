@@ -8,9 +8,8 @@
 </head>
 <body>
 
-<!--<div>-->
-    <!--<input type="text" id="messageinput"/>-->
-<!--</div>-->
+<p>Squads: </p>
+<div id="squads"></div>
 <div>
     <button type="button" onclick="openSocket();">Open</button>
     <button type="button" onclick="send();">Send</button>
@@ -24,12 +23,30 @@
 
 <!-- Script to utilise the WebSocket -->
 <script type="text/javascript">
+    'use strict';
 
     var webSocket;
     var messagesDiv = document.getElementById("messages");
     var queueDiv = document.getElementById("queue");
     var gameStateDiv = document.getElementById("gameState");
 
+    fetch('/api/squads/my', {credentials: 'include'})
+        .then(function (response) {
+
+            return response.json();
+        })
+        .then(function (squads) {
+            if (squads) {
+                let squadsDiv = document.getElementById("squads");
+                squads.forEach(function (element, index) {
+                    squadsDiv.innerHTML += '<input type="radio" name="squad" value="' +
+                        element.id +
+                        (index === 0 ? '" checked>' : '">') +
+                        element.name + '<br>';
+                });
+            }
+        })
+        .catch(alert);
 
     function openSocket() {
         // Ensures only one connection is open at a time
@@ -44,13 +61,14 @@
          * Binds functions to the listeners for the websocket.
          */
         webSocket.onopen = function (event) {
-            // For reasons I can't determine, onopen gets called twice
-            // and the first time event.data is undefined.
-            // Leave a comment if you know the answer.
-            if (event.data === undefined)
-                return;
-
-            writeResponse(event.data);
+            let squads = document.getElementsByName('squad');
+            let chosenSquad;
+            for(let i = 0; i < squads.length; i++){
+                if(squads[i].checked){
+                    chosenSquad = squads[i].value;
+                }
+            }
+            webSocket.send(JSON.stringify({type: 'INITIAL', body: {squadId: chosenSquad}}));
         };
 
         webSocket.onmessage = function (event) {
