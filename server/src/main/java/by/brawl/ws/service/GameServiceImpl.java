@@ -1,14 +1,12 @@
 package by.brawl.ws.service;
 
-import by.brawl.dto.ExposableSpellDto;
 import by.brawl.dto.MulliganDto;
-import by.brawl.dto.NewHeroDto;
 import by.brawl.entity.Account;
 import by.brawl.entity.Hero;
+import by.brawl.entity.IdEntity;
 import by.brawl.entity.Squad;
 import by.brawl.service.AccountService;
 import by.brawl.service.HeroService;
-import by.brawl.ws.dto.HeroDto;
 import by.brawl.ws.dto.JsonDto;
 import by.brawl.ws.pojo.GameState;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +15,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
+import org.springframework.web.socket.adapter.jetty.JettyWebSocketSession;
 
 import java.io.IOException;
 import java.util.*;
@@ -69,6 +68,9 @@ public class GameServiceImpl implements GameService {
         }
 
         battlefield.put(playerKey, heroesAtBattlefield);
+        if (battlefield.size() == 2) {
+
+        }
     }
 
     private void sendMulliganData(Pair<WebSocketSession, Squad> firstPlayer,
@@ -86,12 +88,14 @@ public class GameServiceImpl implements GameService {
         sendDto(secondPlayer.getFirst(), secondPlayerMessage);
     }
 
-    private void sendDto(WebSocketSession session, JsonDto dto) {
-        try {
-            session.sendMessage(new TextMessage(dto.asJson()));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    private void sendStartGameDta() {
+        // todo: keep player sessions
+        WebSocketSession session = new JettyWebSocketSession(null);
+        // todo: replace ids with correct values
+        List<String> firstPlayerPositions = battlefield.get("1").stream().map(IdEntity::getId).collect(Collectors.toList());
+        List<String> secondPlayerPositions = battlefield.get("2").stream().map(IdEntity::getId).collect(Collectors.toList());
+        // todo: create battlefield DTO
+        sendDto(session, null);
     }
 
     private MulliganDto hideNonExposedSpells(MulliganDto dto) {
@@ -100,5 +104,13 @@ public class GameServiceImpl implements GameService {
                 h.getSpells().removeIf(spellDto -> !exposedSpellIds.contains(spellDto.getId()))
         );
         return dto;
+    }
+
+    private void sendDto(WebSocketSession session, JsonDto dto) {
+        try {
+            session.sendMessage(new TextMessage(dto.asJson()));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
