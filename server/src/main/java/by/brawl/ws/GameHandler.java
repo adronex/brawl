@@ -169,13 +169,6 @@ public class GameHandler extends TextWebSocketHandler {
                 .forEach(this::sendGameTurn);
     }
 
-    private void setQueue() {
-        playerStates.values()
-                .stream()
-                .map(PlayerStateHolder::getPlayer)
-                .forEach(a -> heroesQueue.addAll(a.getSquads().iterator().next().getHeroes()));
-    }
-
     private Set<SpellDto> getSpells() {
         Set<SpellDto> spells = new HashSet<>();
         heroesQueue.forEach(h ->
