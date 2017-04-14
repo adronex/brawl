@@ -1,7 +1,9 @@
 package by.brawl.ws.service;
 
+import by.brawl.entity.Spell;
 import by.brawl.entity.Squad;
 import by.brawl.ws.dto.JsonDto;
+import by.brawl.ws.dto.MessageDto;
 import by.brawl.ws.newdto.BattlefieldDto;
 import by.brawl.ws.newdto.MulliganDto;
 import by.brawl.ws.pojo.BattlefieldHolder;
@@ -15,6 +17,7 @@ import org.springframework.web.socket.WebSocketSession;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class GameServiceImpl implements GameService {
@@ -66,7 +69,38 @@ public class GameServiceImpl implements GameService {
             battlefieldHolder.prepareGame();
             gameState = GameState.PLAYING;
             sendBattlefieldData();
+        } else {
+            sendDto(session, new MessageDto("Opponent is still choosing."));
         }
+    }
+
+    @Override
+    public void castSpell(WebSocketSession session, String spellId, Set<Integer> myTargets, Set<Integer> enemyTargets) {
+        if (!GameState.PLAYING.equals(gameState)) {
+            throw new IllegalStateException("Invalid game state!");
+        }
+        String playerKey = session.getPrincipal().getName();
+        String currentHeroId = battlefieldHolder.getQueue().element();
+        // check for your hero or not
+        HeroHolder currentHero = battlefieldHolder.getBattleHeroes().get(playerKey)
+                .stream()
+                .filter(h -> h.getId().equals(currentHeroId))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Not your turn!"));
+        // check for spell validity (if hero has it)
+        Spell castedSpell = battlefieldHolder.getHeroSpells().get(currentHeroId)
+                .stream()
+                .filter(s -> s.getId().equals(spellId))
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException("Not your spell!"));
+
+        if (!castedSpell.getMyTargets().containsAll(myTargets) ||
+                !castedSpell.getEnemyTargets().containsAll(enemyTargets)) {
+            throw new IllegalArgumentException("Invalid targets!");
+        }
+        // todo: cast spells right here
+        battlefieldHolder.moveQueue();
+        sendBattlefieldData();
     }
 
     private void sendMulliganData() {
@@ -85,12 +119,6 @@ public class GameServiceImpl implements GameService {
             BattlefieldDto dto = new BattlefieldDto(battlefieldHolder,key);
             sendDto(value, dto);
         });
-    }
-
-    private void sendGameTurnData(WebSocketSession session) {
-
-
-        sendDto(session, battlefieldHolder);
     }
 
     private void sendDto(WebSocketSession session, JsonDto dto) {

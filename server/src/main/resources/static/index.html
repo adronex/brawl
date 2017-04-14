@@ -12,7 +12,8 @@
 <div id="squads"></div>
 <div>
     <button type="button" onclick="openSocket();">Open</button>
-    <button type="button" onclick="send();">Send</button>
+    <button type="button" onclick="sendMulliganInfo();">Choose heroes</button>
+    <button type="button" onclick="sendFirstSpell();">Cast first spell</button>
     <button type="button" onclick="closeSocket();">Close</button>
 </div>
 <!-- Server responses get written here -->
@@ -88,8 +89,12 @@
     /**
      * Sends the value of the text input to the server
      */
-    function send() {
-        webSocket.send(JSON.stringify({type: 'HEROES_CHOICE', body: {heroes: ['2', '1']}}));
+    function sendMulliganInfo() {
+        webSocket.send(JSON.stringify({type: 'CHOOSE_HEROES', body: {heroes: ['2', '1']}}));
+    }
+
+    function sendFirstSpell() {
+        webSocket.send(JSON.stringify({type: 'CAST_SPELL', body: {heroes: ['2', '1']}}));
     }
 
     function closeSocket() {

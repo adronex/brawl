@@ -34,14 +34,30 @@ public class BattlefieldHolder extends AbstractDto implements JsonDto {
 
     public void prepareGame() {
         mulliganHeroes.clear();
-        setQueue();
+        prepareQueue();
     }
 
 
-    private void setQueue() {
+    private void prepareQueue() {
         for (List<HeroHolder> heroes : battleHeroes.values()) {
             heroes.forEach(h -> queue.add(h.getId()));
         }
+    }
+
+    public void moveQueue() {
+        String heroToMove = queue.remove();
+        queue.add(heroToMove);
+
+        List<String> newQueue = queue.stream()
+                .filter(queueElement ->
+                        battleHeroes.values()
+                                .stream()
+                                .flatMap(Collection::stream)
+                                .filter(h -> h.getId().equals(queueElement) && h.isAlive())
+                                .count() > 0)
+                .collect(Collectors.toList());
+        queue.clear();
+        queue.addAll(newQueue);
     }
 
     public Map<String, WebSocketSession> getSessions() {

@@ -2,6 +2,7 @@ package by.brawl.ws;
 
 import by.brawl.entity.Account;
 import by.brawl.entity.Hero;
+import by.brawl.service.AccountService;
 import by.brawl.ws.dto.*;
 import by.brawl.ws.pojo.GameState;
 import by.brawl.ws.service.GameService;
@@ -40,10 +41,12 @@ import java.util.stream.Collectors;
 @Component
 public class GameHandler extends TextWebSocketHandler {
 
+    //todo: delete when client-side will send mulligan requests
+    @Autowired
+    private AccountService accountService;
+
     private MatchmakingService matchmakingService;
     private GameService gameService;
-
-   // private Queue<Hero> heroesQueue = new LinkedList<>();
 
     @Autowired
     public GameHandler(MatchmakingService matchmakingService,
@@ -81,17 +84,32 @@ public class GameHandler extends TextWebSocketHandler {
             matchmakingService.addInPool(session, squadId);
         }
 
-        if (ClientRequestType.HEROES_CHOICE.equals(type)) {
+        if (ClientRequestType.CHOOSE_HEROES.equals(type)) {
             JSONObject body = request.getJSONObject("body");
             JSONArray requestArray = body.getJSONArray("heroes");
 
             List<String> heroes = new ArrayList<>();
             requestArray.toList().forEach(o -> heroes.add((String) o));
 
+            //todo: remove next block with accountService
+            {
+                heroes.clear();
+                if ("adronex303@gmail.com".equals(session.getPrincipal().getName())) {
+                    heroes.add("1");
+                    heroes.add("2");
+                } else if ("adronex_@mail.ru".equals(session.getPrincipal().getName())) {
+                    heroes.add("3");
+                    heroes.add("4");
+                }
+            }
 
             gameService.setHeroesPositions(session, heroes);
         }
 
+        if (ClientRequestType.CAST_SPELL.equals(type)) {
+            //todo: remove next block with accountService
+            gameService.castSpell(session, "1", new HashSet<>(), new HashSet<>());
+        }
 //        if (GameState.MULLIGAN.equals(gameState)) {
 //            playerStates.get(session.getId()).setReadyForGame(true);
 //            if (playerStates.values()
