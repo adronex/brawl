@@ -1,34 +1,23 @@
 package by.brawl.ws.service;
 
-import by.brawl.dto.MulliganDto;
-import by.brawl.entity.Account;
-import by.brawl.entity.IdEntity;
 import by.brawl.entity.Squad;
-import by.brawl.service.AccountService;
-import by.brawl.service.HeroService;
 import by.brawl.ws.dto.JsonDto;
+import by.brawl.ws.newdto.BattlefieldDto;
+import by.brawl.ws.newdto.MulliganDto;
 import by.brawl.ws.pojo.BattlefieldHolder;
 import by.brawl.ws.pojo.GameState;
 import by.brawl.ws.pojo.HeroHolder;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.util.Pair;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
-import org.springframework.web.socket.adapter.jetty.JettyWebSocketSession;
 
 import java.io.IOException;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class GameServiceImpl implements GameService {
-
-    @Autowired
-    private AccountService accountService;
-    @Autowired
-    private HeroService heroService;
 
     private BattlefieldHolder battlefieldHolder = new BattlefieldHolder();
     private GameState gameState = GameState.NOT_STARTED;
@@ -36,16 +25,17 @@ public class GameServiceImpl implements GameService {
     private static final Integer BATTLEFIELD_HEROES_COUNT = 2;
 
     @Override
-    public void createTwoPlayersGame(Pair<WebSocketSession, Squad> firstPlayer,
-                                     Pair<WebSocketSession, Squad> secondPlayer) {
+    public void createTwoPlayersGame(WebSocketSession firstSession, Squad firstSquad,
+                                     WebSocketSession secondSession, Squad secondSquad) {
 
         if (!GameState.NOT_STARTED.equals(gameState)) {
+            System.out.println("GAME STATE IS ILLEGAL");
             throw new IllegalStateException();
         }
-        battlefieldHolder.addSquad(firstPlayer.getSecond());
-        battlefieldHolder.addSquad(secondPlayer.getSecond());
-    //    sendMulliganData(firstPlayer, secondPlayer);
+        battlefieldHolder.addSquad(firstSession, firstSquad);
+        battlefieldHolder.addSquad(secondSession, secondSquad);
         gameState = GameState.MULLIGAN;
+        sendMulliganData();
     }
 
     @Override
@@ -75,40 +65,32 @@ public class GameServiceImpl implements GameService {
         if (battlefieldHolder.getBattleHeroes().size() == 2) {
             battlefieldHolder.prepareGame();
             gameState = GameState.PLAYING;
+            sendBattlefieldData();
         }
     }
 
-    private void sendMulliganData(Pair<WebSocketSession, Squad> firstPlayer,
-                                  Pair<WebSocketSession, Squad> secondPlayer) {
-        Account first = accountService.findByEmail(firstPlayer.getFirst().getPrincipal().getName());
-        Account second = accountService.findByEmail(secondPlayer.getFirst().getPrincipal().getName());
-
-        MulliganDto firstPlayerMessage = new MulliganDto(firstPlayer.getSecond(), secondPlayer.getSecond(), first);
-        firstPlayerMessage = hideNonExposedSpells(firstPlayerMessage);
-
-        MulliganDto secondPlayerMessage = new MulliganDto(firstPlayer.getSecond(), secondPlayer.getSecond(), second);
-        secondPlayerMessage = hideNonExposedSpells(secondPlayerMessage);
-
-        sendDto(firstPlayer.getFirst(), firstPlayerMessage);
-        sendDto(secondPlayer.getFirst(), secondPlayerMessage);
+    private void sendMulliganData() {
+        battlefieldHolder.getSessions().forEach((key, value) -> {
+            MulliganDto dto = new MulliganDto(
+                    battlefieldHolder.getMulliganHeroes(),
+                    battlefieldHolder.getHeroSpells(),
+                    key
+            );
+            sendDto(value, dto);
+        });
     }
 
-    private void sendStartGameDta() {
-        // todo: keep player sessions
-        WebSocketSession session = new JettyWebSocketSession(null);
-        // todo: replace ids with correct values
-        List<String> firstPlayerPositions = battlefield.get("1").stream().map(IdEntity::getId).collect(Collectors.toList());
-        List<String> secondPlayerPositions = battlefield.get("2").stream().map(IdEntity::getId).collect(Collectors.toList());
-        // todo: create battlefield DTO
-        sendDto(session, null);
+    private void sendBattlefieldData() {
+        battlefieldHolder.getSessions().forEach((key, value) -> {
+            BattlefieldDto dto = new BattlefieldDto(battlefieldHolder,key);
+            sendDto(value, dto);
+        });
     }
 
-    private MulliganDto hideNonExposedSpells(MulliganDto dto) {
+    private void sendGameTurnData(WebSocketSession session) {
 
-        dto.getEnemyHeroes().forEach(h ->
-                h.getSpells().removeIf(spellDto -> !exposedSpellIds.contains(spellDto.getId()))
-        );
-        return dto;
+
+        sendDto(session, battlefieldHolder);
     }
 
     private void sendDto(WebSocketSession session, JsonDto dto) {

@@ -2,17 +2,13 @@ package by.brawl.ws;
 
 import by.brawl.entity.Account;
 import by.brawl.entity.Hero;
-import by.brawl.service.AccountService;
-import by.brawl.service.SecurityService;
 import by.brawl.ws.dto.*;
 import by.brawl.ws.pojo.GameState;
-import by.brawl.ws.pojo.PlayerStateHolder;
 import by.brawl.ws.service.GameService;
 import by.brawl.ws.service.MatchmakingService;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
@@ -47,11 +43,7 @@ public class GameHandler extends TextWebSocketHandler {
     private MatchmakingService matchmakingService;
     private GameService gameService;
 
-    private Map<String, PlayerStateHolder> playerStates = new HashMap<>();
-    private GameState gameState = GameState.NOT_STARTED;
-    private Queue<Hero> heroesQueue = new LinkedList<>();
-    private Map<String, List<HeroDto>> heroes = new HashMap<>();
-    private List<String> history = new ArrayList<>();
+   // private Queue<Hero> heroesQueue = new LinkedList<>();
 
     @Autowired
     public GameHandler(MatchmakingService matchmakingService,
@@ -100,52 +92,52 @@ public class GameHandler extends TextWebSocketHandler {
             gameService.setHeroesPositions(session, heroes);
         }
 
-        if (GameState.MULLIGAN.equals(gameState)) {
-            playerStates.get(session.getId()).setReadyForGame(true);
-            if (playerStates.values()
-                    .stream()
-                    .filter(s -> !s.getReadyForGame())
-                    .count() == 0) {
-                sendInfoMessageToAll("Game started!");
-                gameState = GameState.PLAYING;
-                setQueue();
-                playerStates.values().forEach(ps -> ps.getSpells().addAll(getSpells()));
-                sendGameTurnToAll();
-            } else {
-                sendInfoMessage(session, "Opponent is still choosing");
-            }
-        } else if (GameState.PLAYING.equals(gameState)) {
-            Hero currentHero = heroesQueue.element();
-            if (!playerStates.get(session.getId())
-                    .getPlayer()
-                    .equals(currentHero.getOwner())) {
-                sendInfoMessage(session, "Not your turn!");
-                return;
-            }
-            // todo: check for spell is missing
-            currentHero.hit(15);
-            heroesQueue.remove();
-            heroesQueue.add(currentHero);
-            checkQueue();
-            checkGameIsFinished();
-            sendGameTurnToAll();
-            if (GameState.END.equals(gameState)) {
-                sendInfoMessageToAll("Game over!");
-                clearSessions();
-            }
-        }
+//        if (GameState.MULLIGAN.equals(gameState)) {
+//            playerStates.get(session.getId()).setReadyForGame(true);
+//            if (playerStates.values()
+//                    .stream()
+//                    .filter(s -> !s.getReadyForGame())
+//                    .count() == 0) {
+//                sendInfoMessageToAll("Game started!");
+//                gameState = GameState.PLAYING;
+//                //setQueue();
+//                playerStates.values().forEach(ps -> ps.getSpells().addAll(getSpells()));
+//                sendGameTurnToAll();
+//            } else {
+//                sendInfoMessage(session, "Opponent is still choosing");
+//            }
+//        } else if (GameState.PLAYING.equals(gameState)) {
+//            Hero currentHero = heroesQueue.element();
+//            if (!playerStates.get(session.getId())
+//                    .getPlayer()
+//                    .equals(currentHero.getOwner())) {
+//                sendInfoMessage(session, "Not your turn!");
+//                return;
+//            }
+//            // todo: check for spell is missing
+//            currentHero.hit(15);
+//            heroesQueue.remove();
+//            heroesQueue.add(currentHero);
+//            checkQueue();
+//            checkGameIsFinished();
+//            sendGameTurnToAll();
+//            if (GameState.END.equals(gameState)) {
+//                sendInfoMessageToAll("Game over!");
+//                clearSessions();
+//            }
+//        }
     }
 
     private void sendInfoMessage(WebSocketSession session, String text) {
         sendDto(session, new MessageDto(text));
     }
 
-    private void sendInfoMessageToAll(String text) {
-        playerStates.values()
-                .stream()
-                .map(PlayerStateHolder::getSession)
-                .forEach(s -> sendInfoMessage(s, text));
-    }
+//    private void sendInfoMessageToAll(String text) {
+//        playerStates.values()
+//                .stream()
+//                .map(PlayerStateHolder::getSession)
+//                .forEach(s -> sendInfoMessage(s, text));
+//    }
 
     private void sendDto(WebSocketSession session, JsonDto dto) {
         try {
@@ -155,66 +147,66 @@ public class GameHandler extends TextWebSocketHandler {
         }
     }
 
-    @Deprecated
-    private void sendGameTurn(WebSocketSession session) {
-        Account receiver = playerStates.get(session.getId()).getPlayer();
-        sendDto(session, new GameTurnDto(gameState, heroesQueue, receiver));
-    }
+//    @Deprecated
+//    private void sendGameTurn(WebSocketSession session) {
+//        Account receiver = playerStates.get(session.getId()).getPlayer();
+//        sendDto(session, new GameTurnDto(gameState, heroesQueue, receiver));
+//    }
+//
+//    @Deprecated
+//    private void sendGameTurnToAll() {
+//        playerStates.values()
+//                .stream()
+//                .map(PlayerStateHolder::getSession)
+//                .forEach(this::sendGameTurn);
+//    }
 
-    @Deprecated
-    private void sendGameTurnToAll() {
-        playerStates.values()
-                .stream()
-                .map(PlayerStateHolder::getSession)
-                .forEach(this::sendGameTurn);
-    }
+//    private Set<SpellDto> getSpells() {
+//        Set<SpellDto> spells = new HashSet<>();
+//        heroesQueue.forEach(h ->
+//                spells.addAll(h.getSpells()
+//                        .stream()
+//                        .map(s -> new SpellDto(s.getId(), h.getId()))
+//                        .collect(Collectors.toList())));
+//        return spells;
+//    }
+//
+//    private void checkQueue() {
+//        List<Hero> aliveHeroes = heroesQueue.stream().filter(Hero::isAlive).collect(Collectors.toList());
+//        Queue<Hero> updatedQueue = new LinkedList<>();
+//        updatedQueue.addAll(aliveHeroes);
+//        heroesQueue.clear();
+//        heroesQueue.addAll(updatedQueue);
+//    }
 
-    private Set<SpellDto> getSpells() {
-        Set<SpellDto> spells = new HashSet<>();
-        heroesQueue.forEach(h ->
-                spells.addAll(h.getSpells()
-                        .stream()
-                        .map(s -> new SpellDto(s.getId(), h.getId()))
-                        .collect(Collectors.toList())));
-        return spells;
-    }
-
-    private void checkQueue() {
-        List<Hero> aliveHeroes = heroesQueue.stream().filter(Hero::isAlive).collect(Collectors.toList());
-        Queue<Hero> updatedQueue = new LinkedList<>();
-        updatedQueue.addAll(aliveHeroes);
-        heroesQueue.clear();
-        heroesQueue.addAll(updatedQueue);
-    }
-
-    private void checkGameIsFinished() {
-        Map<Account, List<Hero>> splitList = heroesQueue.stream().collect(Collectors.groupingBy(Hero::getOwner));
-
-        playerStates.values()
-                .forEach(s -> {
-                    Boolean alive = splitList.get(s.getPlayer()) != null;
-                    s.setAlive(alive);
-                });
-
-        if (playerStates.values()
-                .stream()
-                .filter(s -> !s.getAlive()).count() > 0) {
-            gameState = GameState.END;
-        }
-    }
-
-    private void clearSessions() {
-        playerStates.values()
-                .stream()
-                .map(PlayerStateHolder::getSession)
-                .forEach(s -> {
-                    try {
-                        s.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                });
-        playerStates.clear();
-        heroesQueue.clear();
-    }
+//    private void checkGameIsFinished() {
+//        Map<Account, List<Hero>> splitList = heroesQueue.stream().collect(Collectors.groupingBy(Hero::getOwner));
+//
+//        playerStates.values()
+//                .forEach(s -> {
+//                    Boolean alive = splitList.get(s.getPlayer()) != null;
+//                    s.setAlive(alive);
+//                });
+//
+//        if (playerStates.values()
+//                .stream()
+//                .filter(s -> !s.getAlive()).count() > 0) {
+//            gameState = GameState.END;
+//        }
+//    }
+//
+//    private void clearSessions() {
+//        playerStates.values()
+//                .stream()
+//                .map(PlayerStateHolder::getSession)
+//                .forEach(s -> {
+//                    try {
+//                        s.close();
+//                    } catch (IOException e) {
+//                        e.printStackTrace();
+//                    }
+//                });
+//        playerStates.clear();
+//        heroesQueue.clear();
+//    }
 }

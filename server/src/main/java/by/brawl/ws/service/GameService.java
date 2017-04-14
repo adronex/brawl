@@ -8,8 +8,8 @@ import java.util.List;
 
 public interface GameService {
 
-    void createTwoPlayersGame(Pair<WebSocketSession, Squad> firstPlayer,
-                              Pair<WebSocketSession, Squad> secondPlayer);
+    void createTwoPlayersGame(WebSocketSession firstSession, Squad firstSquad,
+                              WebSocketSession secondSession, Squad secondSquad);
 
     void setHeroesPositions(WebSocketSession session,
                             List<String> heroesIds);

@@ -42,7 +42,7 @@ class MatchmakingServiceImpl implements MatchmakingService {
             waitingPool.remove(0);
             Pair<WebSocketSession, Squad> second = waitingPool.get(0);
             waitingPool.remove(0);
-            gameService.createTwoPlayersGame(first, second);
+            gameService.createTwoPlayersGame(first.getFirst(), first.getSecond(), second.getFirst(), second.getSecond());
         }
     }
 }
