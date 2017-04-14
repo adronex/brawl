@@ -4,11 +4,15 @@ import by.brawl.entity.Hero;
 
 public class HeroHolder {
     private String id;
-    private Integer health = 0;
+    private Integer health = 30;
 
     public HeroHolder(Hero hero) {
         id = hero.getId();
         health = hero.getHealth();
+    }
+
+    public void hit(Integer value) {
+        health -= value;
     }
 
     public Boolean isAlive() {

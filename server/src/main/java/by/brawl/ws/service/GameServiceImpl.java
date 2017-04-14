@@ -9,15 +9,17 @@ import by.brawl.ws.newdto.MulliganDto;
 import by.brawl.ws.pojo.BattlefieldHolder;
 import by.brawl.ws.pojo.GameState;
 import by.brawl.ws.pojo.HeroHolder;
+import by.brawl.ws.spell.SpellLogic;
+import by.brawl.ws.spell.SuckerPunch;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
+import javax.annotation.PostConstruct;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class GameServiceImpl implements GameService {
@@ -25,7 +27,15 @@ public class GameServiceImpl implements GameService {
     private BattlefieldHolder battlefieldHolder = new BattlefieldHolder();
     private GameState gameState = GameState.NOT_STARTED;
 
+    private Map<String, SpellLogic> spellsPool = new HashMap<>();
+
     private static final Integer BATTLEFIELD_HEROES_COUNT = 2;
+
+    @PostConstruct
+    public void init() {
+        SpellLogic suckerPunch = new SuckerPunch();
+        spellsPool.put(suckerPunch.getId(), suckerPunch);
+    }
 
     @Override
     public void createTwoPlayersGame(WebSocketSession firstSession, Squad firstSquad,
@@ -75,7 +85,7 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public void castSpell(WebSocketSession session, String spellId, Set<Integer> myTargets, Set<Integer> enemyTargets) {
+    public void castSpell(WebSocketSession session, String spellId, Integer target, Boolean enemy) {
         if (!GameState.PLAYING.equals(gameState)) {
             throw new IllegalStateException("Invalid game state!");
         }
@@ -88,15 +98,18 @@ public class GameServiceImpl implements GameService {
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("Not your turn!"));
         // check for spell validity (if hero has it)
-        Spell castedSpell = battlefieldHolder.getHeroSpells().get(currentHeroId)
+        Spell castedSpellId = battlefieldHolder.getHeroSpells().get(currentHeroId)
                 .stream()
                 .filter(s -> s.getId().equals(spellId))
                 .findAny()
                 .orElseThrow(() -> new IllegalArgumentException("Not your spell!"));
-
-        if (!castedSpell.getMyTargets().containsAll(myTargets) ||
-                !castedSpell.getEnemyTargets().containsAll(enemyTargets)) {
-            throw new IllegalArgumentException("Invalid targets!");
+        SpellLogic castedSpell = spellsPool.get(castedSpellId.getId());
+        // check target for validity
+        Boolean cannotBeTargeted = (target == null && !castedSpell.getTargetable());
+        Boolean validMyTarget = target != null && enemy != null && !enemy && castedSpell.getMyTargets().contains(target);
+        Boolean validEnemyTarget = target != null && enemy != null && enemy && castedSpell.getEnemyTargets().contains(target);
+        if (!cannotBeTargeted && !validMyTarget && !validEnemyTarget) {
+            throw new IllegalArgumentException("Invalid target!");
         }
         // todo: cast spells right here
         battlefieldHolder.moveQueue();

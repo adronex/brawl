@@ -107,8 +107,10 @@ public class GameHandler extends TextWebSocketHandler {
         }
 
         if (ClientRequestType.CAST_SPELL.equals(type)) {
-            //todo: remove next block with accountService
-            gameService.castSpell(session, "1", new HashSet<>(), new HashSet<>());
+            JSONObject body = request.getJSONObject("body");
+            Integer target = body.optInt("target");
+            Boolean enemy = body.optBoolean("enemy");
+            gameService.castSpell(session, "1", target, enemy);
         }
 //        if (GameState.MULLIGAN.equals(gameState)) {
 //            playerStates.get(session.getId()).setReadyForGame(true);

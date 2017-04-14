@@ -13,16 +13,4 @@ import java.util.Set;
  */
 @Entity
 public class Spell extends NamedEntity {
-    @Transient
-    private Set<Integer> myTargets = new HashSet<>();
-    @Transient
-    private Set<Integer> enemyTargets = new HashSet<>();
-
-    public Set<Integer> getMyTargets() {
-        return myTargets;
-    }
-
-    public Set<Integer> getEnemyTargets() {
-        return enemyTargets;
-    }
 }

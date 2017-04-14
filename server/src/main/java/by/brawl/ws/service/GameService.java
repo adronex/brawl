@@ -17,6 +17,6 @@ public interface GameService {
 
     void castSpell(WebSocketSession session,
                    String spellId,
-                   Set<Integer> myTargets,
-                   Set<Integer> enemyTargets);
+                   Integer target,
+                   Boolean enemy);
 }

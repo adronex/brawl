@@ -94,7 +94,7 @@
     }
 
     function sendFirstSpell() {
-        webSocket.send(JSON.stringify({type: 'CAST_SPELL', body: {heroes: ['2', '1']}}));
+        webSocket.send(JSON.stringify({type: 'CAST_SPELL', body: {target: 1, enemy: true}}));
     }
 
     function closeSocket() {
