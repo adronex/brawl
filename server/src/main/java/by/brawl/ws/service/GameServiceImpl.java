@@ -1,9 +1,9 @@
 package by.brawl.ws.service;
 
-import by.brawl.util.Exceptions;
 import by.brawl.entity.IdEntity;
 import by.brawl.entity.Spell;
 import by.brawl.entity.Squad;
+import by.brawl.util.Exceptions;
 import by.brawl.ws.dto.JsonDto;
 import by.brawl.ws.dto.MessageDto;
 import by.brawl.ws.newdto.BattlefieldDto;
@@ -21,7 +21,6 @@ import org.springframework.web.socket.WebSocketSession;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -52,9 +51,8 @@ public class GameServiceImpl implements GameService {
 									 WebSocketSession secondSession, Squad secondSquad) {
 
 		if (!GameState.NOT_STARTED.equals(gameState)) {
-			String message = MessageFormat.format("Illegal game state. Expected: {0}, actual: {1}",
+			throw Exceptions.produceIllegalState(LOG, "Illegal game state. Expected: {0}, actual: {1}",
 					GameState.NOT_STARTED, gameState);
-			throw Exceptions.produceIllegalState(message, LOG);
 		}
 		battlefieldHolder.addSquad(firstSession, firstSquad);
 		battlefieldHolder.addSquad(secondSession, secondSquad);
@@ -65,14 +63,12 @@ public class GameServiceImpl implements GameService {
 	@Override
 	public void setHeroesPositions(WebSocketSession session, List<String> heroesIds) {
 		if (!GameState.MULLIGAN.equals(gameState)) {
-			String message = MessageFormat.format("Illegal game state. Expected: {0}, actual: {1}",
+			throw Exceptions.produceIllegalState(LOG, "Illegal game state. Expected: {0}, actual: {1}",
 					GameState.MULLIGAN, gameState);
-			throw Exceptions.produceIllegalState(message, LOG);
 		}
 		if (heroesIds.size() != BATTLEFIELD_HEROES_COUNT) {
-			String message = MessageFormat.format("Wrong heroes in battle count. Expected: {0}, actual: {1}",
+			throw Exceptions.produceIllegalArgument(LOG, "Wrong heroes in battle count. Expected: {0}, actual: {1}",
 					BATTLEFIELD_HEROES_COUNT, heroesIds.size());
-			throw Exceptions.produceIllegalArgument(message, LOG);
 		}
 		String playerKey = session.getPrincipal().getName();
 
@@ -83,11 +79,9 @@ public class GameServiceImpl implements GameService {
 			HeroHolder battleHero = mulliganHeroes.stream()
 					.filter(h -> h.getId().equals(heroId))
 					.findFirst()
-					.orElseThrow(() -> {
-						String message = MessageFormat.format("Player {0} trying to choose hero with id {1} from available ids: {2}",
-								session.getPrincipal().getName(), heroId, Arrays.toString(mulliganHeroes.stream().map(HeroHolder::getId).toArray()));
-						return Exceptions.produceAccessDenied(message, LOG);
-					});
+					.orElseThrow(() -> Exceptions.produceAccessDenied(LOG, "Player {0} trying to choose hero with id {1} from available ids: {2}",
+								session.getPrincipal().getName(), heroId, Arrays.toString(mulliganHeroes.stream().map(HeroHolder::getId).toArray()))
+					);
 
 			battleHeroes.add(battleHero);
 		}
@@ -105,23 +99,20 @@ public class GameServiceImpl implements GameService {
 
 	@Override
 	public void castSpell(WebSocketSession session, String spellId, Integer target, Boolean enemy) {
-		if (!GameState.PLAYING.equals(gameState)) {
-			String message = MessageFormat.format("Illegal game state. Expected: {0}, actual: {1}",
-					GameState.PLAYING, gameState);
-			throw Exceptions.produceIllegalState(message, LOG);
-		}
 		String playerKey = session.getPrincipal().getName();
+		if (!GameState.PLAYING.equals(gameState)) {
+			throw Exceptions.produceIllegalState(LOG, "Illegal game state. Expected: {0}, actual: {1}. Initiator: {2}",
+					GameState.PLAYING, gameState, playerKey);
+		}
 		String currentHeroId = battlefieldHolder.getQueue().element();
 		// check for your hero or not
 		HeroHolder currentHero = battlefieldHolder.getBattleHeroes().get(playerKey)
 				.stream()
 				.filter(h -> h.getId().equals(currentHeroId))
 				.findFirst()
-				.orElseThrow(() -> {
-					String message = MessageFormat.format("Player {0} tries to make own turn in enemy's one.",
-							playerKey);
-					return Exceptions.produceIllegalArgument(message, LOG);
-				});
+				.orElseThrow(() -> Exceptions.produceIllegalArgument(
+						LOG, "Player {0} tries to make own turn in enemy's one.", playerKey)
+				);
 		// check for spell validity (if hero has it)
 		Spell castedSpellId = battlefieldHolder.getHeroSpells().get(currentHeroId)
 				.stream()
@@ -132,9 +123,8 @@ public class GameServiceImpl implements GameService {
 							.stream()
 							.map(IdEntity::getId)
 							.collect(Collectors.toList());
-					String message = MessageFormat.format("Player {0} casted spell {1} when available spells are {2}.",
+					return Exceptions.produceIllegalArgument(LOG, "Player {0} casted spell {1} when available spells are {2}",
 							playerKey, spellId, Arrays.asList(availableSpellsIds.toArray()));
-					return Exceptions.produceIllegalArgument(message, LOG);
 				});
 		SpellLogic castedSpell = spellsPool.get(castedSpellId.getId());
 		// check target for validity
@@ -142,9 +132,8 @@ public class GameServiceImpl implements GameService {
 		Boolean validMyTarget = target != null && enemy != null && !enemy && castedSpell.getMyTargets().contains(target);
 		Boolean validEnemyTarget = target != null && enemy != null && enemy && castedSpell.getEnemyTargets().contains(target);
 		if (!cannotBeTargeted && !validMyTarget && !validEnemyTarget) {
-			String message = MessageFormat.format("Targeting error. Can't be targeted: {0}, valid my target: {1}, valid enemy target: {2}",
+			throw Exceptions.produceIllegalArgument(LOG, "Targeting error. Can't be targeted: {0}, valid my target: {1}, valid enemy target: {2}",
 					cannotBeTargeted, validEnemyTarget, validEnemyTarget);
-			throw Exceptions.produceIllegalArgument(message, LOG);
 		}
 		// todo: cast spells right here
 		battlefieldHolder.moveQueue();
@@ -173,7 +162,7 @@ public class GameServiceImpl implements GameService {
 		try {
 			session.sendMessage(new TextMessage(dto.asJson()));
 		} catch (IOException e) {
-			Exceptions.logError("Web socket message sending threw error.", e, LOG);
+			Exceptions.logError(LOG, e, "Web socket message sending threw error");
 		}
 	}
 }

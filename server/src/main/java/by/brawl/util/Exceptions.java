@@ -4,43 +4,51 @@ import org.slf4j.Logger;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
+import java.text.MessageFormat;
+
 public final class Exceptions {
 
 	private Exceptions() {
 		// Lock class from instantiation
 	}
 
-	public static AccessDeniedException produceAccessDenied(String message, Logger log) {
-		AccessDeniedException e = new AccessDeniedException(message);
-		log.error(message, e);
+	public static AccessDeniedException produceAccessDenied(Logger log, String message, Object... messageArgs) {
+		String formattedMessage = MessageFormat.format(message, messageArgs);
+		AccessDeniedException e = new AccessDeniedException(formattedMessage);
+		log.error(formattedMessage, e);
 		return e;
 	}
 
-	public static IllegalArgumentException produceIllegalArgument(String message, Logger log) {
-		IllegalArgumentException e = new IllegalArgumentException(message);
-		log.error(message, e);
+	public static IllegalArgumentException produceIllegalArgument(Logger log, String message, Object... messageArgs) {
+		String formattedMessage = MessageFormat.format(message, messageArgs);
+		IllegalArgumentException e = new IllegalArgumentException(formattedMessage);
+		log.error(formattedMessage, e);
 		return e;
 	}
 
-	public static IllegalStateException produceIllegalState(String message, Logger log) {
-		IllegalStateException e = new IllegalStateException(message);
-		log.error(message, e);
+	public static IllegalStateException produceIllegalState(Logger log, String message, Object... messageArgs) {
+		String formattedMessage = MessageFormat.format(message, messageArgs);
+		IllegalStateException e = new IllegalStateException(formattedMessage);
+		log.error(formattedMessage, e);
 		return e;
 	}
 
-	public static NullPointerException produceNullPointer(String message, Logger log) {
-		NullPointerException e = new NullPointerException(message);
-		log.error(message, e);
+	public static NullPointerException produceNullPointer(Logger log, String message, Object... messageArgs) {
+		String formattedMessage = MessageFormat.format(message, messageArgs);
+		NullPointerException e = new NullPointerException(formattedMessage);
+		log.error(formattedMessage, e);
 		return e;
 	}
 
-	public static UsernameNotFoundException produceUsernameNotFound(String message, Logger log) {
-		UsernameNotFoundException e = new UsernameNotFoundException(message);
-		log.error(message, e);
+	public static UsernameNotFoundException produceUsernameNotFound(Logger log, String message, Object... messageArgs) {
+		String formattedMessage = MessageFormat.format(message, messageArgs);
+		UsernameNotFoundException e = new UsernameNotFoundException(formattedMessage);
+		log.error(formattedMessage, e);
 		return e;
 	}
 
-	public static void logError(String message, Exception e, Logger log) {
-		log.error(message, e);
+	public static void logError(Logger log, Exception e, String message, Object... messageArgs) {
+		String formattedMessage = MessageFormat.format(message, messageArgs);
+		log.error(formattedMessage, e);
 	}
 }
