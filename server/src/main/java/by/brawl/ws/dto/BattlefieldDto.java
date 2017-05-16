@@ -11,6 +11,8 @@ public class BattlefieldDto extends AbstractDto implements JsonDto {
 	private List<HeroDto> enemyHeroes = new ArrayList<>();
 	private Map<String, Set<SpellDto>> heroSpells = new HashMap<>();
 	private Queue<String> queue = new LinkedList<>();
+    private Integer currentStep;
+    private List<StepLogDto> battleLog = new ArrayList<>();
 
 	public BattlefieldDto(BattlefieldHolder battlefieldHolder,
 						  String receiverName) {
@@ -49,7 +51,11 @@ public class BattlefieldDto extends AbstractDto implements JsonDto {
 				queue.add(null);
 			}
 		});
-	}
+
+        currentStep = battlefieldHolder.getCurrentStep();
+        // todo: lambdas are bitches!
+        battleLog.addAll(battlefieldHolder.getBattleLog().stream().map(log -> new StepLogDto(log, receiverName)).collect(Collectors.toList()));
+    }
 
 	public List<HeroDto> getMyHeroes() {
 		return myHeroes;
@@ -66,4 +72,12 @@ public class BattlefieldDto extends AbstractDto implements JsonDto {
 	public Queue<String> getQueue() {
 		return queue;
 	}
+
+    public Integer getCurrentStep() {
+        return currentStep;
+    }
+
+    public List<StepLogDto> getBattleLog() {
+        return battleLog;
+    }
 }

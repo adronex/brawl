@@ -2,24 +2,19 @@ package by.brawl.ws.holder;
 
 import by.brawl.entity.Squad;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Queue;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class BattlefieldHolder {
 
     private GameState gameState = GameState.NOT_STARTED;
+    private Integer currentStep = 0;
 
     private Map<String, List<HeroHolder>> mulliganHeroes = new HashMap<>();
     private Map<String, List<HeroHolder>> battleHeroes = new HashMap<>();
- //   private Map<String, Set<Spell>> heroSpells = new HashMap<>();
     private Set<String> connectedAccountsIds = new HashSet<>();
     private Queue<HeroHolder> queue = new LinkedList<>();
+    private List<StepLogHolder> battleLog = new ArrayList<>();
 
     public void addSquad(Squad squad) {
         List<HeroHolder> heroes = squad.getHeroes()
@@ -28,16 +23,10 @@ public class BattlefieldHolder {
                 .collect(Collectors.toList());
         mulliganHeroes.put(squad.getOwner().getUsername(), heroes);
         connectedAccountsIds.add(squad.getOwner().getUsername());
-
-//        squad.getHeroes().forEach(h ->
-//                heroSpells.put(h.getId(), h.getSpells())
-//        );
     }
 
     public void prepareGame() {
-		for (List<HeroHolder> heroes : battleHeroes.values()) {
-			heroes.forEach(h -> queue.add(h));
-		}
+        battleHeroes.values().forEach(heroHolders -> queue.addAll(heroHolders));
         mulliganHeroes.clear();
     }
 
@@ -56,12 +45,20 @@ public class BattlefieldHolder {
         return connectedAccountsIds;
     }
 
+    public void incrementStep() {
+        currentStep++;
+    }
+
     public GameState getGameState() {
         return gameState;
     }
 
     public void setGameState(GameState gameState) {
         this.gameState = gameState;
+    }
+
+    public Integer getCurrentStep() {
+        return currentStep;
     }
 
     public Map<String, List<HeroHolder>> getMulliganHeroes() {
@@ -72,11 +69,11 @@ public class BattlefieldHolder {
         return battleHeroes;
     }
 
-//    public Map<String, Set<Spell>> getHeroSpells() {
-//        return heroSpells;
-//    }
-
     public Queue<HeroHolder> getQueue() {
         return queue;
+    }
+
+    public List<StepLogHolder> getBattleLog() {
+        return battleLog;
     }
 }

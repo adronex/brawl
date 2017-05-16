@@ -97,7 +97,8 @@ class GameServiceImpl implements GameService {
 					playerKey, spellId, availableSpellsIds.toString());
 		}
 
-		battlefieldHolder = spellCastService.castSpell(spellId, target, enemy, battlefieldHolder);
+		battlefieldHolder = spellCastService.castSpell(spellId, session.getId(), currentHero.getId(), target, enemy, battlefieldHolder);
+		battlefieldHolder.incrementStep();
 		gameSessionsPool.sendBattlefieldData(battlefieldHolder);
 	}
 

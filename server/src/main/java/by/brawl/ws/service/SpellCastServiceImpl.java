@@ -2,6 +2,7 @@ package by.brawl.ws.service;
 
 import by.brawl.util.Exceptions;
 import by.brawl.ws.holder.BattlefieldHolder;
+import by.brawl.ws.holder.StepLogHolder;
 import by.brawl.ws.spell.SpellLogic;
 import by.brawl.ws.spell.SuckerPunch;
 import org.slf4j.Logger;
@@ -25,22 +26,34 @@ class SpellCastServiceImpl implements SpellCastService {
         spellsMap.put(suckerPunch.getId(), suckerPunch);
 	}
 
-	@Override
-	public BattlefieldHolder castSpell(String id, Integer target, Boolean enemy, BattlefieldHolder battlefieldHolder) {
-		SpellLogic castedSpell = spellsMap.get(id);
-		if (castedSpell == null) {
-			throw Exceptions.produceNullPointer(LOG, "Casted spell is absent in spells pool");
-		}
-		// check target for validity
-		Boolean cannotBeTargeted = (target == null && !castedSpell.getTargetable());
-		Boolean validMyTarget = target != null && enemy != null && !enemy && castedSpell.getMyTargets().contains(target);
-		Boolean validEnemyTarget = target != null && enemy != null && enemy && castedSpell.getEnemyTargets().contains(target);
-		if (!cannotBeTargeted && !validMyTarget && !validEnemyTarget) {
-			throw Exceptions.produceIllegalArgument(LOG, "Targeting error. Can't be targeted: {0}, valid my target: {1}, valid enemy target: {2}",
-					cannotBeTargeted, validEnemyTarget, validEnemyTarget);
-		}
-		// todo: cast spells right here
-		battlefieldHolder.moveQueueWithDeadRemoval();
-		return battlefieldHolder;
-	}
+    // todo: split senders to senders/casters and receivers to receivers/victims
+    @Override
+    public BattlefieldHolder castSpell(String id,
+                                       String senderAccountId,
+                                       String senderId,
+                                       Integer receiverPositionId,
+                                       Boolean enemy,
+                                       BattlefieldHolder battlefieldHolder) {
+        SpellLogic castedSpell = spellsMap.get(id);
+        if (castedSpell == null) {
+            throw Exceptions.produceNullPointer(LOG, "Casted spell is absent in spells pool");
+        }
+        // check target for validity
+        Boolean cannotBeTargeted = (receiverPositionId == null && !castedSpell.getTargetable());
+        Boolean validMyTarget = receiverPositionId != null && enemy != null && !enemy && castedSpell.getMyTargets().contains(receiverPositionId);
+        Boolean validEnemyTarget = receiverPositionId != null && enemy != null && enemy && castedSpell.getEnemyTargets().contains(receiverPositionId);
+        if (!cannotBeTargeted && !validMyTarget && !validEnemyTarget) {
+            throw Exceptions.produceIllegalArgument(LOG, "Targeting error. Can't be targeted: {0}, valid my target: {1}, valid enemy target: {2}",
+                    cannotBeTargeted, validEnemyTarget, validEnemyTarget);
+        }
+        // todo: cast spells right here
+        StepLogHolder stepLog = new StepLogHolder(
+                senderAccountId,
+                id,
+                senderId
+        );
+        battlefieldHolder.getBattleLog().add(stepLog);
+        battlefieldHolder.moveQueueWithDeadRemoval();
+        return battlefieldHolder;
+    }
 }
