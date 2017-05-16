@@ -1,4 +1,4 @@
-package by.brawl.ws.dto;
+package by.brawl.ws.newdto;
 
 public class MessageDto extends AbstractDto {
 

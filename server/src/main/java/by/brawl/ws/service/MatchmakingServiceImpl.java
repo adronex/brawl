@@ -4,6 +4,7 @@ import by.brawl.entity.Account;
 import by.brawl.entity.Squad;
 import by.brawl.service.AccountService;
 import by.brawl.service.SquadService;
+import by.brawl.ws.holder.GameSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
@@ -22,12 +23,12 @@ class MatchmakingServiceImpl implements MatchmakingService {
     @Autowired
     private GameService gameService;
 
-    private List<Pair<WebSocketSession, Squad>> waitingPool = new ArrayList<>();
+    private List<Pair<GameSession, Squad>> waitingPool = new ArrayList<>();
 
     @Override
-    public void addInPool(WebSocketSession session, String squadId) {
+    public void addInPool(GameSession session, String squadId) {
 
-        Account account = accountService.findByEmail(session.getPrincipal().getName());
+        Account account = accountService.findByEmail(session.getId());
         Squad squad = squadService.getWithAuthorityCheck(account, squadId);
         waitingPool.add(Pair.of(session, squad));
         // todo: remake to scheduled version
@@ -38,9 +39,9 @@ class MatchmakingServiceImpl implements MatchmakingService {
     private void triggerMatchmaking(){
         Integer poolSize = waitingPool.size();
         if (poolSize > 0 && poolSize % 2 == 0) {
-            Pair<WebSocketSession, Squad> first = waitingPool.get(0);
+            Pair<GameSession, Squad> first = waitingPool.get(0);
             waitingPool.remove(0);
-            Pair<WebSocketSession, Squad> second = waitingPool.get(0);
+            Pair<GameSession, Squad> second = waitingPool.get(0);
             waitingPool.remove(0);
             gameService.createTwoPlayersGame(first.getFirst(), first.getSecond(), second.getFirst(), second.getSecond());
         }

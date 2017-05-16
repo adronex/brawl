@@ -4,13 +4,14 @@ import by.brawl.entity.IdEntity;
 import by.brawl.entity.Spell;
 import by.brawl.entity.Squad;
 import by.brawl.util.Exceptions;
-import by.brawl.ws.dto.JsonDto;
-import by.brawl.ws.dto.MessageDto;
+import by.brawl.ws.holder.GameSession;
+import by.brawl.ws.newdto.JsonDto;
+import by.brawl.ws.newdto.MessageDto;
 import by.brawl.ws.newdto.BattlefieldDto;
 import by.brawl.ws.newdto.MulliganDto;
-import by.brawl.ws.pojo.BattlefieldHolder;
-import by.brawl.ws.pojo.GameState;
-import by.brawl.ws.pojo.HeroHolder;
+import by.brawl.ws.holder.BattlefieldHolder;
+import by.brawl.ws.holder.GameState;
+import by.brawl.ws.holder.HeroHolder;
 import by.brawl.ws.spell.SpellLogic;
 import by.brawl.ws.spell.SuckerPunch;
 import org.slf4j.Logger;
@@ -29,7 +30,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
-public class GameServiceImpl implements GameService {
+class GameServiceImpl implements GameService {
 
 	private static final Logger LOG = LoggerFactory.getLogger(GameServiceImpl.class);
 
@@ -47,8 +48,8 @@ public class GameServiceImpl implements GameService {
 	}
 
 	@Override
-	public void createTwoPlayersGame(WebSocketSession firstSession, Squad firstSquad,
-									 WebSocketSession secondSession, Squad secondSquad) {
+	public void createTwoPlayersGame(GameSession firstSession, Squad firstSquad,
+									 GameSession secondSession, Squad secondSquad) {
 
 		if (!GameState.NOT_STARTED.equals(gameState)) {
 			throw Exceptions.produceIllegalState(LOG, "Illegal game state. Expected: {0}, actual: {1}",
@@ -61,7 +62,7 @@ public class GameServiceImpl implements GameService {
 	}
 
 	@Override
-	public void setHeroesPositions(WebSocketSession session, List<String> heroesIds) {
+	public void setHeroesPositions(GameSession session, List<String> heroesIds) {
 		if (!GameState.MULLIGAN.equals(gameState)) {
 			throw Exceptions.produceIllegalState(LOG, "Illegal game state. Expected: {0}, actual: {1}",
 					GameState.MULLIGAN, gameState);
@@ -70,9 +71,8 @@ public class GameServiceImpl implements GameService {
 			throw Exceptions.produceIllegalArgument(LOG, "Wrong heroes in battle count. Expected: {0}, actual: {1}",
 					BATTLEFIELD_HEROES_COUNT, heroesIds.size());
 		}
-		String playerKey = session.getPrincipal().getName();
 
-		List<HeroHolder> mulliganHeroes = battlefieldHolder.getMulliganHeroes().get(playerKey);
+		List<HeroHolder> mulliganHeroes = battlefieldHolder.getMulliganHeroes().get(session.getId());
 		List<HeroHolder> battleHeroes = new ArrayList<>();
 
 		for (String heroId : heroesIds) {
@@ -80,26 +80,26 @@ public class GameServiceImpl implements GameService {
 					.filter(h -> h.getId().equals(heroId))
 					.findFirst()
 					.orElseThrow(() -> Exceptions.produceAccessDenied(LOG, "Player {0} trying to choose hero with id {1} from available ids: {2}",
-								session.getPrincipal().getName(), heroId, Arrays.toString(mulliganHeroes.stream().map(HeroHolder::getId).toArray()))
+								session.getId(), heroId, Arrays.toString(mulliganHeroes.stream().map(HeroHolder::getId).toArray()))
 					);
 
 			battleHeroes.add(battleHero);
 		}
 
-		battlefieldHolder.getBattleHeroes().put(playerKey, battleHeroes);
+		battlefieldHolder.getBattleHeroes().put(session.getId(), battleHeroes);
 
 		if (battlefieldHolder.getBattleHeroes().size() == 2) {
 			battlefieldHolder.prepareGame();
 			gameState = GameState.PLAYING;
 			sendBattlefieldData();
 		} else {
-			sendDto(session, new MessageDto("Opponent is still choosing."));
+			session.sendInfoMessage("Opponent is still choosing.");
 		}
 	}
 
 	@Override
-	public void castSpell(WebSocketSession session, String spellId, Integer target, Boolean enemy) {
-		String playerKey = session.getPrincipal().getName();
+	public void castSpell(GameSession session, String spellId, Integer target, Boolean enemy) {
+		String playerKey = session.getId();
 		if (!GameState.PLAYING.equals(gameState)) {
 			throw Exceptions.produceIllegalState(LOG, "Illegal game state. Expected: {0}, actual: {1}. Initiator: {2}",
 					GameState.PLAYING, gameState, playerKey);
@@ -147,22 +147,14 @@ public class GameServiceImpl implements GameService {
 					battlefieldHolder.getHeroSpells(),
 					key
 			);
-			sendDto(value, dto);
+			value.sendDto(dto);
 		});
 	}
 
 	private void sendBattlefieldData() {
 		battlefieldHolder.getSessions().forEach((key, value) -> {
 			BattlefieldDto dto = new BattlefieldDto(battlefieldHolder, key);
-			sendDto(value, dto);
+			value.sendDto(dto);
 		});
-	}
-
-	private void sendDto(WebSocketSession session, JsonDto dto) {
-		try {
-			session.sendMessage(new TextMessage(dto.asJson()));
-		} catch (IOException e) {
-			Exceptions.logError(LOG, e, "Web socket message sending threw error");
-		}
 	}
 }

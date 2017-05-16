@@ -1,9 +1,9 @@
-package by.brawl.ws.pojo;
+package by.brawl.ws.holder;
 
 import by.brawl.entity.Spell;
 import by.brawl.entity.Squad;
-import by.brawl.ws.dto.AbstractDto;
-import by.brawl.ws.dto.JsonDto;
+import by.brawl.ws.newdto.AbstractDto;
+import by.brawl.ws.newdto.JsonDto;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.springframework.web.socket.WebSocketSession;
 
@@ -13,19 +13,19 @@ import java.util.stream.Collectors;
 public class BattlefieldHolder extends AbstractDto implements JsonDto {
 
     @JsonIgnore
-    private Map<String, WebSocketSession> sessions = new HashMap<>();
+    private Map<String, GameSession> sessions = new HashMap<>();
     private Map<String, List<HeroHolder>> mulliganHeroes = new HashMap<>();
     private Map<String, List<HeroHolder>> battleHeroes = new HashMap<>();
     private Map<String, Set<Spell>> heroSpells = new HashMap<>();
     private Queue<String> queue = new LinkedList<>();
 
-    public void addSquad(WebSocketSession session, Squad squad) {
+    public void addSquad(GameSession session, Squad squad) {
         List<HeroHolder> heroes = squad.getHeroes()
                 .stream()
                 .map(HeroHolder::new)
                 .collect(Collectors.toList());
         mulliganHeroes.put(squad.getOwner().getUsername(), heroes);
-        sessions.put(session.getPrincipal().getName(), session);
+        sessions.put(session.getId(), session);
 
         squad.getHeroes().forEach(h ->
                 heroSpells.put(h.getId(), h.getSpells())
@@ -60,7 +60,7 @@ public class BattlefieldHolder extends AbstractDto implements JsonDto {
         queue.addAll(newQueue);
     }
 
-    public Map<String, WebSocketSession> getSessions() {
+    public Map<String, GameSession> getSessions() {
         return sessions;
     }
 

@@ -1,6 +1,6 @@
 package by.brawl.ws.newdto;
 
-import by.brawl.ws.pojo.HeroHolder;
+import by.brawl.ws.holder.HeroHolder;
 
 public class HeroDto {
     private String id;

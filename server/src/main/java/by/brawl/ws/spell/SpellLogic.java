@@ -1,10 +1,8 @@
 package by.brawl.ws.spell;
 
-import by.brawl.ws.pojo.HeroHolder;
+import by.brawl.ws.holder.HeroHolder;
 import org.springframework.data.util.Pair;
 
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 

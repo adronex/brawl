@@ -1,6 +1,7 @@
 package by.brawl.ws.service;
 
 import by.brawl.entity.Squad;
+import by.brawl.ws.holder.GameSession;
 import org.springframework.data.util.Pair;
 import org.springframework.web.socket.WebSocketSession;
 
@@ -9,13 +10,13 @@ import java.util.Set;
 
 public interface GameService {
 
-    void createTwoPlayersGame(WebSocketSession firstSession, Squad firstSquad,
-                              WebSocketSession secondSession, Squad secondSquad);
+    void createTwoPlayersGame(GameSession firstSession, Squad firstSquad,
+                              GameSession secondSession, Squad secondSquad);
 
-    void setHeroesPositions(WebSocketSession session,
+    void setHeroesPositions(GameSession session,
                             List<String> heroesIds);
 
-    void castSpell(WebSocketSession session,
+    void castSpell(GameSession session,
                    String spellId,
                    Integer target,
                    Boolean enemy);

@@ -1,4 +1,4 @@
-package by.brawl.ws.pojo;
+package by.brawl.ws.holder;
 
 import by.brawl.entity.Hero;
 

@@ -1,14 +1,17 @@
 package by.brawl.ws;
 
-import by.brawl.entity.Account;
-import by.brawl.entity.Hero;
-import by.brawl.service.AccountService;
-import by.brawl.ws.dto.*;
-import by.brawl.ws.pojo.GameState;
+import by.brawl.util.Exceptions;
+import by.brawl.ws.holder.GameSession;
+import by.brawl.ws.holder.GameSessionsPull;
+import by.brawl.ws.newdto.ClientRequestType;
+import by.brawl.ws.newdto.JsonDto;
+import by.brawl.ws.newdto.MessageDto;
 import by.brawl.ws.service.GameService;
 import by.brawl.ws.service.MatchmakingService;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.TextMessage;
@@ -17,7 +20,6 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 // todo: Noisia - Machine Gun
 // todo: Noisia - Hunter Theme
@@ -41,192 +43,87 @@ import java.util.stream.Collectors;
 @Component
 public class GameHandler extends TextWebSocketHandler {
 
-    //todo: delete when client-side will send mulligan requests
-    @Autowired
-    private AccountService accountService;
+	private static final Logger LOG = LoggerFactory.getLogger(GameHandler.class);
 
-    private MatchmakingService matchmakingService;
-    private GameService gameService;
+	private GameSessionsPull gameSessionsPull;
+	private MatchmakingService matchmakingService;
+	private GameService gameService;
 
-    @Autowired
-    public GameHandler(MatchmakingService matchmakingService,
-                       GameService gameService) {
+	@Autowired
+	public GameHandler(GameSessionsPull gameSessionsPull,
+					   MatchmakingService matchmakingService,
+					   GameService gameService) {
 
-        this.matchmakingService = matchmakingService;
-        this.gameService = gameService;
-    }
+		this.gameSessionsPull = gameSessionsPull;
+		this.matchmakingService = matchmakingService;
+		this.gameService = gameService;
+	}
 
-    @Override
-    public void afterConnectionEstablished(WebSocketSession session) throws IOException {
+	@Override
+	public void afterConnectionEstablished(WebSocketSession webSocketSession) throws IOException {
+		gameSessionsPull.putSession(webSocketSession);
+		GameSession gameSession = gameSessionsPull.getSession(webSocketSession.getPrincipal().getName());
+		if (gameSession == null) {
+			throw Exceptions.produceNullPointer(LOG, "Session wasn't successfully added!");
+		}
+		gameSession.sendInfoMessage("Connected");
+	}
 
-       // Account account = accountService.findByEmail(session.getPrincipal().getName());
+	@Override
+	protected void handleTextMessage(WebSocketSession webSocketSession, TextMessage message) throws IOException {
 
-//        playerStates.put(session.getId(), new PlayerStateHolder(null, session, false));
-//
-        sendInfoMessage(session, "Connected");
-//
-//        if (playerStates.size() == 2) {
-//            gameState = GameState.MULLIGAN;
-//            sendInfoMessageToAll("Mulligan state");
-//        } else {
-//            sendInfoMessage(session, "Finding opponent");
-//        }
-    }
+		GameSession gameSession = gameSessionsPull.getSession(webSocketSession.getPrincipal().getName());
+		if (gameSession == null) {
+			throw Exceptions.produceNullPointer(LOG, "Session wasn't successfully added!");
+		}
 
-    @Override
-    protected void handleTextMessage(WebSocketSession session, TextMessage message) throws IOException {
+		JSONObject request = new JSONObject(message.getPayload());
+		ClientRequestType type = request.getEnum(ClientRequestType.class, "type");
+		JSONObject body = request.getJSONObject("body");
 
-        JSONObject request = new JSONObject(message.getPayload());
-        ClientRequestType type = request.getEnum(ClientRequestType.class, "type");
-        if (ClientRequestType.INITIAL.equals(type)) {
-            JSONObject body = request.getJSONObject("body");
-            String squadId = body.getString("squadId");
-            matchmakingService.addInPool(session, squadId);
-        }
+		if (ClientRequestType.INITIAL.equals(type)) {
+			handleInitRequest(gameSession, body);
+		}
 
-        if (ClientRequestType.CHOOSE_HEROES.equals(type)) {
-            JSONObject body = request.getJSONObject("body");
-            JSONArray requestArray = body.getJSONArray("heroes");
+		if (ClientRequestType.CHOOSE_HEROES.equals(type)) {
+			handleChooseHeroesRequest(gameSession, body);
+		}
 
-            List<String> heroes = new ArrayList<>();
-            requestArray.toList().forEach(o -> heroes.add((String) o));
+		if (ClientRequestType.CAST_SPELL.equals(type)) {
+			handleCastSpellRequest(gameSession, body);
+		}
+	}
 
-            //todo: remove next block with accountService
-            {
-                heroes.clear();
-                if ("adronex303@gmail.com".equals(session.getPrincipal().getName())) {
-                    heroes.add("1");
-                    heroes.add("2");
-                } else if ("adronex_@mail.ru".equals(session.getPrincipal().getName())) {
-                    heroes.add("3");
-                    heroes.add("4");
-                }
-            }
+	private void handleInitRequest(GameSession session, JSONObject body) {
+		String squadId = body.getString("squadId");
+		matchmakingService.addInPool(session, squadId);
+	}
 
-            gameService.setHeroesPositions(session, heroes);
-        }
+	private void handleChooseHeroesRequest(GameSession session, JSONObject body) {
+		JSONArray requestArray = body.getJSONArray("heroes");
 
-        if (ClientRequestType.CAST_SPELL.equals(type)) {
-            JSONObject body = request.getJSONObject("body");
-            Integer target = body.optInt("target");
-            Boolean enemy = body.optBoolean("enemy");
-            gameService.castSpell(session, "1", target, enemy);
-        }
-//        if (GameState.MULLIGAN.equals(gameState)) {
-//            playerStates.get(session.getId()).setReadyForGame(true);
-//            if (playerStates.values()
-//                    .stream()
-//                    .filter(s -> !s.getReadyForGame())
-//                    .count() == 0) {
-//                sendInfoMessageToAll("Game started!");
-//                gameState = GameState.PLAYING;
-//                //setQueue();
-//                playerStates.values().forEach(ps -> ps.getSpells().addAll(getSpells()));
-//                sendGameTurnToAll();
-//            } else {
-//                sendInfoMessage(session, "Opponent is still choosing");
-//            }
-//        } else if (GameState.PLAYING.equals(gameState)) {
-//            Hero currentHero = heroesQueue.element();
-//            if (!playerStates.get(session.getId())
-//                    .getPlayer()
-//                    .equals(currentHero.getOwner())) {
-//                sendInfoMessage(session, "Not your turn!");
-//                return;
-//            }
-//            // todo: check for spell is missing
-//            currentHero.hit(15);
-//            heroesQueue.remove();
-//            heroesQueue.add(currentHero);
-//            checkQueue();
-//            checkGameIsFinished();
-//            sendGameTurnToAll();
-//            if (GameState.END.equals(gameState)) {
-//                sendInfoMessageToAll("Game over!");
-//                clearSessions();
-//            }
-//        }
-    }
+		List<String> heroes = new ArrayList<>();
+		requestArray.toList().forEach(o -> heroes.add((String) o));
 
-    private void sendInfoMessage(WebSocketSession session, String text) {
-        sendDto(session, new MessageDto(text));
-    }
+		//todo: remove next block with accountService
+		{
+			heroes.clear();
+			if ("adronex303@gmail.com".equals(session.getId())) {
+				heroes.add("1");
+				heroes.add("2");
+			} else if ("adronex_@mail.ru".equals(session.getId())) {
+				heroes.add("3");
+				heroes.add("4");
+			}
+		}
 
-//    private void sendInfoMessageToAll(String text) {
-//        playerStates.values()
-//                .stream()
-//                .map(PlayerStateHolder::getSession)
-//                .forEach(s -> sendInfoMessage(s, text));
-//    }
+		gameService.setHeroesPositions(session, heroes);
+	}
 
-    private void sendDto(WebSocketSession session, JsonDto dto) {
-        try {
-            session.sendMessage(new TextMessage(dto.asJson()));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-//    @Deprecated
-//    private void sendGameTurn(WebSocketSession session) {
-//        Account receiver = playerStates.get(session.getId()).getPlayer();
-//        sendDto(session, new GameTurnDto(gameState, heroesQueue, receiver));
-//    }
-//
-//    @Deprecated
-//    private void sendGameTurnToAll() {
-//        playerStates.values()
-//                .stream()
-//                .map(PlayerStateHolder::getSession)
-//                .forEach(this::sendGameTurn);
-//    }
-
-//    private Set<SpellDto> getSpells() {
-//        Set<SpellDto> spells = new HashSet<>();
-//        heroesQueue.forEach(h ->
-//                spells.addAll(h.getSpells()
-//                        .stream()
-//                        .map(s -> new SpellDto(s.getId(), h.getId()))
-//                        .collect(Collectors.toList())));
-//        return spells;
-//    }
-//
-//    private void checkQueue() {
-//        List<Hero> aliveHeroes = heroesQueue.stream().filter(Hero::isAlive).collect(Collectors.toList());
-//        Queue<Hero> updatedQueue = new LinkedList<>();
-//        updatedQueue.addAll(aliveHeroes);
-//        heroesQueue.clear();
-//        heroesQueue.addAll(updatedQueue);
-//    }
-
-//    private void checkGameIsFinished() {
-//        Map<Account, List<Hero>> splitList = heroesQueue.stream().collect(Collectors.groupingBy(Hero::getOwner));
-//
-//        playerStates.values()
-//                .forEach(s -> {
-//                    Boolean alive = splitList.get(s.getPlayer()) != null;
-//                    s.setAlive(alive);
-//                });
-//
-//        if (playerStates.values()
-//                .stream()
-//                .filter(s -> !s.getAlive()).count() > 0) {
-//            gameState = GameState.END;
-//        }
-//    }
-//
-//    private void clearSessions() {
-//        playerStates.values()
-//                .stream()
-//                .map(PlayerStateHolder::getSession)
-//                .forEach(s -> {
-//                    try {
-//                        s.close();
-//                    } catch (IOException e) {
-//                        e.printStackTrace();
-//                    }
-//                });
-//        playerStates.clear();
-//        heroesQueue.clear();
-//    }
+	private void handleCastSpellRequest(GameSession session, JSONObject body) {
+		String spellId = "1"; // TODO: remove mock and get this spell from request
+		Integer target = body.optInt("target");
+		Boolean enemy = body.optBoolean("enemy");
+		gameService.castSpell(session, spellId, target, enemy);
+	}
 }

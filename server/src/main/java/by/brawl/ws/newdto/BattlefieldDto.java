@@ -1,8 +1,6 @@
 package by.brawl.ws.newdto;
 
-import by.brawl.ws.dto.AbstractDto;
-import by.brawl.ws.dto.JsonDto;
-import by.brawl.ws.pojo.BattlefieldHolder;
+import by.brawl.ws.holder.BattlefieldHolder;
 
 import java.util.*;
 import java.util.stream.Collectors;

@@ -1,9 +1,7 @@
 package by.brawl.ws.newdto;
 
 import by.brawl.entity.Spell;
-import by.brawl.ws.dto.AbstractDto;
-import by.brawl.ws.dto.JsonDto;
-import by.brawl.ws.pojo.HeroHolder;
+import by.brawl.ws.holder.HeroHolder;
 
 import java.util.*;
 import java.util.stream.Collectors;
