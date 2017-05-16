@@ -1,4 +1,4 @@
-package by.brawl.ws.newdto;
+package by.brawl.ws.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;

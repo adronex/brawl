@@ -1,9 +1,9 @@
 package by.brawl.ws;
 
 import by.brawl.util.Exceptions;
+import by.brawl.ws.dto.ClientRequestType;
 import by.brawl.ws.holder.GameSession;
 import by.brawl.ws.holder.GameSessionsPool;
-import by.brawl.ws.newdto.ClientRequestType;
 import by.brawl.ws.service.GameService;
 import by.brawl.ws.service.MatchmakingService;
 import org.json.JSONArray;
@@ -17,7 +17,8 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 // todo: Noisia - Machine Gun
 // todo: Noisia - Hunter Theme

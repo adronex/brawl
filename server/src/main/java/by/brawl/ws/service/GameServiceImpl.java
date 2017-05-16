@@ -2,12 +2,7 @@ package by.brawl.ws.service;
 
 import by.brawl.entity.Squad;
 import by.brawl.util.Exceptions;
-import by.brawl.ws.holder.BattlefieldHolder;
-import by.brawl.ws.holder.GameSession;
-import by.brawl.ws.holder.GameSessionsPool;
-import by.brawl.ws.holder.GameState;
-import by.brawl.ws.holder.HeroHolder;
-import by.brawl.ws.holder.SpellHolder;
+import by.brawl.ws.holder.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,18 +12,17 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 class GameServiceImpl implements GameService {
 
 	private static final Logger LOG = LoggerFactory.getLogger(GameServiceImpl.class);
-
+	private static final Integer BATTLEFIELD_HEROES_COUNT = 2;
 	@Autowired
 	private GameSessionsPool gameSessionsPool;
 	@Autowired
 	private SpellCastService spellCastService;
-
-	private static final Integer BATTLEFIELD_HEROES_COUNT = 2;
 
 	@Override
 	public void createTwoPlayersGame(GameSession firstSession, Squad firstSquad,
@@ -89,16 +83,18 @@ class GameServiceImpl implements GameService {
 				.count() > 0;
 		if (!castedSpellBelongsToCurrentHero) {
 			Object availableSpellsIds[] = currentHero.getAllSpells().stream().map(SpellHolder::getId).toArray();
-			throw Exceptions.produceIllegalArgument(LOG, "Player {0} casted spell {1} that doesn\'t belong to current hero. Available spells are {2}",
+			throw Exceptions.produceIllegalArgument(LOG, "Player {0} casted spell {1} that does not belong to current hero. Available spells are {2}",
 					playerKey, spellId, availableSpellsIds);
 		}
 		Boolean castedSpellAvailable = currentHero.getAvailableSpells().stream()
 				.filter(spellHolder -> Objects.equals(spellHolder.getId(), spellId))
 				.count() > 0;
-		if (castedSpellAvailable) {
-			Object availableSpellsIds[] = currentHero.getAvailableSpells().stream().map(SpellHolder::getId).toArray();
-			throw Exceptions.produceIllegalArgument(LOG, "Player {0} casted spell {1} that isn\'t available (on cooldown/suspended/etc). Available spells are {2}",
-					playerKey, spellId, availableSpellsIds);
+		if (!castedSpellAvailable) {
+			List<String> availableSpellsIds = currentHero.getAvailableSpells().stream()
+					.map(SpellHolder::getId)
+					.collect(Collectors.toList());
+			throw Exceptions.produceIllegalArgument(LOG, "Player {0} casted spell {1} that is not available (on cooldown/suspended/etc). Available spells are {2}",
+					playerKey, spellId, availableSpellsIds.toString());
 		}
 
 		battlefieldHolder = spellCastService.castSpell(spellId, target, enemy, battlefieldHolder);

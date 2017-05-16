@@ -1,4 +1,4 @@
-package by.brawl.ws.newdto;
+package by.brawl.ws.dto;
 
 import by.brawl.ws.holder.SpellHolder;
 

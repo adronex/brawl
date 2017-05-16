@@ -1,8 +1,8 @@
 package by.brawl.ws.holder;
 
 import by.brawl.util.Exceptions;
-import by.brawl.ws.newdto.BattlefieldDto;
-import by.brawl.ws.newdto.MulliganDto;
+import by.brawl.ws.dto.BattlefieldDto;
+import by.brawl.ws.dto.MulliganDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;

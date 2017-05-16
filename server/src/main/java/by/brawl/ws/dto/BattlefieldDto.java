@@ -1,4 +1,4 @@
-package by.brawl.ws.newdto;
+package by.brawl.ws.dto;
 
 import by.brawl.ws.holder.BattlefieldHolder;
 import by.brawl.ws.holder.HeroHolder;
@@ -43,7 +43,7 @@ public class BattlefieldDto extends AbstractDto implements JsonDto {
 				.collect(Collectors.toList());
 
 		battlefieldHolder.getQueue().forEach(s -> {
-			if (myHeroesIds.contains(s)) {
+			if (myHeroesIds.contains(s.getId())) {
 				queue.add(s.getId());
 			} else {
 				queue.add(null);

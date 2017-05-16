@@ -1,8 +1,8 @@
 package by.brawl.ws.holder;
 
 import by.brawl.util.Exceptions;
-import by.brawl.ws.newdto.JsonDto;
-import by.brawl.ws.newdto.MessageDto;
+import by.brawl.ws.dto.JsonDto;
+import by.brawl.ws.dto.MessageDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.socket.TextMessage;
