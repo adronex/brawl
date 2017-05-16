@@ -1,62 +1,69 @@
 package by.brawl.ws.newdto;
 
 import by.brawl.ws.holder.BattlefieldHolder;
+import by.brawl.ws.holder.HeroHolder;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class BattlefieldDto extends AbstractDto implements JsonDto {
-    private List<HeroDto> myHeroes = new ArrayList<>();
-    private List<HeroDto> enemyHeroes = new ArrayList<>();
-    private Map<String, Set<SpellDto>> heroSpells = new HashMap<>();
-    private Queue<String> queue = new LinkedList<>();
+	private List<HeroDto> myHeroes = new ArrayList<>();
+	private List<HeroDto> enemyHeroes = new ArrayList<>();
+	private Map<String, Set<SpellDto>> heroSpells = new HashMap<>();
+	private Queue<String> queue = new LinkedList<>();
 
-    public BattlefieldDto(BattlefieldHolder battlefieldHolder,
-                          String receiverName) {
-        battlefieldHolder.getBattleHeroes().forEach((key, value) -> {
-            if (key.equals(receiverName)) {
-                myHeroes = value.stream()
-                        .map(HeroDto::new)
-                        .collect(Collectors.toList());
-            } else {
-                enemyHeroes = value.stream()
-                        .map(HeroDto::new)
-                        .collect(Collectors.toList());
-            }
-        });
+	public BattlefieldDto(BattlefieldHolder battlefieldHolder,
+						  String receiverName) {
+		battlefieldHolder.getBattleHeroes().forEach((key, value) -> {
+			if (key.equals(receiverName)) {
+				myHeroes = value.stream()
+						.map(HeroDto::new)
+						.collect(Collectors.toList());
+			} else {
+				enemyHeroes = value.stream()
+						.map(HeroDto::new)
+						.collect(Collectors.toList());
+			}
+		});
 
-        List<String> myHeroesIds = myHeroes.stream()
-                .map(HeroDto::getId)
-                .collect(Collectors.toList());
+		battlefieldHolder.getBattleHeroes().forEach((key, value) -> {
+			if (Objects.equals(key, receiverName)) {
+				for (HeroHolder heroHolder : value) {
+					heroSpells.put(
+							heroHolder.getId(),
+							heroHolder.getAllSpells().stream()
+									.map(SpellDto::new).collect(Collectors.toSet())
+					);
+				}
+			}
+		});
 
-        battlefieldHolder.getHeroSpells().forEach((key, value) -> {
-            if (myHeroesIds.contains(key)) {
-                heroSpells.put(key, value.stream().map(SpellDto::new).collect(Collectors.toSet()));
-            }
-        });
+		List<String> myHeroesIds = myHeroes.stream()
+				.map(HeroDto::getId)
+				.collect(Collectors.toList());
 
-        battlefieldHolder.getQueue().forEach(s -> {
-            if (myHeroesIds.contains(s)) {
-                queue.add(s);
-            } else {
-                queue.add(null);
-            }
-        });
-    }
+		battlefieldHolder.getQueue().forEach(s -> {
+			if (myHeroesIds.contains(s)) {
+				queue.add(s.getId());
+			} else {
+				queue.add(null);
+			}
+		});
+	}
 
-    public List<HeroDto> getMyHeroes() {
-        return myHeroes;
-    }
+	public List<HeroDto> getMyHeroes() {
+		return myHeroes;
+	}
 
-    public List<HeroDto> getEnemyHeroes() {
-        return enemyHeroes;
-    }
+	public List<HeroDto> getEnemyHeroes() {
+		return enemyHeroes;
+	}
 
-    public Map<String, Set<SpellDto>> getHeroSpells() {
-        return heroSpells;
-    }
+	public Map<String, Set<SpellDto>> getHeroSpells() {
+		return heroSpells;
+	}
 
-    public Queue<String> getQueue() {
-        return queue;
-    }
+	public Queue<String> getQueue() {
+		return queue;
+	}
 }
