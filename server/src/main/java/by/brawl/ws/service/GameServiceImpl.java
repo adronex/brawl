@@ -4,29 +4,20 @@ import by.brawl.entity.IdEntity;
 import by.brawl.entity.Spell;
 import by.brawl.entity.Squad;
 import by.brawl.util.Exceptions;
-import by.brawl.ws.holder.GameSession;
-import by.brawl.ws.newdto.JsonDto;
-import by.brawl.ws.newdto.MessageDto;
-import by.brawl.ws.newdto.BattlefieldDto;
-import by.brawl.ws.newdto.MulliganDto;
 import by.brawl.ws.holder.BattlefieldHolder;
+import by.brawl.ws.holder.GameSession;
+import by.brawl.ws.holder.GameSessionsPool;
 import by.brawl.ws.holder.GameState;
 import by.brawl.ws.holder.HeroHolder;
 import by.brawl.ws.spell.SpellLogic;
-import by.brawl.ws.spell.SuckerPunch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.socket.TextMessage;
-import org.springframework.web.socket.WebSocketSession;
 
-import javax.annotation.PostConstruct;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -34,38 +25,36 @@ class GameServiceImpl implements GameService {
 
 	private static final Logger LOG = LoggerFactory.getLogger(GameServiceImpl.class);
 
-	private BattlefieldHolder battlefieldHolder = new BattlefieldHolder();
-	private GameState gameState = GameState.NOT_STARTED;
+	//private BattlefieldHolder battlefieldHolder = new BattlefieldHolder();
 
-	private Map<String, SpellLogic> spellsPool = new HashMap<>();
-
+	@Autowired
+	private GameSessionsPool gameSessionsPool;
 	private static final Integer BATTLEFIELD_HEROES_COUNT = 2;
-
-	@PostConstruct
-	public void init() {
-		SpellLogic suckerPunch = new SuckerPunch();
-		spellsPool.put(suckerPunch.getId(), suckerPunch);
-	}
 
 	@Override
 	public void createTwoPlayersGame(GameSession firstSession, Squad firstSquad,
 									 GameSession secondSession, Squad secondSquad) {
+		BattlefieldHolder battlefieldHolder = new BattlefieldHolder();
 
-		if (!GameState.NOT_STARTED.equals(gameState)) {
-			throw Exceptions.produceIllegalState(LOG, "Illegal game state. Expected: {0}, actual: {1}",
-					GameState.NOT_STARTED, gameState);
-		}
-		battlefieldHolder.addSquad(firstSession, firstSquad);
-		battlefieldHolder.addSquad(secondSession, secondSquad);
-		gameState = GameState.MULLIGAN;
-		sendMulliganData();
+//		if (!GameState.NOT_STARTED.equals(battlefieldHolder.getGameState())) {
+//			throw Exceptions.produceIllegalState(LOG, "Illegal game state. Expected: {0}, actual: {1}",
+//					GameState.NOT_STARTED, battlefieldHolder.getGameState());
+//		}
+		battlefieldHolder.addSquad(firstSquad);
+		battlefieldHolder.addSquad(secondSquad);
+		firstSession.setBattlefieldHolder(battlefieldHolder);
+		secondSession.setBattlefieldHolder(battlefieldHolder);
+		battlefieldHolder.setGameState(GameState.MULLIGAN);
+		gameSessionsPool.sendMulliganData(battlefieldHolder);
 	}
 
 	@Override
 	public void setHeroesPositions(GameSession session, List<String> heroesIds) {
-		if (!GameState.MULLIGAN.equals(gameState)) {
+		BattlefieldHolder battlefieldHolder = getBattlefieldHolder(session);
+
+		if (!GameState.MULLIGAN.equals(battlefieldHolder.getGameState())) {
 			throw Exceptions.produceIllegalState(LOG, "Illegal game state. Expected: {0}, actual: {1}",
-					GameState.MULLIGAN, gameState);
+					GameState.MULLIGAN, battlefieldHolder.getGameState());
 		}
 		if (heroesIds.size() != BATTLEFIELD_HEROES_COUNT) {
 			throw Exceptions.produceIllegalArgument(LOG, "Wrong heroes in battle count. Expected: {0}, actual: {1}",
@@ -90,8 +79,8 @@ class GameServiceImpl implements GameService {
 
 		if (battlefieldHolder.getBattleHeroes().size() == 2) {
 			battlefieldHolder.prepareGame();
-			gameState = GameState.PLAYING;
-			sendBattlefieldData();
+			battlefieldHolder.setGameState(GameState.PLAYING);
+			gameSessionsPool.sendBattlefieldData(battlefieldHolder);
 		} else {
 			session.sendInfoMessage("Opponent is still choosing.");
 		}
@@ -99,10 +88,11 @@ class GameServiceImpl implements GameService {
 
 	@Override
 	public void castSpell(GameSession session, String spellId, Integer target, Boolean enemy) {
+		BattlefieldHolder battlefieldHolder = getBattlefieldHolder(session);
 		String playerKey = session.getId();
-		if (!GameState.PLAYING.equals(gameState)) {
+		if (!GameState.PLAYING.equals(battlefieldHolder.getGameState())) {
 			throw Exceptions.produceIllegalState(LOG, "Illegal game state. Expected: {0}, actual: {1}. Initiator: {2}",
-					GameState.PLAYING, gameState, playerKey);
+					GameState.PLAYING, battlefieldHolder.getGameState(), playerKey);
 		}
 		String currentHeroId = battlefieldHolder.getQueue().element();
 		// check for your hero or not
@@ -126,8 +116,11 @@ class GameServiceImpl implements GameService {
 					return Exceptions.produceIllegalArgument(LOG, "Player {0} casted spell {1} when available spells are {2}",
 							playerKey, spellId, Arrays.asList(availableSpellsIds.toArray()));
 				});
-		SpellLogic castedSpell = spellsPool.get(castedSpellId.getId());
+		SpellLogic castedSpell = battlefieldHolder.getSpellsPool().get(castedSpellId.getId());
 		// check target for validity
+		if (castedSpell == null) {
+			throw Exceptions.produceNullPointer(LOG, "Casted spell is absent in spells pool");
+		}
 		Boolean cannotBeTargeted = (target == null && !castedSpell.getTargetable());
 		Boolean validMyTarget = target != null && enemy != null && !enemy && castedSpell.getMyTargets().contains(target);
 		Boolean validEnemyTarget = target != null && enemy != null && enemy && castedSpell.getEnemyTargets().contains(target);
@@ -137,24 +130,13 @@ class GameServiceImpl implements GameService {
 		}
 		// todo: cast spells right here
 		battlefieldHolder.moveQueue();
-		sendBattlefieldData();
+		gameSessionsPool.sendBattlefieldData(battlefieldHolder);
 	}
 
-	private void sendMulliganData() {
-		battlefieldHolder.getSessions().forEach((key, value) -> {
-			MulliganDto dto = new MulliganDto(
-					battlefieldHolder.getMulliganHeroes(),
-					battlefieldHolder.getHeroSpells(),
-					key
-			);
-			value.sendDto(dto);
-		});
-	}
-
-	private void sendBattlefieldData() {
-		battlefieldHolder.getSessions().forEach((key, value) -> {
-			BattlefieldDto dto = new BattlefieldDto(battlefieldHolder, key);
-			value.sendDto(dto);
-		});
+	private BattlefieldHolder getBattlefieldHolder(GameSession session) {
+		if (session.getBattlefieldHolder() == null) {
+			throw Exceptions.produceNullPointer(LOG, "User {0} tries to play game without preliminary matchmaking", session.getId());
+		}
+		return session.getBattlefieldHolder();
 	}
 }

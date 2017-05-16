@@ -2,10 +2,8 @@ package by.brawl.ws;
 
 import by.brawl.util.Exceptions;
 import by.brawl.ws.holder.GameSession;
-import by.brawl.ws.holder.GameSessionsPull;
+import by.brawl.ws.holder.GameSessionsPool;
 import by.brawl.ws.newdto.ClientRequestType;
-import by.brawl.ws.newdto.JsonDto;
-import by.brawl.ws.newdto.MessageDto;
 import by.brawl.ws.service.GameService;
 import by.brawl.ws.service.MatchmakingService;
 import org.json.JSONArray;
@@ -45,24 +43,24 @@ public class GameHandler extends TextWebSocketHandler {
 
 	private static final Logger LOG = LoggerFactory.getLogger(GameHandler.class);
 
-	private GameSessionsPull gameSessionsPull;
+	private GameSessionsPool gameSessionsPool;
 	private MatchmakingService matchmakingService;
 	private GameService gameService;
 
 	@Autowired
-	public GameHandler(GameSessionsPull gameSessionsPull,
+	public GameHandler(GameSessionsPool gameSessionsPool,
 					   MatchmakingService matchmakingService,
 					   GameService gameService) {
 
-		this.gameSessionsPull = gameSessionsPull;
+		this.gameSessionsPool = gameSessionsPool;
 		this.matchmakingService = matchmakingService;
 		this.gameService = gameService;
 	}
 
 	@Override
 	public void afterConnectionEstablished(WebSocketSession webSocketSession) throws IOException {
-		gameSessionsPull.putSession(webSocketSession);
-		GameSession gameSession = gameSessionsPull.getSession(webSocketSession.getPrincipal().getName());
+		gameSessionsPool.putSession(webSocketSession);
+		GameSession gameSession = gameSessionsPool.getSession(webSocketSession.getPrincipal().getName());
 		if (gameSession == null) {
 			throw Exceptions.produceNullPointer(LOG, "Session wasn't successfully added!");
 		}
@@ -72,7 +70,7 @@ public class GameHandler extends TextWebSocketHandler {
 	@Override
 	protected void handleTextMessage(WebSocketSession webSocketSession, TextMessage message) throws IOException {
 
-		GameSession gameSession = gameSessionsPull.getSession(webSocketSession.getPrincipal().getName());
+		GameSession gameSession = gameSessionsPool.getSession(webSocketSession.getPrincipal().getName());
 		if (gameSession == null) {
 			throw Exceptions.produceNullPointer(LOG, "Session wasn't successfully added!");
 		}
