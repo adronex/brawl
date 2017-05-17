@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Queue;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -16,8 +17,8 @@ public class BattlefieldDto extends AbstractDto implements JsonDto {
 	private List<HeroDto> enemyHeroes = new ArrayList<>();
 	private Map<String, Set<SpellDto>> heroSpells = new HashMap<>();
 	private Queue<String> queue = new LinkedList<>();
-    private Integer currentStep;
-    private List<StepLogDto> battleLog = new ArrayList<>();
+	private Integer currentStep;
+	private List<StepLogDto> battleLog = new ArrayList<>();
 
 	public BattlefieldDto(BattlefieldHolder battlefieldHolder,
 						  String receiverName) {
@@ -38,17 +39,23 @@ public class BattlefieldDto extends AbstractDto implements JsonDto {
 				.collect(Collectors.toList());
 
 		battlefieldHolder.getQueue().forEach(s -> {
-			if (myHeroesIds.contains(s.getId())) {
+			Boolean exposed = myHeroesIds.contains(s.getId()) ||
+					battlefieldHolder.getBattleLog().stream()
+							.filter(battleLog -> Objects.equals(battleLog.getCasterId(), s.getId()))
+							.count() > 0;
+			if (exposed) {
 				queue.add(s.getId());
 			} else {
 				queue.add(null);
 			}
 		});
 
-        currentStep = battlefieldHolder.getCurrentStep();
-        // todo: lambdas are bitches!
-        battleLog.addAll(battlefieldHolder.getBattleLog().stream().map(log -> new StepLogDto(log, receiverName)).collect(Collectors.toList()));
-    }
+		currentStep = battlefieldHolder.getCurrentStep();
+		// todo: lambdas are bitches!
+		battleLog.addAll(battlefieldHolder.getBattleLog().stream()
+				.map(stepLog -> new StepLogDto(stepLog, receiverName))
+				.collect(Collectors.toList()));
+	}
 
 	public List<HeroDto> getMyHeroes() {
 		return myHeroes;
@@ -66,11 +73,11 @@ public class BattlefieldDto extends AbstractDto implements JsonDto {
 		return queue;
 	}
 
-    public Integer getCurrentStep() {
-        return currentStep;
-    }
+	public Integer getCurrentStep() {
+		return currentStep;
+	}
 
-    public List<StepLogDto> getBattleLog() {
-        return battleLog;
-    }
+	public List<StepLogDto> getBattleLog() {
+		return battleLog;
+	}
 }

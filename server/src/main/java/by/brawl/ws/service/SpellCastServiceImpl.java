@@ -52,7 +52,7 @@ class SpellCastServiceImpl implements SpellCastService {
     public BattlefieldHolder castSpell(String spellId,
                                        String senderId,
                                        String casterId,
-                                       Integer victimPositionId,
+                                       Integer victimPosition,
                                        Boolean forEnemy,
                                        BattlefieldHolder battlefieldHolder) {
         SpellLogic castedSpell = spellsMap.get(spellId);
@@ -60,14 +60,14 @@ class SpellCastServiceImpl implements SpellCastService {
             throw Exceptions.produceNullPointer(LOG, "Casted spell is absent in spells pool");
         }
         // check target for validity
-        Boolean cannotBeTargeted = (victimPositionId == null && !castedSpell.getTargetable());
-        Boolean validMyTarget = victimPositionId != null && forEnemy != null && !forEnemy && castedSpell.getMyTargets().contains(victimPositionId);
-        Boolean validEnemyTarget = victimPositionId != null && forEnemy != null && forEnemy && castedSpell.getEnemyTargets().contains(victimPositionId);
+        Boolean cannotBeTargeted = (victimPosition == null && !castedSpell.getTargetable());
+        Boolean validMyTarget = victimPosition != null && forEnemy != null && !forEnemy && castedSpell.getMyTargets().contains(victimPosition);
+        Boolean validEnemyTarget = victimPosition != null && forEnemy != null && forEnemy && castedSpell.getEnemyTargets().contains(victimPosition);
         if (!cannotBeTargeted && !validMyTarget && !validEnemyTarget) {
             throw Exceptions.produceIllegalArgument(LOG, "Targeting error. Can't be targeted: {0}, valid my target: {1}, valid forEnemy target: {2}",
                     cannotBeTargeted, validEnemyTarget, validEnemyTarget);
         }
-        // todo: cast spells right here
+        battlefieldHolder = castedSpell.cast(battlefieldHolder, senderId, victimPosition, forEnemy);
         StepLogHolder stepLog = new StepLogHolder(
                 senderId,
                 spellId,

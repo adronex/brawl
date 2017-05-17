@@ -87,7 +87,11 @@ class GameServiceImpl implements GameService {
 			return;
 		}
 		battlefieldHolder = spellCastService.castSpell(spellId, session.getId(), currentHero.getId(), victimPosition, forEnemy, battlefieldHolder);
-		battlefieldHolder.incrementStep();
+		if (battlefieldHolder.isGameFinished()) {
+			battlefieldHolder.setGameState(GameState.END);
+		} else {
+			battlefieldHolder.incrementStep();
+		}
 		gameSessionsPool.sendBattlefieldData(battlefieldHolder);
 	}
 

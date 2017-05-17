@@ -75,6 +75,19 @@ public class BattlefieldHolder {
         currentStep++;
     }
 
+    public Boolean isGameFinished() {
+        Boolean gameFinished = false;
+        for (Map.Entry<String, List<HeroHolder>> entry : battleHeroes.entrySet()) {
+            for (HeroHolder heroHolder : entry.getValue()) {
+                if (heroHolder.isAlive()) {
+                    continue;
+                }
+                gameFinished = true;
+            }
+        }
+        return gameFinished;
+    }
+
     public GameState getGameState() {
         return gameState;
     }
