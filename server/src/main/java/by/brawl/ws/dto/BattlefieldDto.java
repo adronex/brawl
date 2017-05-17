@@ -33,6 +33,16 @@ public class BattlefieldDto extends AbstractDto implements JsonDto {
 						heroHolder.getAllSpells().stream()
 								.map(SpellDto::new).collect(Collectors.toSet())
 				));
+		// todo: lambda is a fuck
+		battlefieldHolder.getBattleHeroes(receiverName, true).forEach(heroHolder ->
+				heroSpells.put(
+						heroHolder.getId(),
+						heroHolder.getAllSpells().stream()
+								.filter(spellHolder -> battlefieldHolder.getBattleLog().stream()
+										.filter(stepLog -> Objects.equals(stepLog.getSpellId(), spellHolder.getId()) && Objects.equals(stepLog.getCasterId(), heroHolder.getId()))
+										.count() > 0)
+								.map(SpellDto::new).collect(Collectors.toSet())
+				));
 
 		List<String> myHeroesIds = myHeroes.stream()
 				.map(HeroDto::getId)
@@ -41,7 +51,7 @@ public class BattlefieldDto extends AbstractDto implements JsonDto {
 		battlefieldHolder.getQueue().forEach(s -> {
 			Boolean exposed = myHeroesIds.contains(s.getId()) ||
 					battlefieldHolder.getBattleLog().stream()
-							.filter(battleLog -> Objects.equals(battleLog.getCasterId(), s.getId()))
+							.filter(stepLog -> Objects.equals(stepLog.getCasterId(), s.getId()))
 							.count() > 0;
 			if (exposed) {
 				queue.add(s.getId());
