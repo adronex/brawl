@@ -12,8 +12,8 @@ public class StepLogDto {
 
     public StepLogDto(StepLogHolder stepLogHolder, String receiverId) {
         spellId = stepLogHolder.getSpellId();
-        senderId = stepLogHolder.getSenderId();
-        this.enemy = !Objects.equals(receiverId, stepLogHolder.getAccountId());
+        senderId = stepLogHolder.getCasterId();
+        this.enemy = !Objects.equals(receiverId, stepLogHolder.getSenderId());
     }
 
     public String getSpellId() {

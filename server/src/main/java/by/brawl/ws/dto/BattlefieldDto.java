@@ -1,9 +1,14 @@
 package by.brawl.ws.dto;
 
 import by.brawl.ws.holder.BattlefieldHolder;
-import by.brawl.ws.holder.HeroHolder;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Queue;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class BattlefieldDto extends AbstractDto implements JsonDto {
@@ -16,29 +21,17 @@ public class BattlefieldDto extends AbstractDto implements JsonDto {
 
 	public BattlefieldDto(BattlefieldHolder battlefieldHolder,
 						  String receiverName) {
-		battlefieldHolder.getBattleHeroes().forEach((key, value) -> {
-			if (key.equals(receiverName)) {
-				myHeroes = value.stream()
-						.map(HeroDto::new)
-						.collect(Collectors.toList());
-			} else {
-				enemyHeroes = value.stream()
-						.map(HeroDto::new)
-						.collect(Collectors.toList());
-			}
-		});
+		myHeroes = battlefieldHolder.getBattleHeroes(receiverName, false).stream()
+				.map(HeroDto::new).collect(Collectors.toList());
+		enemyHeroes = battlefieldHolder.getBattleHeroes(receiverName, true).stream()
+				.map(HeroDto::new).collect(Collectors.toList());
 
-		battlefieldHolder.getBattleHeroes().forEach((key, value) -> {
-			if (Objects.equals(key, receiverName)) {
-				for (HeroHolder heroHolder : value) {
-					heroSpells.put(
-							heroHolder.getId(),
-							heroHolder.getAllSpells().stream()
-									.map(SpellDto::new).collect(Collectors.toSet())
-					);
-				}
-			}
-		});
+		battlefieldHolder.getBattleHeroes(receiverName, false).forEach(heroHolder ->
+				heroSpells.put(
+						heroHolder.getId(),
+						heroHolder.getAllSpells().stream()
+								.map(SpellDto::new).collect(Collectors.toSet())
+				));
 
 		List<String> myHeroesIds = myHeroes.stream()
 				.map(HeroDto::getId)

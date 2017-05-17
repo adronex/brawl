@@ -2,7 +2,12 @@ package by.brawl.ws.service;
 
 import by.brawl.entity.Squad;
 import by.brawl.util.Exceptions;
-import by.brawl.ws.holder.*;
+import by.brawl.ws.holder.BattlefieldHolder;
+import by.brawl.ws.holder.GameSession;
+import by.brawl.ws.holder.GameSessionsPool;
+import by.brawl.ws.holder.GameState;
+import by.brawl.ws.holder.HeroHolder;
+import by.brawl.ws.holder.SpellHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +22,8 @@ import java.util.stream.Collectors;
 @Service
 class GameServiceImpl implements GameService {
 
-	private static final Logger LOG = LoggerFactory.getLogger(GameServiceImpl.class);
 	private static final Integer BATTLEFIELD_HEROES_COUNT = 2;
+	private static final Logger LOG = LoggerFactory.getLogger(GameServiceImpl.class);
 	@Autowired
 	private GameSessionsPool gameSessionsPool;
 	@Autowired
@@ -45,7 +50,6 @@ class GameServiceImpl implements GameService {
 			throw Exceptions.produceIllegalArgument(LOG, "Wrong heroes in battle count. Expected: {0}, actual: {1}",
 					BATTLEFIELD_HEROES_COUNT, heroesIds.size());
 		}
-
 		List<HeroHolder> mulliganHeroes = battlefieldHolder.getMulliganHeroes().get(session.getId());
 		List<HeroHolder> battleHeroes = new ArrayList<>();
 
@@ -59,10 +63,9 @@ class GameServiceImpl implements GameService {
 
 			battleHeroes.add(battleHero);
 		}
+		battlefieldHolder.addBattleHeroes(session.getId(), battleHeroes);
 
-		battlefieldHolder.getBattleHeroes().put(session.getId(), battleHeroes);
-
-		if (battlefieldHolder.getBattleHeroes().size() == 2) {
+		if (battlefieldHolder.isReadyForBattle()) {
 			battlefieldHolder.prepareGame();
 			battlefieldHolder.setGameState(GameState.PLAYING);
 			gameSessionsPool.sendBattlefieldData(battlefieldHolder);
@@ -72,12 +75,23 @@ class GameServiceImpl implements GameService {
 	}
 
 	@Override
-	public void castSpell(GameSession session, String spellId, Integer target, Boolean enemy) {
+	public void castSpell(GameSession session, String spellId, Integer victimPosition, Boolean forEnemy) {
 		BattlefieldHolder battlefieldHolder = getBattlefieldHolderAndCheckState(session, GameState.PLAYING);
-
 		String playerKey = session.getId();
 		HeroHolder currentHero = battlefieldHolder.getQueue().element();
 
+		if (!battlefieldHolder.getBattleHeroes(playerKey, false).contains(currentHero)) {
+			throw Exceptions.produceAccessDenied(LOG, "Player {0} tries to cast spell in opponents turn", playerKey);
+		}
+		if (!isSpellValid(currentHero, spellId, playerKey)) {
+			return;
+		}
+		battlefieldHolder = spellCastService.castSpell(spellId, session.getId(), currentHero.getId(), victimPosition, forEnemy, battlefieldHolder);
+		battlefieldHolder.incrementStep();
+		gameSessionsPool.sendBattlefieldData(battlefieldHolder);
+	}
+
+	private Boolean isSpellValid(HeroHolder currentHero, String spellId, String playerKey){
 		Boolean castedSpellBelongsToCurrentHero = currentHero.getAllSpells().stream()
 				.filter(spellHolder -> Objects.equals(spellHolder.getId(), spellId))
 				.count() > 0;
@@ -96,10 +110,7 @@ class GameServiceImpl implements GameService {
 			throw Exceptions.produceIllegalArgument(LOG, "Player {0} casted spell {1} that is not available (on cooldown/suspended/etc). Available spells are {2}",
 					playerKey, spellId, availableSpellsIds.toString());
 		}
-
-		battlefieldHolder = spellCastService.castSpell(spellId, session.getId(), currentHero.getId(), target, enemy, battlefieldHolder);
-		battlefieldHolder.incrementStep();
-		gameSessionsPool.sendBattlefieldData(battlefieldHolder);
+		return true;
 	}
 
 	private BattlefieldHolder getBattlefieldHolderAndCheckState(GameSession session, GameState gameState) {

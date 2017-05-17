@@ -4,27 +4,27 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class StepLogHolder {
-    private String accountId;
-    private String spellId;
     private String senderId;
+    private String spellId;
+    private String casterId;
     private Map<String, Integer> damageByReceivers = new HashMap<>();
 
-    public StepLogHolder(String accountId, String spellId, String senderId) {
-        this.accountId = accountId;
-        this.spellId = spellId;
+    public StepLogHolder(String senderId, String spellId, String casterId) {
         this.senderId = senderId;
+        this.spellId = spellId;
+        this.casterId = casterId;
     }
 
-    public String getAccountId() {
-        return accountId;
+    public String getSenderId() {
+        return senderId;
     }
 
     public String getSpellId() {
         return spellId;
     }
 
-    public String getSenderId() {
-        return senderId;
+    public String getCasterId() {
+        return casterId;
     }
 
     public Map<String, Integer> getDamageByReceivers() {

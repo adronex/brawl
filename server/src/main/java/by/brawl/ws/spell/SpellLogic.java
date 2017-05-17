@@ -1,9 +1,7 @@
 package by.brawl.ws.spell;
 
-import by.brawl.ws.holder.HeroHolder;
-import org.springframework.data.util.Pair;
+import by.brawl.ws.holder.BattlefieldHolder;
 
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -14,9 +12,10 @@ import java.util.Set;
  */
 public interface SpellLogic {
 
-    Pair<List<HeroHolder>, List<HeroHolder>> cast(List<HeroHolder> myHeroes,
-                                                  List<HeroHolder> enemyHeroes,
-                                                  Integer target);
+    BattlefieldHolder cast(BattlefieldHolder battlefieldHolder,
+                           String senderId,
+                           Integer victimPosition,
+                           Boolean forEnemy);
     String getId();
     Boolean getTargetable();
     Set<Integer> getMyTargets();

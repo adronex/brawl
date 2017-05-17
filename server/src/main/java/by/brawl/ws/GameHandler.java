@@ -20,11 +20,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-// todo: Noisia - Machine Gun
-// todo: Noisia - Hunter Theme
+// Noisia - Machine Gun
+// Noisia - Hunter Theme
 
-// todo: matchmaking service
-// todo: game service
 // steps:
 // 1. choose squad.
 // OPEN WEBSOCKET.
@@ -122,7 +120,7 @@ public class GameHandler extends TextWebSocketHandler {
 	private void handleCastSpellRequest(GameSession session, JSONObject body) {
 		String spellId = "1"; // TODO: remove mock and get this spell from request
 		Integer target = body.optInt("target");
-		Boolean enemy = body.optBoolean("enemy");
-		gameService.castSpell(session, spellId, target, enemy);
+		Boolean forEnemy = body.optBoolean("forEnemy");
+		gameService.castSpell(session, spellId, target, forEnemy);
 	}
 }

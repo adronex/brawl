@@ -31,6 +31,10 @@ public class HeroHolder {
         return spells;
     }
 
+    public void heal(Integer value) {
+        health += value;
+    }
+
     public void hit(Integer value) {
         health -= value;
     }
