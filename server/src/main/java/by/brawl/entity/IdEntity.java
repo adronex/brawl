@@ -5,16 +5,9 @@ import org.hibernate.annotations.GenericGenerator;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
-import java.util.Objects;
 
-/**
- * Default class description.
- *
- * @author P.Sinitsky.
- *         Created on 25.03.2017.
- */
 @MappedSuperclass
-public class IdEntity {
+public abstract class IdEntity {
 
     @Id
     @GeneratedValue(generator = "uuid")

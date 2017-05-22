@@ -10,13 +10,18 @@ public class HeroHolder {
     private String id;
     private Integer health = 30;
     private Set<SpellHolder> spells = new LinkedHashSet<>();
+    private Set<BodypartHolder> bodyparts = new LinkedHashSet<>();
 
     public HeroHolder(Hero hero) {
         id = hero.getId();
-        health = hero.getHealth();
         spells.addAll(
                 hero.getSpells().stream()
                         .map(SpellHolder::new)
+                        .collect(Collectors.toList())
+        );
+        bodyparts.addAll(
+                hero.getBodyparts().stream()
+                        .map(BodypartHolder::new)
                         .collect(Collectors.toList())
         );
     }
@@ -49,5 +54,9 @@ public class HeroHolder {
 
     public Integer getHealth() {
         return health;
+    }
+
+    public Set<BodypartHolder> getBodyparts() {
+        return bodyparts;
     }
 }
