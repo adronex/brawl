@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 
 public class HeroHolder {
     private String id;
-    private Integer health = 30;
+    private HeroAttributesHolder attributes;
     private Set<SpellHolder> spells = new LinkedHashSet<>();
     private Set<BodypartHolder> bodyparts = new LinkedHashSet<>();
 
@@ -24,6 +24,7 @@ public class HeroHolder {
                         .map(BodypartHolder::new)
                         .collect(Collectors.toList())
         );
+        attributes = new HeroAttributesHolder(hero.getBodyparts());
     }
 
     public Set<SpellHolder> getAvailableSpells() {
@@ -37,23 +38,19 @@ public class HeroHolder {
     }
 
     public void heal(Integer value) {
-        health += value;
+        attributes.getHealth().incrementCurrent(value);
     }
 
     public void hit(Integer value) {
-        health -= value;
+        attributes.getHealth().decrementCurrent(value);
     }
 
     public Boolean isAlive() {
-        return health > 0;
+        return attributes.getHealth().getCurrentValue() > 0;
     }
 
     public String getId() {
         return id;
-    }
-
-    public Integer getHealth() {
-        return health;
     }
 
     public Set<BodypartHolder> getBodyparts() {
