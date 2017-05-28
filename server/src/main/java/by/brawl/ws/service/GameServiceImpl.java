@@ -2,12 +2,8 @@ package by.brawl.ws.service;
 
 import by.brawl.entity.Squad;
 import by.brawl.util.Exceptions;
-import by.brawl.ws.holder.BattlefieldHolder;
-import by.brawl.ws.holder.GameSession;
-import by.brawl.ws.holder.GameSessionsPool;
-import by.brawl.ws.holder.GameState;
-import by.brawl.ws.holder.HeroHolder;
-import by.brawl.ws.holder.SpellHolder;
+import by.brawl.util.Mappers;
+import by.brawl.ws.holder.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +13,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Service
 class GameServiceImpl implements GameService {
@@ -108,9 +103,7 @@ class GameServiceImpl implements GameService {
 				.filter(spellHolder -> Objects.equals(spellHolder.getId(), spellId))
 				.count() > 0;
 		if (!castedSpellAvailable) {
-			List<String> availableSpellsIds = currentHero.getAvailableSpells().stream()
-					.map(SpellHolder::getId)
-					.collect(Collectors.toList());
+			List<String> availableSpellsIds = Mappers.asList(currentHero.getAvailableSpells(), SpellHolder::getId);
 			throw Exceptions.produceIllegalArgument(LOG, "Player {0} casted spell {1} that is not available (on cooldown/suspended/etc). Available spells are {2}",
 					playerKey, spellId, availableSpellsIds.toString());
 		}

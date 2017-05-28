@@ -1,10 +1,10 @@
 package by.brawl.ws.dto;
 
+import by.brawl.util.Mappers;
 import by.brawl.ws.holder.HeroHolder;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public class HeroDto {
     private String id;
@@ -12,11 +12,7 @@ public class HeroDto {
 
     public HeroDto(HeroHolder heroHolder) {
         id = heroHolder.getId();
-        bodyparts.addAll(
-                heroHolder.getBodyparts().stream()
-                        .map(BodypartDto::new)
-                        .collect(Collectors.toList())
-        );
+        bodyparts = Mappers.asSet(heroHolder.getBodyparts(), BodypartDto::new);
 //        spells.addAll(
 //                heroHolder.getAllSpells().stream()
 //                        .map(SpellDto::new)

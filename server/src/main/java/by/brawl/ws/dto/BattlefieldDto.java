@@ -1,15 +1,9 @@
 package by.brawl.ws.dto;
 
+import by.brawl.util.Mappers;
 import by.brawl.ws.holder.BattlefieldHolder;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Queue;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class BattlefieldDto extends AbstractDto implements JsonDto {
@@ -22,10 +16,8 @@ public class BattlefieldDto extends AbstractDto implements JsonDto {
 
 	public BattlefieldDto(BattlefieldHolder battlefieldHolder,
 						  String receiverName) {
-		myHeroes = battlefieldHolder.getBattleHeroes(receiverName, false).stream()
-				.map(HeroDto::new).collect(Collectors.toList());
-		enemyHeroes = battlefieldHolder.getBattleHeroes(receiverName, true).stream()
-				.map(HeroDto::new).collect(Collectors.toList());
+        myHeroes = Mappers.asList(battlefieldHolder.getBattleHeroes(receiverName, false), HeroDto::new);
+        enemyHeroes = Mappers.asList(battlefieldHolder.getBattleHeroes(receiverName, true), HeroDto::new);
 
 		battlefieldHolder.getBattleHeroes(receiverName, false).forEach(heroHolder ->
 				heroSpells.put(
@@ -44,9 +36,7 @@ public class BattlefieldDto extends AbstractDto implements JsonDto {
 								.map(SpellDto::new).collect(Collectors.toSet())
 				));
 
-		List<String> myHeroesIds = myHeroes.stream()
-				.map(HeroDto::getId)
-				.collect(Collectors.toList());
+        List<String> myHeroesIds = Mappers.asList(myHeroes, HeroDto::getId);
 
 		battlefieldHolder.getQueue().forEach(s -> {
 			Boolean exposed = myHeroesIds.contains(s.getId()) ||
@@ -61,11 +51,8 @@ public class BattlefieldDto extends AbstractDto implements JsonDto {
 		});
 
 		currentStep = battlefieldHolder.getCurrentStep();
-		// todo: lambdas are bitches!
-		battleLog.addAll(battlefieldHolder.getBattleLog().stream()
-				.map(stepLog -> new StepLogDto(stepLog, receiverName))
-				.collect(Collectors.toList()));
-	}
+        battleLog = Mappers.asList(battlefieldHolder.getBattleLog(), (stepLog -> new StepLogDto(stepLog, receiverName)));
+    }
 
 	public List<HeroDto> getMyHeroes() {
 		return myHeroes;

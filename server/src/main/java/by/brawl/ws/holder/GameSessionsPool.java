@@ -1,6 +1,7 @@
 package by.brawl.ws.holder;
 
 import by.brawl.util.Exceptions;
+import by.brawl.util.Mappers;
 import by.brawl.ws.dto.BattlefieldDto;
 import by.brawl.ws.dto.MulliganDto;
 import org.slf4j.Logger;
@@ -11,7 +12,6 @@ import org.springframework.web.socket.WebSocketSession;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Component
 public class GameSessionsPool {
@@ -31,13 +31,10 @@ public class GameSessionsPool {
 	}
 
 	private Set<GameSession> getAllReceiversByBattlefield (BattlefieldHolder battlefield) {
-		Set<GameSession> receivers = battlefield.getConnectedAccountsIds()
-				.stream()
-				.map(key -> gameSessions.get(key))
-				.collect(Collectors.toSet());
-		if (receivers.contains(null)) {
-			throw Exceptions.produceNullPointer(LOG, "BattlefieldHolder contains null sessions!");
-		}
+        Set<GameSession> receivers = Mappers.asSet(battlefield.getConnectedAccountsIds(), key -> gameSessions.get(key));
+        if (receivers.contains(null)) {
+            throw Exceptions.produceNullPointer(LOG, "BattlefieldHolder contains null sessions!");
+        }
 		return receivers;
 	}
 

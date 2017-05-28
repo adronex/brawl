@@ -8,10 +8,12 @@
 </head>
 <body>
 
-<p>Squads: </p>
-<div id="squads"></div>
-<div>
+<div id="menu">
+    <p>Squads: </p>
+    <div id="squads"></div>
     <button type="button" onclick="openSocket();">Open</button>
+</div>
+<div id="game" style="display: none">
     <button type="button" onclick="sendMulliganInfo();">Choose heroes</button>
     <button type="button" onclick="sendFirstSpell();">Cast first spell</button>
     <button type="button" onclick="closeSocket();">Close</button>
@@ -63,12 +65,14 @@
         webSocket.onopen = function (event) {
             let squads = document.getElementsByName('squad');
             let chosenSquad;
-            for(let i = 0; i < squads.length; i++){
-                if(squads[i].checked){
+            for (let i = 0; i < squads.length; i++) {
+                if (squads[i].checked) {
                     chosenSquad = squads[i].value;
                 }
             }
             webSocket.send(JSON.stringify({type: 'INITIAL', body: {squadId: chosenSquad}}));
+            document.getElementById('menu').style.display = 'none';
+            document.getElementById('game').style.display = 'block';
         };
 
         webSocket.onmessage = function (event) {
@@ -83,6 +87,8 @@
 
         webSocket.onclose = function (event) {
             writeResponse("Connection closed");
+            document.getElementById('menu').style.display = 'block';
+            document.getElementById('game').style.display = 'none';
         };
     }
 

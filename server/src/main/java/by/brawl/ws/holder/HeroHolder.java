@@ -1,6 +1,7 @@
 package by.brawl.ws.holder;
 
 import by.brawl.entity.Hero;
+import by.brawl.util.Mappers;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -14,16 +15,8 @@ public class HeroHolder {
 
     public HeroHolder(Hero hero) {
         id = hero.getId();
-        spells.addAll(
-                hero.getSpells().stream()
-                        .map(SpellHolder::new)
-                        .collect(Collectors.toList())
-        );
-        bodyparts.addAll(
-                hero.getBodyparts().stream()
-                        .map(BodypartHolder::new)
-                        .collect(Collectors.toList())
-        );
+        spells = Mappers.asSet(hero.getSpells(), SpellHolder::new);
+        bodyparts = Mappers.asSet(hero.getBodyparts(), BodypartHolder::new);
         attributes = new HeroAttributesHolder(hero.getBodyparts());
     }
 

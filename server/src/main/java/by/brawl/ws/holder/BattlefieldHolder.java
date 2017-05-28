@@ -2,18 +2,11 @@ package by.brawl.ws.holder;
 
 import by.brawl.entity.Squad;
 import by.brawl.util.Exceptions;
+import by.brawl.util.Mappers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Queue;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class BattlefieldHolder {
@@ -31,10 +24,7 @@ public class BattlefieldHolder {
     private List<StepLogHolder> battleLog = new ArrayList<>();
 
     public void addSquad(Squad squad) {
-        List<HeroHolder> heroes = squad.getHeroes()
-                .stream()
-                .map(HeroHolder::new)
-                .collect(Collectors.toList());
+        List<HeroHolder> heroes = Mappers.asList(squad.getHeroes(), HeroHolder::new);
         mulliganHeroes.put(squad.getOwner().getUsername(), heroes);
         connectedAccountsIds.add(squad.getOwner().getUsername());
     }

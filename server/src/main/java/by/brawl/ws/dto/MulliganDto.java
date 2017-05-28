@@ -1,10 +1,10 @@
 package by.brawl.ws.dto;
 
+import by.brawl.util.Mappers;
 import by.brawl.ws.holder.HeroHolder;
 import by.brawl.ws.holder.SpellHolder;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class MulliganDto extends AbstractDto implements JsonDto {
 	private List<HeroDto> myHeroes = new ArrayList<>();
@@ -15,27 +15,21 @@ public class MulliganDto extends AbstractDto implements JsonDto {
 					   String receiverName) {
 		mulliganHeroes.forEach((key, value) -> {
 			if (key.equals(receiverName)) {
-				myHeroes = value.stream()
-						.map(HeroDto::new)
-						.collect(Collectors.toList());
-			} else {
-				enemyHeroes = value.stream()
-						.map(HeroDto::new)
-						.collect(Collectors.toList());
-			}
-		});
+                myHeroes = Mappers.asList(value, HeroDto::new);
+            } else {
+                enemyHeroes = Mappers.asList(value, HeroDto::new);
+            }
+        });
 
 		mulliganHeroes.forEach((key, value) -> {
 			if (Objects.equals(key, receiverName)) {
 				for (HeroHolder heroHolder : mulliganHeroes.get(receiverName)) {
 					heroSpellsIds.put(
 							heroHolder.getId(),
-							heroHolder.getAllSpells().stream()
-									.map(SpellHolder::getId)
-									.collect(Collectors.toList())
-					);
-				}
-			}
+                            Mappers.asList(heroHolder.getAllSpells(), SpellHolder::getId)
+                    );
+                }
+            }
 		});
 	}
 
