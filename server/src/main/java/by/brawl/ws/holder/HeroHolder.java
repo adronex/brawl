@@ -12,11 +12,13 @@ public class HeroHolder {
     private HeroAttributesHolder attributes;
     private Set<SpellHolder> spells = new LinkedHashSet<>();
     private Set<BodypartHolder> bodyparts = new LinkedHashSet<>();
+    private Set<EquipmentHolder> equipments = new LinkedHashSet<>();
 
     public HeroHolder(Hero hero) {
         id = hero.getId();
         spells = Mappers.asSet(hero.getSpells(), SpellHolder::new);
         bodyparts = Mappers.asSet(hero.getBodyparts(), BodypartHolder::new);
+        equipments = Mappers.asSet(hero.getEquipments(), EquipmentHolder::new);
         attributes = new HeroAttributesHolder(hero.getBodyparts());
     }
 
@@ -48,5 +50,9 @@ public class HeroHolder {
 
     public Set<BodypartHolder> getBodyparts() {
         return bodyparts;
+    }
+
+    public Set<EquipmentHolder> getEquipments() {
+        return equipments;
     }
 }

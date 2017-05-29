@@ -1,6 +1,7 @@
 package by.brawl.entity;
 
 import by.brawl.entity.bodypart.Bodypart;
+import by.brawl.entity.bodypart.Equipment;
 
 import javax.persistence.*;
 import java.util.LinkedHashSet;
@@ -23,6 +24,12 @@ public class Hero extends NamedEntity {
             joinColumns = @JoinColumn(name = "hero_id"),
             inverseJoinColumns = @JoinColumn(name = "bodypart_id"))
     private Set<Bodypart> bodyparts = new LinkedHashSet<>();
+
+    @ManyToMany
+    @JoinTable(name = "hero_equipment",
+            joinColumns = @JoinColumn(name = "hero_id"),
+            inverseJoinColumns = @JoinColumn(name = "equipment_id"))
+    private Set<Equipment> equipments = new LinkedHashSet<>();
 //
 //    @Transient
 //    private Integer health = 30;
@@ -45,6 +52,10 @@ public class Hero extends NamedEntity {
 
     public Set<Bodypart> getBodyparts() {
         return bodyparts;
+    }
+
+    public Set<Equipment> getEquipments() {
+        return equipments;
     }
 
     @Override

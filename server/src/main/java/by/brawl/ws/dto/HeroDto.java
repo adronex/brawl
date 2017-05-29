@@ -9,10 +9,12 @@ import java.util.Set;
 public class HeroDto {
     private String id;
     private Set<BodypartDto> bodyparts = new LinkedHashSet<>();
+    private Set<EquipmentDto> equipments = new LinkedHashSet<>();
 
     public HeroDto(HeroHolder heroHolder) {
         id = heroHolder.getId();
         bodyparts = Mappers.asSet(heroHolder.getBodyparts(), BodypartDto::new);
+        equipments = Mappers.asSet(heroHolder.getEquipments(), EquipmentDto::new);
 //        spells.addAll(
 //                heroHolder.getAllSpells().stream()
 //                        .map(SpellDto::new)
@@ -27,7 +29,11 @@ public class HeroDto {
     public Set<BodypartDto> getBodyparts() {
         return bodyparts;
     }
-//    public Set<SpellDto> getSpells() {
+
+    public Set<EquipmentDto> getEquipments() {
+        return equipments;
+    }
+    //    public Set<SpellDto> getSpells() {
 //        return spells;
 //    }
 }
