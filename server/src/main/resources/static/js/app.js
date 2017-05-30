@@ -6,7 +6,14 @@ let webSocket;
 
 app.controller('squadMenuController', ['$scope', '$http', function ($scope, $http) {
 
-    $scope.temp = {};//chosenSquadId = 100500;
+    $scope.connected = false;
+    $scope.gameStage = 'MENU';
+    $scope.myHeroes = [];
+    $scope.enemyHeroes = [];
+    $scope.heroesQueue = [];
+    $scope.battleLog = [];
+    $scope.messages = [];
+    $scope.temp = {};
     $scope.onLoad = function () {
         $http.get('http://localhost:8080/api/squads/my').then(function (response, status) {
             $scope.availableSquads = response.data;
@@ -30,24 +37,41 @@ app.controller('squadMenuController', ['$scope', '$http', function ($scope, $htt
             let chosenSquad = $scope.temp.chosenSquadId;
 
             webSocket.send(JSON.stringify({type: 'INITIAL', body: {squadId: chosenSquad}}));
-            document.getElementById('menu').style.display = 'none';
-            document.getElementById('game').style.display = 'block';
+            $scope.gameStage = 'GAME';
+            $scope.$digest();
         };
 
         webSocket.onmessage = function (event) {
             let response = JSON.parse(event.data);
-            if (response.heroesQueue) {
-                updateQueue(response.heroesQueue);
-                updateGameState(response.gameState, response.winner);
-            } else {
-                writeResponse(event.data);
+            if (response.queue) {
+                $scope.heroesQueue = response.queue;
+                delete response.queue;
             }
+            if (response.battleLog) {
+                $scope.battleLog = response.battleLog;
+                delete response.battleLog;
+            }
+            if (response.connected) {
+                $scope.connected = true;
+                delete response.connected;
+            }
+            if (response.myHeroes) {
+                $scope.myHeroes = response.myHeroes;
+                delete response.myHeroes;
+            }
+            if (response.enemyHeroes) {
+                $scope.enemyHeroes = response.enemyHeroes;
+                delete response.enemyHeroes;
+            }
+            if (!(Object.keys(response).length === 0 && response.constructor === Object)) {
+                $scope.messages.push(response);
+            }
+            $scope.$digest();
         };
 
         webSocket.onclose = function (event) {
-            writeResponse("Connection closed");
-            document.getElementById('menu').style.display = 'block';
-            document.getElementById('game').style.display = 'none';
+            $scope.connected = false;
+            $scope.gameStage = 'MENU';
         };
     };
 
@@ -67,21 +91,6 @@ app.controller('squadMenuController', ['$scope', '$http', function ($scope, $htt
     };
 
     function writeResponse(text) {
-        messagesDiv.innerHTML += "<br/>" + text;
-    }
-
-    function updateQueue(queue) {
-        queueDiv.innerHTML = queue.reduce(function (acc, val) {
-            return acc + ' <- ' + val.name + '(' + val.health + ')' + (val.enemy ? '(enemy)' : '(you)');
-        }, '');
-    }
-
-    function updateGameState(state, winner) {
-        let text = state;
-        if (text === 'END') {
-            text += ', ';
-            text += winner ? "YOU WIN!" : "YOU LOSE!";
-        }
-        gameStateDiv.innerHTML = text;
+        document.getElementById('messages').messagesDiv.innerHTML += "<br/>" + text;
     }
 }]);

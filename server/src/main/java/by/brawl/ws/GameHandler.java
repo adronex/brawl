@@ -63,7 +63,7 @@ public class GameHandler extends TextWebSocketHandler {
 		if (gameSession == null) {
 			throw Exceptions.produceNullPointer(LOG, "Session wasn't successfully added!");
 		}
-		gameSession.sendInfoMessage("Connected");
+		gameSession.sendKeyValue("connected", true);
 	}
 
 	@Override

@@ -10,12 +10,11 @@
 </head>
 <body>
 
-<div data-ng-controller="squadMenuController">
-    <div id="newShit"
-         data-ng-init="onLoad()">
-    </div>
+<div data-ng-controller="squadMenuController"
+     data-ng-switch="gameStage"
+     data-ng-init="onLoad()">
 
-    <div id="menu">
+    <div id="menu" data-ng-switch-when="MENU">
         <p>Squads: </p>
         <div id="squads">
             <div data-ng-repeat="(index, squad) in availableSquads">
@@ -28,47 +27,36 @@
         </div>
         <button type="button" data-ng-click="openSocket()">Open</button>
     </div>
-    <div id="game" style="display: none">
-        <button type="button" data-ng-click="sendMulliganInfo();">Choose heroes</button>
-        <button type="button" data-ng-click="sendFirstSpell();">Cast first spell</button>
+    <div id="game" data-ng-switch-when="GAME">
+        <button type="button" data-ng-click="sendMulliganInfo()">Choose heroes</button>
+        <button type="button" data-ng-click="sendFirstSpell()">Cast first spell</button>
         <button type="button" data-ng-click="closeSocket()">Close</button>
+        <div id="connected">
+            Connected: {{connected}}
+        </div>
+        <div id="queue">
+            <span data-ng-repeat="item in heroesQueue track by $index"><- {{item ? item : '?'}}</span>
+        </div>
+        <div id="heroes" style="height: 40px; width: 20%; background-color: antiquewhite">
+            <table>
+                <tr>
+                    <td style="height: 20px; width: 20px; background-color: green" data-ng-repeat="item in myHeroes track by $index" data-ng-attr-title="{{item}}"></td>
+                    <td style="height: 20px; width: 20px; background-color: red" data-ng-repeat="item in enemyHeroes track by $index" data-ng-attr-title="{{item}}"></td>
+                </tr>
+            </table>
+        </div>
+        <div id="log">
+            <div data-ng-repeat="item in battleLog track by $index">
+                <span>Sender: {{item.senderId}}, Spell: {{item.spellId}}, Enemy: {{item.enemy}}</span>
+            </div>
+        </div>
+        <div id="messages">
+            <div data-ng-repeat="item in messages track by $index">
+                <span>{{item}}</span>
+            </div>
+        </div>
     </div>
 </div>
-<!-- Server responses get written here -->
-<div id="gameState"></div>
-<div id="queue"></div>
-<div id="messages"></div>
-
-<!-- Script to utilise the WebSocket -->
-<script type="text/javascript">
-    'use strict';
-
-    var messagesDiv = document.getElementById("messages");
-    var queueDiv = document.getElementById("queue");
-    var gameStateDiv = document.getElementById("gameState");
-
-//    fetch('/api/squads/my', {credentials: 'include'})
-//            .then(function (response) {
-//
-//                return response.json();
-//            })
-//            .then(function (squads) {
-//                if (squads) {
-//                    let squadsDiv = document.getElementById("squads");
-//                    squads.forEach(function (element, index) {
-//                        squadsDiv.innerHTML += '<input type="radio" name="squad" value="' +
-//                                element.id +
-//                                (index === 0 ? '" checked>' : '">') +
-//                                element.name + '<br>';
-//                    });
-//                }
-//            })
-//            .catch(alert);
-
-
-
-
-</script>
 
 </body>
 </html>
