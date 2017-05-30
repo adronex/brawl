@@ -92,7 +92,7 @@ public class GameHandler extends TextWebSocketHandler {
 	}
 
 	private void handleInitRequest(GameSession session, JSONObject body) {
-		String squadId = body.getString("squadId");
+		String squadId = body.optString("squadId", null);
 		matchmakingService.addInPool(session, squadId);
 	}
 

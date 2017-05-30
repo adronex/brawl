@@ -20,17 +20,19 @@
         <div id="squads">
             <div data-ng-repeat="(index, squad) in availableSquads">
                 <input type="radio"
-                       value="{{squad.id}}"
-                       data-ng-checked="{{index === 0}}">{{squad.name}}
+                       data-ng-model="temp[index]"
+                       data-ng-value="squad.id"
+                       data-ng-change="temp.chosenSquadId = temp[index]">
+                {{squad.name}}
             </div>
         </div>
-        <button type="button" onclick="openSocket();">Open</button>
+        <button type="button" data-ng-click="openSocket()">Open</button>
     </div>
-</div>
-<div id="game" style="display: none">
-    <button type="button" onclick="sendMulliganInfo();">Choose heroes</button>
-    <button type="button" onclick="sendFirstSpell();">Cast first spell</button>
-    <button type="button" onclick="closeSocket();">Close</button>
+    <div id="game" style="display: none">
+        <button type="button" data-ng-click="sendMulliganInfo();">Choose heroes</button>
+        <button type="button" data-ng-click="sendFirstSpell();">Cast first spell</button>
+        <button type="button" data-ng-click="closeSocket()">Close</button>
+    </div>
 </div>
 <!-- Server responses get written here -->
 <div id="gameState"></div>
@@ -41,7 +43,6 @@
 <script type="text/javascript">
     'use strict';
 
-    var webSocket;
     var messagesDiv = document.getElementById("messages");
     var queueDiv = document.getElementById("queue");
     var gameStateDiv = document.getElementById("gameState");
@@ -64,81 +65,8 @@
 //            })
 //            .catch(alert);
 
-    function openSocket() {
-        // Ensures only one connection is open at a time
-        if (webSocket !== undefined && webSocket.readyState !== WebSocket.CLOSED) {
-            writeResponse("WebSocket is already opened.");
-            return;
-        }
-        // Create a new instance of the websocket
-        webSocket = new WebSocket("ws://localhost:8080/game");
 
-        /**
-         * Binds functions to the listeners for the websocket.
-         */
-        webSocket.onopen = function (event) {
-            let squads = document.getElementsByName('squad');
-            let chosenSquad;
-            for (let i = 0; i < squads.length; i++) {
-                if (squads[i].checked) {
-                    chosenSquad = squads[i].value;
-                }
-            }
-            webSocket.send(JSON.stringify({type: 'INITIAL', body: {squadId: chosenSquad}}));
-            document.getElementById('menu').style.display = 'none';
-            document.getElementById('game').style.display = 'block';
-        };
 
-        webSocket.onmessage = function (event) {
-            let response = JSON.parse(event.data);
-            if (response.heroesQueue) {
-                updateQueue(response.heroesQueue);
-                updateGameState(response.gameState, response.winner);
-            } else {
-                writeResponse(event.data);
-            }
-        };
-
-        webSocket.onclose = function (event) {
-            writeResponse("Connection closed");
-            document.getElementById('menu').style.display = 'block';
-            document.getElementById('game').style.display = 'none';
-        };
-    }
-
-    /**
-     * Sends the value of the text input to the server
-     */
-    function sendMulliganInfo() {
-        webSocket.send(JSON.stringify({type: 'CHOOSE_HEROES', body: {heroes: ['2', '1']}}));
-    }
-
-    function sendFirstSpell() {
-        webSocket.send(JSON.stringify({type: 'CAST_SPELL', body: {target: 1, forEnemy: true}}));
-    }
-
-    function closeSocket() {
-        webSocket.close();
-    }
-
-    function writeResponse(text) {
-        messagesDiv.innerHTML += "<br/>" + text;
-    }
-
-    function updateQueue(queue) {
-        queueDiv.innerHTML = queue.reduce(function (acc, val) {
-            return acc + ' <- ' + val.name + '(' + val.health + ')' + (val.enemy ? '(enemy)' : '(you)');
-        }, '');
-    }
-
-    function updateGameState(state, winner) {
-        let text = state;
-        if (text === 'END') {
-            text += ', ';
-            text += winner ? "YOU WIN!" : "YOU LOSE!";
-        }
-        gameStateDiv.innerHTML = text;
-    }
 
 </script>
 

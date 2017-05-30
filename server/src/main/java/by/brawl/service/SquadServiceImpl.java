@@ -33,6 +33,9 @@ class SquadServiceImpl implements SquadService {
         if (authority == null) {
             throw Exceptions.produceNullPointer(LOG, "Trying to get squad when account is null");
         }
+        if (squadId == null) {
+            throw Exceptions.produceNullPointer(LOG, "Account {0} tries to init game with empty squad id.", authority.getUsername());
+        }
         Squad squad = repository.findOne(squadId);
         if (squad == null) {
             throw Exceptions.produceAccessDenied(LOG, "Squad with id {0} is not existing in database. Calling account: {1}",
