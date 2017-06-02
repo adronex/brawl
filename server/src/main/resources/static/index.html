@@ -31,9 +31,14 @@
         <div id="gameState">
             Game state: {{gameState}}
         </div>
-        <button type="button" data-ng-if="gameState==='MULLIGAN'" data-ng-click="sendMulliganInfo()">Choose heroes</button>
-        <button type="button" data-ng-if="gameState==='PLAYING'" data-ng-click="sendFirstSpell()">Cast first spell</button>
         <button type="button" data-ng-click="closeSocket()">Close</button>
+        <br>
+        <button type="button" data-ng-if="gameState==='MULLIGAN'" data-ng-click="sendMulliganInfo()">Choose heroes</button>
+        <div id="spellBar" data-ng-if="gameState==='PLAYING' && !heroesQueue[0].enemy">
+            <div data-ng-repeat="spell in heroSpells[heroesQueue[0].id]">
+                <button type="button" data-ng-click="sendFirstSpell()">{{spell}}</button>
+            </div>
+        </div>
         <div id="connected">
             Connected: {{connected}}
         </div>

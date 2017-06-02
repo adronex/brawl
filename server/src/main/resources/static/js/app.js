@@ -16,6 +16,7 @@ app.controller('squadMenuController', ['$scope', '$http', function ($scope, $htt
     $scope.battleLog = [];
     $scope.messages = [];
     $scope.temp = {};
+    $scope.heroSpells = [];
     $scope.onLoad = function () {
         $http.get('http://localhost:8080/api/squads/my').then(function (response, status) {
             $scope.availableSquads = response.data;
@@ -68,6 +69,10 @@ app.controller('squadMenuController', ['$scope', '$http', function ($scope, $htt
             if (response.gameState) {
                 $scope.gameState = response.gameState;
                 delete response.gameState;
+            }
+            if (response.heroSpells) {
+                $scope.heroSpells = response.heroSpells;
+                delete response.heroSpells;
             }
             if (!(Object.keys(response).length === 0 && response.constructor === Object)) {
                 $scope.messages.push(response);

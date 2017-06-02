@@ -11,7 +11,7 @@ public class BattlefieldDto extends AbstractDto implements JsonDto {
 	private List<HeroDto> myHeroes = new ArrayList<>();
 	private List<HeroDto> enemyHeroes = new ArrayList<>();
 	private Map<String, Set<SpellDto>> heroSpells = new HashMap<>();
-	private Queue<String> queue = new LinkedList<>();
+	private Queue<HeroInQueueDto> queue = new LinkedList<>();
 	private Integer currentStep;
 	private List<StepLogDto> battleLog = new ArrayList<>();
 	private GameState gameState;
@@ -41,14 +41,15 @@ public class BattlefieldDto extends AbstractDto implements JsonDto {
         List<String> myHeroesIds = Mappers.asList(myHeroes, HeroDto::getId);
 
 		battlefieldHolder.getQueue().forEach(s -> {
-			Boolean exposed = myHeroesIds.contains(s.getId()) ||
+			Boolean enemy = !myHeroesIds.contains(s.getId());
+			Boolean exposed = !enemy ||
 					battlefieldHolder.getBattleLog().stream()
 							.filter(stepLog -> Objects.equals(stepLog.getCasterId(), s.getId()))
 							.count() > 0;
 			if (exposed) {
-				queue.add(s.getId());
+				queue.add(new HeroInQueueDto(s.getId(), enemy));
 			} else {
-				queue.add(null);
+				queue.add(new HeroInQueueDto(null, enemy));
 			}
 		});
 
@@ -69,7 +70,7 @@ public class BattlefieldDto extends AbstractDto implements JsonDto {
 		return heroSpells;
 	}
 
-	public Queue<String> getQueue() {
+	public Queue<HeroInQueueDto> getQueue() {
 		return queue;
 	}
 
