@@ -4,6 +4,12 @@ let app = angular.module('clockworks', []);
 
 let webSocket;
 
+app.filter('reverse', function () {
+    return function (items) {
+        return items.slice().reverse();
+    };
+});
+
 app.controller('squadMenuController', ['$scope', '$http', function ($scope, $http) {
 
     $scope.connected = false;
