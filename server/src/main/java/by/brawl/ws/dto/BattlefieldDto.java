@@ -2,6 +2,7 @@ package by.brawl.ws.dto;
 
 import by.brawl.util.Mappers;
 import by.brawl.ws.holder.BattlefieldHolder;
+import by.brawl.ws.holder.GameState;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -13,6 +14,7 @@ public class BattlefieldDto extends AbstractDto implements JsonDto {
 	private Queue<String> queue = new LinkedList<>();
 	private Integer currentStep;
 	private List<StepLogDto> battleLog = new ArrayList<>();
+	private GameState gameState;
 
 	public BattlefieldDto(BattlefieldHolder battlefieldHolder,
 						  String receiverName) {
@@ -52,6 +54,7 @@ public class BattlefieldDto extends AbstractDto implements JsonDto {
 
 		currentStep = battlefieldHolder.getCurrentStep();
         battleLog = Mappers.asList(battlefieldHolder.getBattleLog(), (stepLog -> new StepLogDto(stepLog, receiverName)));
+		gameState = battlefieldHolder.getGameState();
     }
 
 	public List<HeroDto> getMyHeroes() {
@@ -76,5 +79,9 @@ public class BattlefieldDto extends AbstractDto implements JsonDto {
 
 	public List<StepLogDto> getBattleLog() {
 		return battleLog;
+	}
+
+	public GameState getGameState() {
+		return gameState;
 	}
 }

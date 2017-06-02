@@ -7,7 +7,9 @@ let webSocket;
 app.controller('squadMenuController', ['$scope', '$http', function ($scope, $http) {
 
     $scope.connected = false;
-    $scope.gameStage = 'MENU';
+    $scope.currentWindow = 'MENU';
+
+    $scope.mulliganChosenHeroesIds = [];
     $scope.myHeroes = [];
     $scope.enemyHeroes = [];
     $scope.heroesQueue = [];
@@ -37,7 +39,7 @@ app.controller('squadMenuController', ['$scope', '$http', function ($scope, $htt
             let chosenSquad = $scope.temp.chosenSquadId;
 
             webSocket.send(JSON.stringify({type: 'INITIAL', body: {squadId: chosenSquad}}));
-            $scope.gameStage = 'GAME';
+            $scope.currentWindow = 'GAME';
             $scope.$digest();
         };
 
@@ -63,6 +65,10 @@ app.controller('squadMenuController', ['$scope', '$http', function ($scope, $htt
                 $scope.enemyHeroes = response.enemyHeroes;
                 delete response.enemyHeroes;
             }
+            if (response.gameState) {
+                $scope.gameState = response.gameState;
+                delete response.gameState;
+            }
             if (!(Object.keys(response).length === 0 && response.constructor === Object)) {
                 $scope.messages.push(response);
             }
@@ -71,15 +77,33 @@ app.controller('squadMenuController', ['$scope', '$http', function ($scope, $htt
 
         webSocket.onclose = function (event) {
             $scope.connected = false;
-            $scope.gameStage = 'MENU';
+            $scope.currentWindow = 'MENU';
         };
+    };
+
+    $scope.chooseHeroInMulligan = function (heroId) {
+        if ($scope.gameState === 'MULLIGAN') {
+            if ($scope.mulliganChosenHeroesIds.includes(heroId)) {
+                $scope.mulliganChosenHeroesIds = $scope.mulliganChosenHeroesIds.filter(item => item !== heroId);
+            } else {
+                $scope.mulliganChosenHeroesIds.push(heroId);
+            }
+            if ($scope.mulliganChosenHeroesIds.length > 2) {
+                $scope.mulliganChosenHeroesIds = $scope.mulliganChosenHeroesIds.slice(1);
+            }
+        }
     };
 
     /**
      * Sends the value of the text input to the server
      */
     $scope.sendMulliganInfo = function () {
-        webSocket.send(JSON.stringify({type: 'CHOOSE_HEROES', body: {heroes: ['2', '1']}}));
+        if ($scope.mulliganChosenHeroesIds.length !== 2) {
+            $scope.messages.push('Wrrong heroes count');
+        } else {
+            webSocket.send(JSON.stringify({type: 'CHOOSE_HEROES', body: {heroes: $scope.mulliganChosenHeroesIds}}));
+            $scope.mulliganChosenHeroesIds = [];
+        }
     };
 
     $scope.sendFirstSpell = function () {

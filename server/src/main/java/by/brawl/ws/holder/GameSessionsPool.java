@@ -42,7 +42,8 @@ public class GameSessionsPool {
 		getAllReceiversByBattlefield(battlefield).forEach(receiver -> {
 			MulliganDto dto = new MulliganDto(
 					receiver.getBattlefieldHolder().getMulliganHeroes(),
-					receiver.getId()
+					receiver.getId(),
+					receiver.getBattlefieldHolder().getGameState()
 			);
 			receiver.sendDto(dto);
 		});

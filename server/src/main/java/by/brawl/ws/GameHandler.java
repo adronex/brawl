@@ -102,18 +102,6 @@ public class GameHandler extends TextWebSocketHandler {
 		List<String> heroes = new ArrayList<>();
 		requestArray.toList().forEach(o -> heroes.add((String) o));
 
-		//todo: remove next block with accountService
-		{
-			heroes.clear();
-			if ("adronex303@gmail.com".equals(session.getId())) {
-				heroes.add("1");
-				heroes.add("2");
-			} else if ("adronex_@mail.ru".equals(session.getId())) {
-				heroes.add("3");
-				heroes.add("4");
-			}
-		}
-
 		gameService.setHeroesPositions(session, heroes);
 	}
 
