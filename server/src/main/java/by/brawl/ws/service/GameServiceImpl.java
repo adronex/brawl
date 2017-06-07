@@ -17,7 +17,7 @@ import java.util.Objects;
 @Service
 class GameServiceImpl implements GameService {
 
-	private static final Integer BATTLEFIELD_HEROES_COUNT = 2;
+	private static final Integer BATTLEFIELD_HEROES_COUNT = 4;
 	private static final Logger LOG = LoggerFactory.getLogger(GameServiceImpl.class);
 	@Autowired
 	private GameSessionsPool gameSessionsPool;

@@ -33,21 +33,21 @@ public class DamagedHeal implements SpellLogic {
 
 	@Override
 	public String getId() {
-		return null;
+		return id;
 	}
 
 	@Override
 	public Boolean getTargetable() {
-		return null;
+		return targetable;
 	}
 
 	@Override
 	public Set<Integer> getMyTargets() {
-		return null;
+		return myTargets;
 	}
 
 	@Override
 	public Set<Integer> getEnemyTargets() {
-		return null;
+		return enemyTargets;
 	}
 }

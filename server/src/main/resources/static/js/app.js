@@ -4,12 +4,6 @@ let app = angular.module('clockworks', []);
 
 let webSocket;
 
-app.filter('reverse', function () {
-    return function (items) {
-        return items.slice().reverse();
-    };
-});
-
 app.controller('squadMenuController', ['$scope', '$http', function ($scope, $http) {
 
     $scope.staticData = {
@@ -128,7 +122,7 @@ app.controller('squadMenuController', ['$scope', '$http', function ($scope, $htt
                 delete response.myHeroes;
             }
             if (response.enemyHeroes) {
-                $scope.enemyHeroes = response.enemyHeroes;
+                $scope.enemyHeroes = response.enemyHeroes.slice().reverse();
                 delete response.enemyHeroes;
             }
             if (response.gameState) {
@@ -169,7 +163,7 @@ app.controller('squadMenuController', ['$scope', '$http', function ($scope, $htt
         } else {
             $scope.mulliganChosenHeroesIds.push(heroId);
         }
-        if ($scope.mulliganChosenHeroesIds.length > 2) {
+        if ($scope.mulliganChosenHeroesIds.length > 4) {
             $scope.mulliganChosenHeroesIds = $scope.mulliganChosenHeroesIds.slice(1);
         }
     };
@@ -178,7 +172,7 @@ app.controller('squadMenuController', ['$scope', '$http', function ($scope, $htt
      * Sends the value of the text input to the server
      */
     $scope.sendMulliganInfo = function () {
-        if ($scope.mulliganChosenHeroesIds.length !== 2) {
+        if ($scope.mulliganChosenHeroesIds.length !== 4) {
             $scope.messages.push('Wrrong heroes count');
         } else {
             webSocket.send(JSON.stringify({type: 'CHOOSE_HEROES', body: {heroes: $scope.mulliganChosenHeroesIds}}));

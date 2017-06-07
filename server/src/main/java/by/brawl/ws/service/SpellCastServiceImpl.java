@@ -58,15 +58,15 @@ class SpellCastServiceImpl implements SpellCastService {
                                        BattlefieldHolder battlefieldHolder) {
         SpellLogic castedSpell = spellsMap.get(spellId);
         if (castedSpell == null) {
-            throw Exceptions.produceNullPointer(LOG, "Casted spell is absent in spells pool");
+            throw Exceptions.produceNullPointer(LOG, "Casted spellId ({0}) is absent in spells pool", spellId);
         }
         // check target for validity
         Boolean cannotBeTargeted = (victimPosition == null && !castedSpell.getTargetable());
         Boolean validMyTarget = victimPosition != null && forEnemy != null && !forEnemy && castedSpell.getMyTargets().contains(victimPosition);
         Boolean validEnemyTarget = victimPosition != null && forEnemy != null && forEnemy && castedSpell.getEnemyTargets().contains(victimPosition);
         if (!cannotBeTargeted && !validMyTarget && !validEnemyTarget) {
-            throw Exceptions.produceIllegalArgument(LOG, "Targeting error. Can't be targeted: {0}, valid my target: {1}, valid forEnemy target: {2}",
-                    cannotBeTargeted.toString(), validEnemyTarget.toString(), validEnemyTarget.toString());
+            throw Exceptions.produceIllegalArgument(LOG, "Targeting error. Can''t be targeted: {0}, valid my target: {1}, valid forEnemy target: {2}",
+                    cannotBeTargeted, validEnemyTarget, validEnemyTarget);
         }
         battlefieldHolder = castedSpell.cast(battlefieldHolder, senderId, victimPosition, forEnemy);
         StepLogHolder stepLog = new StepLogHolder(
