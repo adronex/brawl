@@ -3,15 +3,7 @@ package by.brawl.ws.service;
 import by.brawl.util.Exceptions;
 import by.brawl.ws.holder.BattlefieldHolder;
 import by.brawl.ws.holder.StepLogHolder;
-import by.brawl.ws.spell.DamagedHeal;
-import by.brawl.ws.spell.DivineComfort;
-import by.brawl.ws.spell.EldrichPull;
-import by.brawl.ws.spell.Judgement;
-import by.brawl.ws.spell.SelfHeal;
-import by.brawl.ws.spell.ShootThemAll;
-import by.brawl.ws.spell.SpellLogic;
-import by.brawl.ws.spell.SuckerPunch;
-import by.brawl.ws.spell.Uppercut;
+import by.brawl.ws.spell.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -58,7 +50,7 @@ class SpellCastServiceImpl implements SpellCastService {
                                        BattlefieldHolder battlefieldHolder) {
         SpellLogic castedSpell = spellsMap.get(spellId);
         if (castedSpell == null) {
-            throw Exceptions.produceNullPointer(LOG, "Casted spellId ({0}) is absent in spells pool", spellId);
+            throw Exceptions.produceNullPointer(LOG, "Casted spell with id {0} is absent in spells pool", spellId);
         }
         // check target for validity
         Boolean cannotBeTargeted = (victimPosition == null && !castedSpell.getTargetable());

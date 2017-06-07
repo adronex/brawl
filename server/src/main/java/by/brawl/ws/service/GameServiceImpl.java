@@ -3,7 +3,10 @@ package by.brawl.ws.service;
 import by.brawl.entity.Squad;
 import by.brawl.util.Exceptions;
 import by.brawl.util.Mappers;
-import by.brawl.ws.holder.*;
+import by.brawl.ws.holder.BattlefieldHolder;
+import by.brawl.ws.holder.GameState;
+import by.brawl.ws.holder.HeroHolder;
+import by.brawl.ws.holder.SpellHolder;
 import by.brawl.ws.holder.gamesession.GameSession;
 import by.brawl.ws.holder.gamesession.GameSessionsPool;
 import org.slf4j.Logger;
@@ -100,8 +103,8 @@ class GameServiceImpl implements GameService {
 		if (!castedSpellBelongsToCurrentHero) {
 			Object availableSpellsIds[] = currentHero.getAllSpells().stream().map(SpellHolder::getId).toArray();
 			throw Exceptions.produceIllegalArgument(LOG, "Player {0} casted spell {1} that does not belong to current hero. Available spells are {2}",
-					playerKey, spellId, availableSpellsIds);
-		}
+                    playerKey, spellId, Arrays.toString(availableSpellsIds));
+        }
 		Boolean castedSpellAvailable = currentHero.getAvailableSpells().stream()
 				.filter(spellHolder -> Objects.equals(spellHolder.getId(), spellId))
 				.count() > 0;
