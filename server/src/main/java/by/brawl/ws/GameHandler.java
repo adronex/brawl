@@ -7,6 +7,7 @@ import by.brawl.ws.holder.GameSessionsPool;
 import by.brawl.ws.service.GameService;
 import by.brawl.ws.service.MatchmakingService;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -106,9 +107,15 @@ public class GameHandler extends TextWebSocketHandler {
 	}
 
 	private void handleCastSpellRequest(GameSession session, JSONObject body) {
-		String spellId = "1"; // TODO: remove mock and get this spell from request
-		Integer target = body.optInt("target");
-		Boolean forEnemy = body.optBoolean("forEnemy");
+		String spellId = body.optString("spellId");
+		Integer target = null; body.optInt("target");
+		try {
+			target = body.getInt("target");
+		} catch (JSONException ignored) { }
+		Boolean forEnemy = null;
+		try {
+			forEnemy = body.getBoolean("forEnemy");
+		} catch (JSONException ignored) { }
 		gameService.castSpell(session, spellId, target, forEnemy);
 	}
 }

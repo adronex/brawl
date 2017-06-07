@@ -12,6 +12,65 @@ app.filter('reverse', function () {
 
 app.controller('squadMenuController', ['$scope', '$http', function ($scope, $http) {
 
+    $scope.staticData = {
+        spells: {
+            '1': {
+                name: 'Sucker Punch',
+                targetable: true,
+                myTargets: [],
+                enemyTargets: [1, 2]
+            },
+            '2': {
+                name: 'Self Heal',
+                targetable: false,
+                myTargets: [],
+                enemyTargets: []
+            }
+            ,
+            '3': {
+                name: 'Damaged Heal',
+                targetable: true,
+                myTargets: [1, 2, 3, 4],
+                enemyTargets: []
+            }
+            ,
+            '4': {
+                name: 'Divine Comfort',
+                targetable: false,
+                myTargets: [],
+                enemyTargets: []
+            }
+            ,
+            '5': {
+                name: 'Eldrich Pull',
+                targetable: true,
+                myTargets: [],
+                enemyTargets: [4]
+            }
+            ,
+            '6': {
+                name: 'Uppercut',
+                targetable: true,
+                myTargets: [],
+                enemyTargets: [1]
+            }
+            ,
+            '7': {
+                name: 'Shoot Them All',
+                targetable: false,
+                myTargets: [],
+                enemyTargets: []
+            }
+            ,
+            '8': {
+                name: 'Judgement',
+                targetable: true,
+                myTargets: [],
+                enemyTargets: [1, 2, 3]
+            }
+        }
+    };
+
     $scope.connected = false;
     $scope.currentWindow = 'MENU';
 
@@ -92,16 +151,26 @@ app.controller('squadMenuController', ['$scope', '$http', function ($scope, $htt
         };
     };
 
-    $scope.chooseHeroInMulligan = function (heroId) {
+    $scope.onHeroClick = function(heroId, enemy) {
         if ($scope.gameState === 'MULLIGAN') {
-            if ($scope.mulliganChosenHeroesIds.includes(heroId)) {
-                $scope.mulliganChosenHeroesIds = $scope.mulliganChosenHeroesIds.filter(item => item !== heroId);
-            } else {
-                $scope.mulliganChosenHeroesIds.push(heroId);
-            }
-            if ($scope.mulliganChosenHeroesIds.length > 2) {
-                $scope.mulliganChosenHeroesIds = $scope.mulliganChosenHeroesIds.slice(1);
-            }
+            chooseHeroInMulligan(heroId)
+        } else if ($scope.gameState === 'PLAYING' && $scope.temp.castedSpell) {
+            let heroPosition = enemy
+                ? $scope.enemyHeroes.findIndex(hero => hero.id === heroId)
+                : $scope.myHeroes.findIndex(hero => hero.id === heroId);
+            sendSpellToServer($scope.temp.castedSpell, heroPosition + 1, enemy);
+            delete $scope.temp.castedSpell;
+        }
+    };
+
+    let chooseHeroInMulligan = function (heroId) {
+        if ($scope.mulliganChosenHeroesIds.includes(heroId)) {
+            $scope.mulliganChosenHeroesIds = $scope.mulliganChosenHeroesIds.filter(item => item !== heroId);
+        } else {
+            $scope.mulliganChosenHeroesIds.push(heroId);
+        }
+        if ($scope.mulliganChosenHeroesIds.length > 2) {
+            $scope.mulliganChosenHeroesIds = $scope.mulliganChosenHeroesIds.slice(1);
         }
     };
 
@@ -117,8 +186,19 @@ app.controller('squadMenuController', ['$scope', '$http', function ($scope, $htt
         }
     };
 
-    $scope.sendFirstSpell = function () {
-        webSocket.send(JSON.stringify({type: 'CAST_SPELL', body: {target: 1, forEnemy: true}}));
+    $scope.onSpellButtonPress = function (spellId) {
+        let castedSpell = $scope.staticData.spells[spellId];
+        if (castedSpell && castedSpell.targetable) {
+            $scope.temp.castedSpell = spellId;
+        } else if (castedSpell && !castedSpell.targetable) {
+            sendSpellToServer(spellId);
+        } else {
+            console.error('Invalid spell id');
+        }
+    };
+
+    let sendSpellToServer = function (spellId, targetPosition, forEnemy) {
+        webSocket.send(JSON.stringify({type: 'CAST_SPELL', body: {spellId: spellId, target: targetPosition, forEnemy: forEnemy}}));
     };
 
     $scope.closeSocket = function () {

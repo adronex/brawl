@@ -78,6 +78,7 @@ class GameServiceImpl implements GameService {
 		if (!battlefieldHolder.getBattleHeroes(playerKey, false).contains(currentHero)) {
 			throw Exceptions.produceAccessDenied(LOG, "Player {0} tries to cast spell in opponents turn", playerKey);
 		}
+		// todo: check victimPosition and forEnemy for both being null or not null
 		if (!isSpellValid(currentHero, spellId, playerKey)) {
 			return;
 		}

@@ -47,7 +47,8 @@ class SpellCastServiceImpl implements SpellCastService {
         spellsMap.put(uppercut.getId(), uppercut);
 	}
 
-    // todo: split senders to senders/casters and receivers to receivers/victims
+    // todo: check for suspend/cooldown
+    // todo: check for valid target
     @Override
     public BattlefieldHolder castSpell(String spellId,
                                        String senderId,
@@ -65,7 +66,7 @@ class SpellCastServiceImpl implements SpellCastService {
         Boolean validEnemyTarget = victimPosition != null && forEnemy != null && forEnemy && castedSpell.getEnemyTargets().contains(victimPosition);
         if (!cannotBeTargeted && !validMyTarget && !validEnemyTarget) {
             throw Exceptions.produceIllegalArgument(LOG, "Targeting error. Can't be targeted: {0}, valid my target: {1}, valid forEnemy target: {2}",
-                    cannotBeTargeted, validEnemyTarget, validEnemyTarget);
+                    cannotBeTargeted.toString(), validEnemyTarget.toString(), validEnemyTarget.toString());
         }
         battlefieldHolder = castedSpell.cast(battlefieldHolder, senderId, victimPosition, forEnemy);
         StepLogHolder stepLog = new StepLogHolder(
