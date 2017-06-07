@@ -1,7 +1,7 @@
 package by.brawl.ws.service;
 
 import by.brawl.entity.Squad;
-import by.brawl.ws.holder.GameSession;
+import by.brawl.ws.holder.gamesession.GameSession;
 
 import java.util.List;
 

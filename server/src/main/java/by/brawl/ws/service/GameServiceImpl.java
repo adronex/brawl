@@ -4,6 +4,8 @@ import by.brawl.entity.Squad;
 import by.brawl.util.Exceptions;
 import by.brawl.util.Mappers;
 import by.brawl.ws.holder.*;
+import by.brawl.ws.holder.gamesession.GameSession;
+import by.brawl.ws.holder.gamesession.GameSessionsPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,8 +1,9 @@
-package by.brawl.ws.holder;
+package by.brawl.ws.holder.gamesession;
 
 import by.brawl.util.Exceptions;
 import by.brawl.ws.dto.JsonDto;
 import by.brawl.ws.dto.MessageDto;
+import by.brawl.ws.holder.BattlefieldHolder;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

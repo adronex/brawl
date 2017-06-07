@@ -4,11 +4,10 @@ import by.brawl.entity.Account;
 import by.brawl.entity.Squad;
 import by.brawl.service.AccountService;
 import by.brawl.service.SquadService;
-import by.brawl.ws.holder.GameSession;
+import by.brawl.ws.holder.gamesession.GameSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
-import org.springframework.web.socket.WebSocketSession;
 
 import java.util.ArrayList;
 import java.util.List;

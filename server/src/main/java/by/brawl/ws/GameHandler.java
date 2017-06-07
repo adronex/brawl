@@ -2,8 +2,8 @@ package by.brawl.ws;
 
 import by.brawl.util.Exceptions;
 import by.brawl.ws.dto.ClientRequestType;
-import by.brawl.ws.holder.GameSession;
-import by.brawl.ws.holder.GameSessionsPool;
+import by.brawl.ws.holder.gamesession.GameSession;
+import by.brawl.ws.holder.gamesession.GameSessionsPool;
 import by.brawl.ws.service.GameService;
 import by.brawl.ws.service.MatchmakingService;
 import org.json.JSONArray;
@@ -24,20 +24,6 @@ import java.util.List;
 // Noisia - Machine Gun
 // Noisia - Hunter Theme
 
-// steps:
-// 1. choose squad.
-// OPEN WEBSOCKET.
-// 2. send it's id in mm service
-// 3. mm service create room with 2 players and send pre-game squads DTOs.
-// MULLIGAN STATE
-// 4. player send heroes and positions (order matters).
-// 5. waiting for second player if necessary.
-// 6. send queue, enemy positions.
-// PLAYING STATE
-// 7. send valid spell id and positions array ({self: [], enemy: [0, 3]}.
-// 8. game service validates input data.
-// 9. set triggered spells as exposed.
-// 10. send updated queue, heroes through self/enemy parser.
 @Component
 public class GameHandler extends TextWebSocketHandler {
 

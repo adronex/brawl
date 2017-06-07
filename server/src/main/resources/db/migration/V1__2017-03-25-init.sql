@@ -1,11 +1,3 @@
-CREATE DATABASE  IF NOT EXISTS `brawl` /*!40100 DEFAULT CHARACTER SET utf8 */;
-USE `brawl`;
--- MySQL dump 10.13  Distrib 5.6.11, for Win32 (x86)
---
--- Host: localhost    Database: brawl
--- ------------------------------------------------------
--- Server version	5.5.30
-
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
