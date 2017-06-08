@@ -3,7 +3,8 @@ package by.brawl.ws.service;
 import by.brawl.util.Exceptions;
 import by.brawl.ws.holder.BattlefieldHolder;
 import by.brawl.ws.holder.StepLogHolder;
-import by.brawl.ws.spell.*;
+import by.brawl.ws.spell.SpellLogic;
+import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 @Service
 class SpellCastServiceImpl implements SpellCastService {
@@ -20,24 +22,21 @@ class SpellCastServiceImpl implements SpellCastService {
 	private Map<String, SpellLogic> spellsMap = new HashMap<>();
 
 	@PostConstruct
-	public void init() {
-        SpellLogic damagedHeal = new DamagedHeal();
-        SpellLogic divineComfort = new DivineComfort();
-        SpellLogic eldrichPull = new EldrichPull();
-        SpellLogic judgement = new Judgement();
-        SpellLogic selfHeal = new SelfHeal();
-        SpellLogic shootThemAll = new ShootThemAll();
-        SpellLogic suckerPunch = new SuckerPunch();
-        SpellLogic uppercut = new Uppercut();
-        spellsMap.put(damagedHeal.getId(), damagedHeal);
-        spellsMap.put(divineComfort.getId(), divineComfort);
-        spellsMap.put(eldrichPull.getId(), eldrichPull);
-        spellsMap.put(judgement.getId(), judgement);
-        spellsMap.put(selfHeal.getId(), selfHeal);
-        spellsMap.put(shootThemAll.getId(), shootThemAll);
-        spellsMap.put(suckerPunch.getId(), suckerPunch);
-        spellsMap.put(uppercut.getId(), uppercut);
+	public void init() throws InstantiationException, IllegalAccessException {
+
+        findAllSpellsLogic(SpellLogic.class.getPackage().getName());
 	}
+
+    private void findAllSpellsLogic(String scanPackage) throws IllegalAccessException, InstantiationException {
+        Reflections reflections = new Reflections(scanPackage);
+
+        Set<Class<? extends SpellLogic>> allClasses =
+                reflections.getSubTypesOf(SpellLogic.class);
+        for (Class<? extends SpellLogic> spellLogicClass : allClasses) {
+            SpellLogic spellLogic = spellLogicClass.newInstance();
+            spellsMap.put(spellLogic.getId(), spellLogic);
+        }
+    }
 
     // todo: check for suspend/cooldown
     // todo: check for valid target

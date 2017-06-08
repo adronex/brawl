@@ -40,6 +40,9 @@
             Choose targets for spell '{{staticData.spells[temp.castedSpell].name}}', myTargets:
             {{staticData.spells[temp.castedSpell].myTargets}}, enemyTargets:
             {{staticData.spells[temp.castedSpell].enemyTargets}}
+            <button type="button" data-ng-click="temp.castedSpell = undefined">
+                Cancel
+            </button>
         </div>
         <div id="spellBar" data-ng-if="gameState==='PLAYING' && !heroesQueue[0].enemy">
             <div data-ng-repeat="spell in heroSpells[heroesQueue[0].id]">
@@ -55,8 +58,10 @@
             <span data-ng-repeat="item in heroesQueue track by $index"><- {{item ? item : '?'}}</span>
         </div>
         <div class="battlefield">
-            <div data-ng-class="{'myRobot' : true, 'colorChosen' : mulliganChosenHeroesIds.includes(item.id),
-            'colorCurrentTurn' : heroesQueue[0].id === item.id}"
+            <div data-ng-class="{'myRobot' : true,
+            'colorChosen' : mulliganChosenHeroesIds.includes(item.id),
+            'colorCurrentTurn' : heroesQueue[0].id === item.id,
+            'colorTargetable' : staticData.spells[temp.castedSpell].myTargets.includes($index + 1)}"
                  data-ng-repeat="item in myHeroes track by $index"
                  data-ng-click="onHeroClick(item.id, false)">
                 <div class="head"></div>
@@ -70,7 +75,8 @@
             <div class="midSpace">
             </div>
             <div data-ng-class="{'enemyRobot' : true,
-            'colorCurrentTurn' : heroesQueue[0].id === item.id}"
+            'colorCurrentTurn' : heroesQueue[0].id === item.id,
+            'colorTargetable' : staticData.spells[temp.castedSpell].enemyTargets.includes($index + 1)}"
                  data-ng-repeat="item in enemyHeroes track by $index"
                  data-ng-click="onHeroClick(item.id, true)">
                 <div class="head"></div>

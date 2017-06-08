@@ -65,17 +65,22 @@ app.controller('squadMenuController', ['$scope', '$http', function ($scope, $htt
         }
     };
 
-    $scope.connected = false;
-    $scope.currentWindow = 'MENU';
+    var init = function () {
+        $scope.connected = false;
+        $scope.currentWindow = 'MENU';
 
-    $scope.mulliganChosenHeroesIds = [];
-    $scope.myHeroes = [];
-    $scope.enemyHeroes = [];
-    $scope.heroesQueue = [];
-    $scope.battleLog = [];
-    $scope.messages = [];
-    $scope.temp = {};
-    $scope.heroSpells = [];
+        $scope.mulliganChosenHeroesIds = [];
+        $scope.myHeroes = [];
+        $scope.enemyHeroes = [];
+        $scope.heroesQueue = [];
+        $scope.battleLog = [];
+        $scope.messages = [];
+        $scope.temp = {};
+        $scope.heroSpells = [];
+    };
+
+    init();
+
     $scope.onLoad = function () {
         $http.get('http://localhost:8080/api/squads/my').then(function (response, status) {
             $scope.availableSquads = response.data;
@@ -142,6 +147,8 @@ app.controller('squadMenuController', ['$scope', '$http', function ($scope, $htt
         webSocket.onclose = function (event) {
             $scope.connected = false;
             $scope.currentWindow = 'MENU';
+            init();
+            $scope.$digest();
         };
     };
 
