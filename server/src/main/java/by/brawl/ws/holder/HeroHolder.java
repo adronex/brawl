@@ -9,10 +9,10 @@ import java.util.stream.Collectors;
 
 public class HeroHolder {
     private String id;
-    private HeroAttributesHolder attributes;
     private Set<SpellHolder> spells = new LinkedHashSet<>();
     private Set<BodypartHolder> bodyparts = new LinkedHashSet<>();
     private Set<EquipmentHolder> equipments = new LinkedHashSet<>();
+    private HeroAttributesHolder attributes;
 
     public HeroHolder(Hero hero) {
         id = hero.getId();
@@ -41,7 +41,7 @@ public class HeroHolder {
     }
 
     public Boolean isAlive() {
-        return attributes.getHealth().getCurrentValue() > 0;
+        return attributes.getHealth().getCurrent() > 0;
     }
 
     public String getId() {
@@ -54,5 +54,9 @@ public class HeroHolder {
 
     public Set<EquipmentHolder> getEquipments() {
         return equipments;
+    }
+
+    public HeroAttributesHolder getAttributes() {
+        return attributes;
     }
 }

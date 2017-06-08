@@ -55,48 +55,32 @@
             <span data-ng-repeat="item in heroesQueue track by $index"><- {{item ? item : '?'}}</span>
         </div>
         <div class="battlefield">
-            <div data-ng-class="{'myRobot' : true, 'colorDefault' : !mulliganChosenHeroesIds.includes(item.id),
-            'colorChosen' : mulliganChosenHeroesIds.includes(item.id),
-            'colorCurrentTurn' : heroesQueue[0].id === item.id}" data-ng-repeat="item in myHeroes track by $index">
+            <div data-ng-class="{'myRobot' : true, 'colorChosen' : mulliganChosenHeroesIds.includes(item.id),
+            'colorCurrentTurn' : heroesQueue[0].id === item.id}"
+                 data-ng-repeat="item in myHeroes track by $index"
+                 data-ng-click="onHeroClick(item.id, false)">
                 <div class="head"></div>
                 <div class="body"></div>
                 <div class="rightHand"></div>
                 <div class="legs"></div>
+                <progress class="healthBar" value="{{item.attributes.health.current}}" max="{{item.attributes.health.max}}">
+                    <span>{{item.attributes.health.current}}/{{item.attributes.health.max}}</span>
+                </progress>
             </div>
             <div class="midSpace">
             </div>
-            <div class="enemyRobot"
-                 data-ng-repeat="item in enemyHeroes track by $index">
+            <div data-ng-class="{'enemyRobot' : true,
+            'colorCurrentTurn' : heroesQueue[0].id === item.id}"
+                 data-ng-repeat="item in enemyHeroes track by $index"
+                 data-ng-click="onHeroClick(item.id, true)">
                 <div class="head"></div>
                 <div class="body"></div>
                 <div class="rightHand"></div>
                 <div class="legs"></div>
+                <progress class="healthBar" value="{{item.attributes.health.current}}" max="{{item.attributes.health.max}}">
+                    <span>{{item.attributes.health.current}}/{{item.attributes.health.max}}</span>
+                </progress>
             </div>
-        </div>
-        <div id="heroes" style="height: 40px; width: 20%; background-color: antiquewhite">
-            <table>
-                <tr>
-                    <td style="height: 20px; width: 20px"
-                        data-ng-repeat="item in myHeroes track by $index"
-                        data-ng-attr-title="{{item}}"
-                        data-ng-click="onHeroClick(item.id, false)">
-                        <div style="width: 100%; height: 100%; background-color: green"
-                             data-ng-if="!mulliganChosenHeroesIds.includes(item.id)"></div>
-                        <div style="width: 100%; height: 100%; background-color: cyan"
-                             data-ng-if="mulliganChosenHeroesIds.includes(item.id)"></div>
-                        <div style="width: 100%; height: 100%; background-color: yellow"
-                             data-ng-if="heroesQueue[0].id === item.id"></div>
-                    </td>
-                    <td style="height: 20px; width: 20px"
-                        data-ng-repeat="item in enemyHeroes track by $index"
-                        data-ng-attr-title="{{item}}"
-                        data-ng-click="onHeroClick(item.id, true)">
-                        <div style="width: 100%; height: 100%; background-color: red"></div>
-                        <div style="width: 100%; height: 100%; background-color: yellow"
-                             data-ng-if="heroesQueue[0].id === item.id"></div>
-                    </td>
-                </tr>
-            </table>
         </div>
         <div id="log">
             <div data-ng-repeat="item in battleLog track by $index">

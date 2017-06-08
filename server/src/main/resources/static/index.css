@@ -11,12 +11,19 @@
     display: inline-block;
 }
 
+.healthBar {
+    width: 100%;
+    height: 4%;
+    position: absolute;
+    margin-top: 155%;
+    z-index: 4;
+}
+
 .enemyRobot {
     margin-top: 1%;
     margin-left: 2%;
     width: 6%;
     height: 90%;
-    background-color: darkgoldenrod;
     position: relative;
     display: inline-block;
 }

@@ -23,7 +23,7 @@ public class HeroAttributesHolder {
             agility += bodypart.getAgility();
             energy += bodypart.getEnergy();
         }
-        health = new AttributeHolder(100);
+        health = new AttributeHolder(20);
         armor = new AttributeHolder(strength);
         evasion = new AttributeHolder(agility);
         accuracy = new AttributeHolder(100);

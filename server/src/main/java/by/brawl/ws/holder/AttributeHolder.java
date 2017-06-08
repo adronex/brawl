@@ -1,46 +1,46 @@
 package by.brawl.ws.holder;
 
 public class AttributeHolder {
-    private Integer maxValue;
-    private Integer currentValue;
+    private Integer max;
+    private Integer current;
 
     public AttributeHolder(Integer bothValues) {
-        maxValue = bothValues;
-        currentValue = bothValues;
+        max = bothValues;
+        current = bothValues;
     }
 
-    public AttributeHolder(Integer maxValue, Integer currentValue) {
-        this.maxValue = maxValue;
-        this.currentValue = currentValue;
+    public AttributeHolder(Integer max, Integer current) {
+        this.max = max;
+        this.current = current;
     }
 
     public void incrementCurrent(Integer value) {
-        currentValue += value;
-        if (currentValue > maxValue) {
-            currentValue = maxValue;
+        current += value;
+        if (current > max) {
+            current = max;
         }
     }
 
     public void decrementCurrent(Integer value) {
-        currentValue -= value;
-        if (currentValue < 0) {
-            currentValue = 0;
+        current -= value;
+        if (current < 0) {
+            current = 0;
         }
     }
 
-    public Integer getMaxValue() {
-        return maxValue;
+    public Integer getMax() {
+        return max;
     }
 
-    public void setMaxValue(Integer maxValue) {
-        this.maxValue = maxValue;
+    public void setMax(Integer max) {
+        this.max = max;
     }
 
-    public Integer getCurrentValue() {
-        return currentValue;
+    public Integer getCurrent() {
+        return current;
     }
 
-    public void setCurrentValue(Integer currentValue) {
-        this.currentValue = currentValue;
+    public void setCurrent(Integer current) {
+        this.current = current;
     }
 }

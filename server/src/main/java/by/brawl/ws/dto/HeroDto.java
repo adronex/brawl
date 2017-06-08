@@ -1,6 +1,7 @@
 package by.brawl.ws.dto;
 
 import by.brawl.util.Mappers;
+import by.brawl.ws.holder.HeroAttributesHolder;
 import by.brawl.ws.holder.HeroHolder;
 
 import java.util.LinkedHashSet;
@@ -10,16 +11,13 @@ public class HeroDto {
     private String id;
     private Set<BodypartDto> bodyparts = new LinkedHashSet<>();
     private Set<EquipmentDto> equipments = new LinkedHashSet<>();
+    private HeroAttributesHolder attributes;
 
     public HeroDto(HeroHolder heroHolder) {
         id = heroHolder.getId();
         bodyparts = Mappers.asSet(heroHolder.getBodyparts(), BodypartDto::new);
         equipments = Mappers.asSet(heroHolder.getEquipments(), EquipmentDto::new);
-//        spells.addAll(
-//                heroHolder.getAllSpells().stream()
-//                        .map(SpellDto::new)
-//                        .collect(Collectors.toSet())
-//        );
+        attributes = heroHolder.getAttributes();
     }
 
     public String getId() {
@@ -33,7 +31,8 @@ public class HeroDto {
     public Set<EquipmentDto> getEquipments() {
         return equipments;
     }
-    //    public Set<SpellDto> getSpells() {
-//        return spells;
-//    }
+
+    public HeroAttributesHolder getAttributes() {
+        return attributes;
+    }
 }

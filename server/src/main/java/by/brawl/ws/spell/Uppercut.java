@@ -23,7 +23,7 @@ public class Uppercut implements SpellLogic {
 
 		List<HeroHolder> sourceList = battlefieldHolder.getBattleHeroes(senderId, true);
 		LinkedList<HeroHolder> modifiedHeroesList = new LinkedList<>(sourceList);
-		HeroHolder movingHero = modifiedHeroesList.get(4);
+		HeroHolder movingHero = modifiedHeroesList.get(victimPosition - 1);
 		modifiedHeroesList.addFirst(movingHero);
 		modifiedHeroesList.removeLast();
 		sourceList.clear();

@@ -57,8 +57,8 @@ class SpellCastServiceImpl implements SpellCastService {
         Boolean validMyTarget = victimPosition != null && forEnemy != null && !forEnemy && castedSpell.getMyTargets().contains(victimPosition);
         Boolean validEnemyTarget = victimPosition != null && forEnemy != null && forEnemy && castedSpell.getEnemyTargets().contains(victimPosition);
         if (!cannotBeTargeted && !validMyTarget && !validEnemyTarget) {
-            throw Exceptions.produceIllegalArgument(LOG, "Targeting error. Can''t be targeted: {0}, valid my target: {1}, valid forEnemy target: {2}",
-                    cannotBeTargeted, validEnemyTarget, validEnemyTarget);
+            throw Exceptions.produceIllegalArgument(LOG, "Spell targeting error. My available targets:{0}, enemy available targets: {1}, victim position: {2}, for enemy: {3}.",
+                    castedSpell.getMyTargets(), castedSpell.getEnemyTargets(), victimPosition, forEnemy);
         }
         battlefieldHolder = castedSpell.cast(battlefieldHolder, senderId, victimPosition, forEnemy);
         StepLogHolder stepLog = new StepLogHolder(

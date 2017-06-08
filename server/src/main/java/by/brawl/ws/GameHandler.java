@@ -55,26 +55,29 @@ public class GameHandler extends TextWebSocketHandler {
 
 	@Override
 	protected void handleTextMessage(WebSocketSession webSocketSession, TextMessage message) throws IOException {
+		try {
+			GameSession gameSession = gameSessionsPool.getSession(webSocketSession.getPrincipal().getName());
+			if (gameSession == null) {
+				throw Exceptions.produceNullPointer(LOG, "Session wasn't successfully added!");
+			}
 
-		GameSession gameSession = gameSessionsPool.getSession(webSocketSession.getPrincipal().getName());
-		if (gameSession == null) {
-			throw Exceptions.produceNullPointer(LOG, "Session wasn't successfully added!");
-		}
+			JSONObject request = new JSONObject(message.getPayload());
+			ClientRequestType type = request.getEnum(ClientRequestType.class, "type");
+			JSONObject body = request.getJSONObject("body");
 
-		JSONObject request = new JSONObject(message.getPayload());
-		ClientRequestType type = request.getEnum(ClientRequestType.class, "type");
-		JSONObject body = request.getJSONObject("body");
+			if (ClientRequestType.INITIAL.equals(type)) {
+				handleInitRequest(gameSession, body);
+			}
 
-		if (ClientRequestType.INITIAL.equals(type)) {
-			handleInitRequest(gameSession, body);
-		}
+			if (ClientRequestType.CHOOSE_HEROES.equals(type)) {
+				handleChooseHeroesRequest(gameSession, body);
+			}
 
-		if (ClientRequestType.CHOOSE_HEROES.equals(type)) {
-			handleChooseHeroesRequest(gameSession, body);
-		}
-
-		if (ClientRequestType.CAST_SPELL.equals(type)) {
-			handleCastSpellRequest(gameSession, body);
+			if (ClientRequestType.CAST_SPELL.equals(type)) {
+				handleCastSpellRequest(gameSession, body);
+			}
+		} catch (Exception e) {
+			Exceptions.logError(LOG, e, e.getMessage());
 		}
 	}
 

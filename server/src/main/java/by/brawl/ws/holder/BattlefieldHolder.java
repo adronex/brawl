@@ -68,10 +68,7 @@ public class BattlefieldHolder {
     public Boolean isGameFinished() {
         Boolean gameFinished = false;
         for (Map.Entry<String, List<HeroHolder>> entry : battleHeroes.entrySet()) {
-            for (HeroHolder heroHolder : entry.getValue()) {
-                if (heroHolder.isAlive()) {
-                    continue;
-                }
+            if (entry.getValue().stream().filter(HeroHolder::isAlive).count() == 0) {
                 gameFinished = true;
             }
         }
