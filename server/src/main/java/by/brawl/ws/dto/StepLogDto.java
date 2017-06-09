@@ -13,7 +13,7 @@ public class StepLogDto {
     public StepLogDto(StepLogHolder stepLogHolder, String receiverId) {
         spellId = stepLogHolder.getSpellId();
         senderId = stepLogHolder.getCasterId();
-        this.enemy = !Objects.equals(receiverId, stepLogHolder.getSenderId());
+        enemy = !Objects.equals(receiverId, stepLogHolder.getSenderId());
     }
 
     public String getSpellId() {

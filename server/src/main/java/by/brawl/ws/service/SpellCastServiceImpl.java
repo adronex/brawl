@@ -28,6 +28,7 @@ class SpellCastServiceImpl implements SpellCastService {
 	}
 
     private void findAllSpellsLogic(String scanPackage) throws IllegalAccessException, InstantiationException {
+
         Reflections reflections = new Reflections(scanPackage);
 
         Set<Class<? extends SpellLogic>> allClasses =
@@ -47,6 +48,7 @@ class SpellCastServiceImpl implements SpellCastService {
                                        Integer victimPosition,
                                        Boolean forEnemy,
                                        BattlefieldHolder battlefieldHolder) {
+
         SpellLogic castedSpell = spellsMap.get(spellId);
         if (castedSpell == null) {
             throw Exceptions.produceNullPointer(LOG, "Casted spell with id {0} is absent in spells pool", spellId);

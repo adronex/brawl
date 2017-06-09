@@ -7,8 +7,10 @@ import java.util.List;
 
 public interface GameService {
 
-    void createTwoPlayersGame(GameSession firstSession, Squad firstSquad,
-                              GameSession secondSession, Squad secondSquad);
+    void createTwoPlayersGame(GameSession firstSession,
+                              GameSession secondSession,
+                              Squad firstSquad,
+                              Squad secondSquad);
 
     void setHeroesPositions(GameSession session,
                             List<String> heroesIds);

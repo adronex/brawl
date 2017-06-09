@@ -35,8 +35,11 @@ public class BattlefieldHolder {
 
     public Boolean isReadyForBattle() {
         if (battleHeroes.size() > PLAYERS_COUNT) {
-            throw Exceptions.produceIllegalState(LOG, "Two-players battlefield contains more players than maximum allowed: {0}",
-                    battleHeroes.size());
+            throw Exceptions.produceIllegalState(
+                    LOG,
+                    "Two-players battlefield contains more players than maximum allowed: {0}",
+                    battleHeroes.size()
+            );
         }
         return battleHeroes.size() == PLAYERS_COUNT;
     }
@@ -51,8 +54,8 @@ public class BattlefieldHolder {
         queue.add(heroToMove);
 
         List<HeroHolder> newQueue = queue.stream()
-                .filter(HeroHolder::isAlive)
-                .collect(Collectors.toList());
+                                         .filter(HeroHolder::isAlive)
+                                         .collect(Collectors.toList());
         queue.clear();
         queue.addAll(newQueue);
     }
