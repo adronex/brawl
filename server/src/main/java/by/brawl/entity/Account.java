@@ -1,18 +1,14 @@
 package by.brawl.entity;
 
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
-import java.util.*;
+import java.util.Collection;
+import java.util.LinkedHashSet;
+import java.util.Objects;
+import java.util.Set;
 
-/**
- * Default class description.
- *
- * @author P.Sinitsky.
- *         Created on 25.03.2017.
- */
 @Entity
 public class Account extends IdEntity implements UserDetails {
 

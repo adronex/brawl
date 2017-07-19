@@ -30,17 +30,6 @@ public class Hero extends NamedEntity {
             joinColumns = @JoinColumn(name = "hero_id"),
             inverseJoinColumns = @JoinColumn(name = "equipment_id"))
     private Set<Equipment> equipments = new LinkedHashSet<>();
-//
-//    @Transient
-//    private Integer health = 30;
-
-//    public void hit(Integer amount) {
-//        health -= amount;
-//    }
-//
-//    public Boolean isAlive() {
-//        return health > 0;
-//    }
 
     public Account getOwner() {
         return owner;
@@ -61,7 +50,7 @@ public class Hero extends NamedEntity {
     @Override
     public String toString() {
         return "Hero{" +
-                "name='" + name + '\'' +
+                "name='" + getName() + '\'' +
                 ", owner=" + owner.getUsername() +
                 '}';
     }

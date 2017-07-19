@@ -4,12 +4,6 @@ import javax.persistence.*;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-/**
- * Default class description.
- *
- * @author P.Sinitsky.
- *         Created on 25.03.2017.
- */
 @Entity
 public class Squad extends NamedEntity {
 
