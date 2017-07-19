@@ -27,12 +27,6 @@ public class BrawlServerApplicationTests {
 	public void testAccountRepository() {
         Account account = accountService.findByEmail("adronex303@gmail.com");
         assertNotNull(account);
-        assertEquals(5, account.getAvailableSpells().size());
-        assertEquals(1, account.getSquads().size());
-        assertEquals(2, account.getHeroes().size());
-        Set<Hero> heroesInSquad = account.getSquads().stream().findFirst().get().getHeroes();
-        assertEquals(2, heroesInSquad.size());
-        assertEquals(4, heroesInSquad.stream().findFirst().get().getSpells().size());
 	}
 
 }
