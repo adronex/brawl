@@ -28,7 +28,7 @@ class SecurityServiceImpl implements SecurityService, UserDetailsService {
     public UserDetails loadUserByUsername(String username) {
         Account account = accountRepository.findByEmail(username);
         if (account == null) {
-            throw Exceptions.produceUsernameNotFound(LOG, "User with name {0} is not registered in database", username);
+            throw Exceptions.INSTANCE.produceUsernameNotFound(LOG, "User with name {0} is not registered in database", username);
         }
         return account;
     }
@@ -37,11 +37,11 @@ class SecurityServiceImpl implements SecurityService, UserDetailsService {
     public Account getCurrentAccount() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || authentication.getName() == null) {
-            throw Exceptions.produceUsernameNotFound(LOG, "Authentication object is empty");
+            throw Exceptions.INSTANCE.produceUsernameNotFound(LOG, "Authentication object is empty");
         }
         Account currentAccount = accountRepository.findByEmail(authentication.getName());
         if (currentAccount == null) {
-            throw Exceptions.produceUsernameNotFound(LOG, "Authentication object doesn't connect to any existing account");
+            throw Exceptions.INSTANCE.produceUsernameNotFound(LOG, "Authentication object doesn't connect to any existing account");
         }
         return currentAccount;
     }

@@ -35,7 +35,7 @@ public class GameSession {
 		try {
 			session.sendMessage(new TextMessage(dto.asJson()));
 		} catch (IOException e) {
-			Exceptions.logError(LOG, e, "Web socket message sending threw error");
+			Exceptions.INSTANCE.logError(LOG, e, "Web socket message sending threw error");
 		}
 	}
 
@@ -45,7 +45,7 @@ public class GameSession {
 			map.put(key, value);
 			session.sendMessage(new TextMessage(new ObjectMapper().writeValueAsString(map)));
 		} catch (IOException e) {
-			Exceptions.logError(LOG, e, "Web socket message sending threw error");
+			Exceptions.INSTANCE.logError(LOG, e, "Web socket message sending threw error");
 		}
 	}
 

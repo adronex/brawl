@@ -16,7 +16,7 @@ class EldrichPull : SpellLogic {
                       senderId: String,
                       victimPosition: Int?,
                       forEnemy: Boolean?): BattlefieldHolder {
-        val heroes = battlefieldHolder.getBattleHeroes(senderId, true)
+        val heroes = battlefieldHolder.getBattleHeroes(senderId, true).toMutableList()
         val movingHero = heroes[0]
         heroes.add(movingHero)
         heroes.removeAt(0)

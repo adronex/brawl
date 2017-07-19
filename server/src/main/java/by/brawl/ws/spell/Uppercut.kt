@@ -14,7 +14,7 @@ class Uppercut : SpellLogic {
                       victimPosition: Int?,
                       forEnemy: Boolean?): BattlefieldHolder {
 
-        val sourceList = battlefieldHolder.getBattleHeroes(senderId, true)
+        val sourceList = battlefieldHolder.getBattleHeroes(senderId, true).toMutableList()
         val modifiedHeroesList = LinkedList(sourceList)
         val movingHero = modifiedHeroesList[victimPosition!! - 1]
         modifiedHeroesList.addFirst(movingHero)

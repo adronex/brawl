@@ -31,18 +31,18 @@ class SquadServiceImpl implements SquadService {
     @Override
     public Squad getWithAuthorityCheck(Account authority, String squadId) {
         if (authority == null) {
-            throw Exceptions.produceNullPointer(LOG, "Trying to get squad when account is null");
+            throw Exceptions.INSTANCE.produceNullPointer(LOG, "Trying to get squad when account is null");
         }
         if (squadId == null) {
-            throw Exceptions.produceNullPointer(LOG, "Account {0} tries to init game with empty squad id.", authority.getUsername());
+            throw Exceptions.INSTANCE.produceNullPointer(LOG, "Account {0} tries to init game with empty squad id.", authority.getUsername());
         }
         Squad squad = repository.findOne(squadId);
         if (squad == null) {
-            throw Exceptions.produceAccessDenied(LOG, "Squad with id {0} is not existing in database. Calling account: {1}",
+            throw Exceptions.INSTANCE.produceAccessDenied(LOG, "Squad with id {0} is not existing in database. Calling account: {1}",
                     squadId, authority);
         }
         if (!Objects.equals(authority, squad.getOwner())) {
-            throw Exceptions.produceAccessDenied(LOG, "Squad with id {0} is belongs for account {1} but was queried by account {2}",
+            throw Exceptions.INSTANCE.produceAccessDenied(LOG, "Squad with id {0} is belongs for account {1} but was queried by account {2}",
                     squadId, squad.getOwner().getUsername(), authority);
         }
         return squad;

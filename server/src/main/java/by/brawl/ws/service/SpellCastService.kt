@@ -4,10 +4,10 @@ import by.brawl.ws.holder.BattlefieldHolder
 
 interface SpellCastService {
 
-    fun castSpell(id: String,
-                  senderAccountId: String,
+    fun castSpell(spellId: String,
                   senderId: String,
-                  target: Int?,
-                  enemy: Boolean?,
+                  casterId: String,
+                  victimPosition: Int?,
+                  forEnemy: Boolean?,
                   battlefieldHolder: BattlefieldHolder): BattlefieldHolder
 }
