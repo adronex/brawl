@@ -1,12 +1,9 @@
 package by.brawl.ws.dto
 
-import by.brawl.util.Mappers
 import by.brawl.ws.holder.BattlefieldHolder
 import by.brawl.ws.holder.GameState
-import by.brawl.ws.holder.SpellHolder
 
 import java.util.*
-import java.util.stream.Collectors
 
 class BattlefieldDto(battlefieldHolder: BattlefieldHolder, receiverName: String) : AbstractDto(), JsonDto {
 

@@ -1,10 +1,8 @@
 package by.brawl.ws.holder
 
 import by.brawl.entity.Hero
-import by.brawl.util.Mappers
 
 import java.util.LinkedHashSet
-import java.util.stream.Collectors
 
 class HeroHolder(hero: Hero) {
     val id: String = hero.id!!

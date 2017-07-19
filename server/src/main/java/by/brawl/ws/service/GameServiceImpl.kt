@@ -2,21 +2,16 @@ package by.brawl.ws.service
 
 import by.brawl.entity.Squad
 import by.brawl.util.Exceptions
-import by.brawl.util.Mappers
 import by.brawl.ws.holder.BattlefieldHolder
 import by.brawl.ws.holder.GameState
 import by.brawl.ws.holder.HeroHolder
-import by.brawl.ws.holder.SpellHolder
 import by.brawl.ws.holder.gamesession.GameSession
 import by.brawl.ws.holder.gamesession.GameSessionsPool
-import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
 import java.util.ArrayList
 import java.util.Arrays
-import java.util.Objects
 
 @Service
 internal class GameServiceImpl constructor(val spellCastService: SpellCastService,
