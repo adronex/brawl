@@ -5,12 +5,10 @@ import by.brawl.ws.holder.BattlefieldHolder
 import by.brawl.ws.holder.StepLogHolder
 import by.brawl.ws.spell.SpellLogic
 import org.reflections.Reflections
-import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
-
+import java.util.*
 import javax.annotation.PostConstruct
-import java.util.HashMap
 
 @Service
 internal class SpellCastServiceImpl : SpellCastService {
@@ -69,4 +67,5 @@ internal class SpellCastServiceImpl : SpellCastService {
 
         private val LOG = LoggerFactory.getLogger(SpellCastServiceImpl::class.java)
     }
+
 }

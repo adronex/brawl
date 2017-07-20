@@ -10,7 +10,6 @@ open class AbstractDto : JsonDto {
 
     @JsonIgnore
     @Throws(JsonProcessingException::class)
-    override fun asJson(): String {
-        return ObjectMapper().writeValueAsString(this)
-    }
+    override fun asJson(): String = ObjectMapper().writeValueAsString(this)
+
 }

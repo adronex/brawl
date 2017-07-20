@@ -83,4 +83,5 @@ class BattlefieldHolder {
         private val LOG = LoggerFactory.getLogger(BattlefieldHolder::class.java)
         private val PLAYERS_COUNT = 2
     }
+
 }

@@ -1,11 +1,10 @@
 package by.brawl.ws.spell
 
 import by.brawl.ws.holder.BattlefieldHolder
-
-import java.util.Arrays
-import java.util.HashSet
+import java.util.*
 
 class SuckerPunch : SpellLogic {
+
     override val id = "1"
     override val targetable = true
     override val myTargets = HashSet<Int>()

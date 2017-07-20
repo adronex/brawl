@@ -2,9 +2,8 @@ package by.brawl.entity
 
 import by.brawl.entity.bodypart.Bodypart
 import by.brawl.entity.bodypart.Equipment
-
+import java.util.*
 import javax.persistence.*
-import java.util.LinkedHashSet
 
 @Entity
 class Hero : NamedEntity() {
@@ -39,4 +38,5 @@ class Hero : NamedEntity() {
                 ", owner=" + owner.username +
                 '}'
     }
+
 }

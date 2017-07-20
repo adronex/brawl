@@ -17,4 +17,5 @@ interface GameService {
                   spellId: String,
                   victimPosition: Int?,
                   forEnemy: Boolean?)
+
 }

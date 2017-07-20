@@ -6,4 +6,5 @@ interface JsonDto {
 
     @Throws(JsonProcessingException::class)
     fun asJson(): String
+
 }

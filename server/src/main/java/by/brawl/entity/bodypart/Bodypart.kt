@@ -10,8 +10,9 @@ import javax.persistence.Enumerated
 class Bodypart : IdEntity() {
 
     @Enumerated(EnumType.STRING)
-    val type: BodypartType? = null
+    val type = BodypartType.UNKNOWN
     val strength = 0
     val agility = 0
     val energy = 0
+
 }

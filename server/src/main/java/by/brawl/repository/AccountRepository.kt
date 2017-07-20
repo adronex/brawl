@@ -10,5 +10,7 @@ import org.springframework.data.repository.CrudRepository
  * *         Created on 25.03.2017.
  */
 interface AccountRepository : CrudRepository<Account, String> {
+
     fun findByEmail(email: String): Account?
+
 }

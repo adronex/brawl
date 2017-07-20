@@ -10,4 +10,5 @@ interface SpellCastService {
                   victimPosition: Int?,
                   forEnemy: Boolean?,
                   battlefieldHolder: BattlefieldHolder): BattlefieldHolder
+
 }

@@ -5,7 +5,7 @@ import javax.persistence.MappedSuperclass
 @MappedSuperclass
 abstract class NamedEntity : IdEntity() {
 
-    var name: String? = null
+    lateinit var name: String
         protected set
 
     override fun toString(): String {
@@ -13,4 +13,5 @@ abstract class NamedEntity : IdEntity() {
                 "name='" + name + '\'' +
                 '}'
     }
+
 }

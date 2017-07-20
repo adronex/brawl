@@ -14,7 +14,7 @@ import org.springframework.security.core.userdetails.UserDetailsService
 open class WebSecurityConfig : WebSecurityConfigurerAdapter() {
 
     @Autowired
-    private val userDetailsService: UserDetailsService? = null
+    private lateinit var userDetailsService: UserDetailsService
 
     //    @Autowired
     //    private PasswordEncoder passwordEncoder;

@@ -3,6 +3,7 @@ package by.brawl.ws.spell
 import by.brawl.ws.holder.BattlefieldHolder
 
 class ShootThemAll : SpellLogic {
+
     override val id = "7"
     override val targetable = false
     override val myTargets = HashSet<Int>()

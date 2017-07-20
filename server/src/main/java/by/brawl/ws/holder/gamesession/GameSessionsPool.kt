@@ -6,8 +6,7 @@ import by.brawl.ws.holder.BattlefieldHolder
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import org.springframework.web.socket.WebSocketSession
-
-import java.util.HashMap
+import java.util.*
 
 @Component
 open class GameSessionsPool {
@@ -50,4 +49,5 @@ open class GameSessionsPool {
 
         private val LOG = LoggerFactory.getLogger(GameSessionsPool::class.java)
     }
+
 }

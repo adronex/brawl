@@ -2,10 +2,8 @@ package by.brawl.entity
 
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
-
+import java.util.*
 import javax.persistence.*
-import java.util.LinkedHashSet
-import java.util.Objects
 
 @Entity
 class Account : IdEntity(), UserDetails {
@@ -24,8 +22,8 @@ class Account : IdEntity(), UserDetails {
             inverseJoinColumns = arrayOf(JoinColumn(name = "spell_id")))
     val availableSpells: Set<Spell> = LinkedHashSet()
 
-    override fun getAuthorities(): Collection<GrantedAuthority>? {
-        return null
+    override fun getAuthorities(): Collection<GrantedAuthority> {
+        return listOf()
     }
 
     override fun getPassword(): String {
@@ -68,4 +66,5 @@ class Account : IdEntity(), UserDetails {
                 "email='" + email + '\'' +
                 '}'
     }
+
 }

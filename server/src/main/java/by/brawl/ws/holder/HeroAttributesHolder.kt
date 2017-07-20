@@ -3,6 +3,7 @@ package by.brawl.ws.holder
 import by.brawl.entity.bodypart.Bodypart
 
 class HeroAttributesHolder(bodyparts: Set<Bodypart>) {
+
     val health: AttributeHolder
     val armor: AttributeHolder
     val evasion: AttributeHolder
@@ -30,4 +31,5 @@ class HeroAttributesHolder(bodyparts: Set<Bodypart>) {
         criticalDamage = AttributeHolder(200)
         criticalChance = AttributeHolder(15)
     }
+
 }

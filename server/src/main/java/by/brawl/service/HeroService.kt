@@ -4,5 +4,6 @@ import by.brawl.entity.Hero
 
 interface HeroService {
 
-    fun findOne(id: String): Hero?
+    fun findOne(id: String): Hero
+
 }

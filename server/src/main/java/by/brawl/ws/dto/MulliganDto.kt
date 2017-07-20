@@ -33,4 +33,5 @@ class MulliganDto(mulliganHeroes: Map<String, List<HeroHolder>>,
             }
         }
     }
+
 }

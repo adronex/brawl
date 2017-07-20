@@ -13,4 +13,5 @@ abstract class IdEntity {
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "uuid2")
     lateinit var id: String private set
+
 }

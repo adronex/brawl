@@ -7,18 +7,15 @@ import java.util.*
 
 class BattlefieldDto(battlefieldHolder: BattlefieldHolder, receiverName: String) : AbstractDto(), JsonDto {
 
-    var myHeroes: List<HeroDto> = ArrayList()
-    var enemyHeroes: List<HeroDto> = ArrayList()
-    private val heroSpells = HashMap<String, Set<SpellDto>>()
+    val myHeroes = battlefieldHolder.getBattleHeroes(receiverName, false).map { HeroDto(it) }
+    val enemyHeroes = battlefieldHolder.getBattleHeroes(receiverName, true).map { HeroDto(it) }
+    val heroSpells = HashMap<String, Set<SpellDto>>()
     val queue: Queue<HeroInQueueDto> = LinkedList()
-    val currentStep: Int?
+    val currentStep = battlefieldHolder.currentStep
     var battleLog: List<StepLogDto> = ArrayList()
     val gameState: GameState
 
     init {
-
-        myHeroes = battlefieldHolder.getBattleHeroes(receiverName, false).map { HeroDto(it) }
-        enemyHeroes = battlefieldHolder.getBattleHeroes(receiverName, true).map { HeroDto(it) }
 
         battlefieldHolder.getBattleHeroes(receiverName, false)
                 .forEach {
@@ -33,13 +30,11 @@ class BattlefieldDto(battlefieldHolder: BattlefieldHolder, receiverName: String)
                                     .filter { spellHolder ->
                                         battlefieldHolder
                                                 .battleLog
-                                                .stream()
-                                                .filter { stepLog ->
+                                                .count { stepLog ->
                                                     stepLog.spellId == spellHolder
                                                             .id && stepLog.casterId == heroHolder
                                                             .id
-                                                }
-                                                .count() > 0
+                                                } > 0
                                     }
                                     .map { SpellDto(it) }
                                     .toSet())
@@ -57,12 +52,8 @@ class BattlefieldDto(battlefieldHolder: BattlefieldHolder, receiverName: String)
             }
         }
 
-        currentStep = battlefieldHolder.currentStep
         battleLog = battlefieldHolder.battleLog.map { StepLogDto(it, receiverName) }
         gameState = battlefieldHolder.gameState
     }
 
-    fun getHeroSpells(): Map<String, Set<SpellDto>> {
-        return heroSpells
-    }
 }

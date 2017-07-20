@@ -7,4 +7,5 @@ import org.springframework.data.repository.CrudRepository
 interface SquadRepository : CrudRepository<Squad, String> {
 
     fun findByOwner(owner: Account): Set<Squad>
+
 }

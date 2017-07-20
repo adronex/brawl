@@ -4,8 +4,6 @@ import org.slf4j.Logger
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 
-import java.text.MessageFormat
-
 object Exceptions {
 
     fun produceAccessDenied(log: Logger, message: String): AccessDeniedException {
@@ -41,4 +39,5 @@ object Exceptions {
     fun logError(log: Logger, e: Exception, message: String) {
         log.error(message, e)
     }
+
 }

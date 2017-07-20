@@ -1,11 +1,11 @@
 package by.brawl.ws.holder
 
 import by.brawl.entity.Hero
-
-import java.util.LinkedHashSet
+import java.util.*
 
 class HeroHolder(hero: Hero) {
-    val id: String = hero.id!!
+
+    val id: String = hero.id
     var allSpells = hero.spells.map { SpellHolder(it) }.toCollection(LinkedHashSet<SpellHolder>())
     var bodyparts = hero.bodyparts.map { BodypartHolder(it) }.toCollection(LinkedHashSet<BodypartHolder>())
     var equipments = hero.equipments.map { EquipmentHolder(it) }.toCollection(LinkedHashSet<EquipmentHolder>())
@@ -22,4 +22,5 @@ class HeroHolder(hero: Hero) {
     fun hit(value: Int) {
         attributes.health.decrementCurrent(value)
     }
+
 }

@@ -10,8 +10,9 @@ import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry
 @Configuration
 @EnableWebSocket
 open class WebSocketConfig : WebSocketConfigurer {
+
     @Autowired
-    internal var gameHandler: GameHandler? = null
+    private lateinit var gameHandler: GameHandler
 
     override fun registerWebSocketHandlers(registry: WebSocketHandlerRegistry) {
         registry.addHandler(gameHandler, "/game")

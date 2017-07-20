@@ -9,9 +9,7 @@ import by.brawl.ws.holder.gamesession.GameSession
 import by.brawl.ws.holder.gamesession.GameSessionsPool
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
-
-import java.util.ArrayList
-import java.util.Arrays
+import java.util.*
 
 @Service
 internal class GameServiceImpl constructor(val spellCastService: SpellCastService,
@@ -136,4 +134,5 @@ internal class GameServiceImpl constructor(val spellCastService: SpellCastServic
         private val BATTLEFIELD_HEROES_COUNT = 4
         private val LOG = LoggerFactory.getLogger(GameServiceImpl::class.java)
     }
+
 }

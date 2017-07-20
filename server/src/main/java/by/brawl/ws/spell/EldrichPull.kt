@@ -1,12 +1,10 @@
 package by.brawl.ws.spell
 
 import by.brawl.ws.holder.BattlefieldHolder
-import by.brawl.ws.holder.HeroHolder
-
-import java.util.Arrays
-import java.util.HashSet
+import java.util.*
 
 class EldrichPull : SpellLogic {
+
     override val id = "5"
     override val targetable = true
     override val myTargets = HashSet<Int>()

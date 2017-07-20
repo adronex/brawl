@@ -1,9 +1,10 @@
 package by.brawl.ws.spell
 
 import by.brawl.ws.holder.BattlefieldHolder
-import java.util.HashSet
+import java.util.*
 
 class DivineComfort : SpellLogic {
+
     override val id = "4"
     override val targetable = false
     override val myTargets = HashSet<Int>()
@@ -20,4 +21,5 @@ class DivineComfort : SpellLogic {
         }
         return battlefieldHolder
     }
+
 }

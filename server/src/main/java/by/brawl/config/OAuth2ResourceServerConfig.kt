@@ -17,4 +17,5 @@ open class OAuth2ResourceServerConfig : ResourceServerConfigurerAdapter() {
                 .authorizeRequests()
                 .antMatchers("/**").permitAll()
     }
+
 }

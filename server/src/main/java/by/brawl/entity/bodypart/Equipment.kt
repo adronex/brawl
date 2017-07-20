@@ -10,10 +10,11 @@ import javax.persistence.Enumerated
 class Equipment : NamedEntity() {
 
     @Enumerated(EnumType.STRING)
-    val type: EquipmentType? = null
+    val type = EquipmentType.UNKNOWN
     @Enumerated(EnumType.STRING)
-    val category: EquipmentCategory? = null
-    val requiredStrength: Int? = null
-    val requiredAgility: Int? = null
-    val requiredEnergy: Int? = null
+    val category = EquipmentCategory.UNKNOWN
+    val requiredStrength = 0
+    val requiredAgility = 0
+    val requiredEnergy = 0
+
 }

@@ -1,7 +1,7 @@
 package by.brawl.entity
 
+import java.util.*
 import javax.persistence.*
-import java.util.LinkedHashSet
 
 @Entity
 class Squad : NamedEntity() {
@@ -14,4 +14,5 @@ class Squad : NamedEntity() {
             joinColumns = arrayOf(JoinColumn(name = "squad_id")),
             inverseJoinColumns = arrayOf(JoinColumn(name = "hero_id")))
     val heroes: Set<Hero> = LinkedHashSet()
+
 }

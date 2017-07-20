@@ -15,4 +15,5 @@ open class BrawlServerApplication {
             SpringApplication.run(BrawlServerApplication::class.java, *args)
         }
     }
+
 }

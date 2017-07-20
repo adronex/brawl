@@ -8,4 +8,5 @@ interface SquadService {
     val mySquads: Set<Squad>
 
     fun getWithAuthorityCheck(authority: Account, squadId: String): Squad
+
 }

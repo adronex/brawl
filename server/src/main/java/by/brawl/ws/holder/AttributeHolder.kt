@@ -1,6 +1,7 @@
 package by.brawl.ws.holder
 
 class AttributeHolder {
+
     var max = 0
     var current = 0
 
@@ -27,4 +28,5 @@ class AttributeHolder {
             current = 0
         }
     }
+
 }

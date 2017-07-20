@@ -4,6 +4,7 @@ import by.brawl.ws.holder.BattlefieldHolder
 import java.util.*
 
 class Uppercut : SpellLogic {
+
     override val id = "6"
     override val targetable = true
     override val myTargets = HashSet<Int>()
