@@ -121,13 +121,6 @@ internal class GameServiceImpl constructor(val spellCastService: SpellCastServic
 
     private fun getBattlefieldHolderAndCheckState(session: GameSession, gameState: GameState): BattlefieldHolder {
 
-        if (session.battlefieldHolder == null) {
-            throw Exceptions.produceNullPointer(
-                    LOG,
-                    "User ${session.id} tries to play game without preliminary matchmaking"
-            )
-        }
-
         if (gameState != session.battlefieldHolder.gameState) {
             throw Exceptions.produceIllegalState(
                     LOG,

@@ -12,5 +12,5 @@ abstract class IdEntity {
     @Id
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "uuid2")
-    val id: String? = null
+    lateinit var id: String private set
 }
