@@ -16,14 +16,15 @@ import org.junit.Assert.assertNotNull
 @RunWith(SpringRunner::class)
 @SpringBootTest
 @Component
-open class BrawlServerApplicationTests {
+open class BrawlServerApplicationTests
+constructor(){
 
     @Autowired
-    private val accountService: AccountService? = null
+    private lateinit var accountService: AccountService
 
     @Test
     fun testAccountRepository() {
-        val account = accountService!!.findByEmail("adronex303@gmail.com")
+        val account = accountService.findByEmail("adronex303@gmail.com")
         assertNotNull(account)
     }
 
