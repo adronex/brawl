@@ -12,7 +12,7 @@ class BattlefieldHolder {
     var currentStep = 0
 
     val mulliganHeroes = HashMap<String, List<HeroHolder>>()
-    val battleHeroes = HashMap<String, List<HeroHolder>>()
+    private val battleHeroes = HashMap<String, List<HeroHolder>>()
     val connectedAccountsIds = HashSet<String>()
     val queue: Queue<HeroHolder> = LinkedList()
     val battleLog = mutableListOf<StepLogHolder>()

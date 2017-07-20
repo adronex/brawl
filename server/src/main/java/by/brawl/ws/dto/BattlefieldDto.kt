@@ -1,27 +1,20 @@
 package by.brawl.ws.dto
 
 import by.brawl.ws.holder.BattlefieldHolder
-import by.brawl.ws.holder.GameState
-
 import java.util.*
 
 class BattlefieldDto(battlefieldHolder: BattlefieldHolder, receiverName: String) : AbstractDto(), JsonDto {
 
     val myHeroes = battlefieldHolder.getBattleHeroes(receiverName, false).map { HeroDto(it) }
     val enemyHeroes = battlefieldHolder.getBattleHeroes(receiverName, true).map { HeroDto(it) }
-    val heroSpells = HashMap<String, Set<SpellDto>>()
+    val heroSpells = battlefieldHolder.getBattleHeroes(receiverName, false)
+            .associateBy({ it.id }, { it.allSpells.map { SpellDto(it) }.toSet() }).toMutableMap()
     val queue: Queue<HeroInQueueDto> = LinkedList()
     val currentStep = battlefieldHolder.currentStep
-    var battleLog: List<StepLogDto> = ArrayList()
-    val gameState: GameState
+    var battleLog = battlefieldHolder.battleLog.map { StepLogDto(it, receiverName) }
+    val gameState = battlefieldHolder.gameState
 
     init {
-
-        battlefieldHolder.getBattleHeroes(receiverName, false)
-                .forEach {
-                    heroHolder -> heroSpells.put(heroHolder.id,heroHolder.allSpells.map { SpellDto(it) }.toSet())
-                }
-
         // todo: refactor
         battlefieldHolder.getBattleHeroes(receiverName, true)
                 .forEach { heroHolder ->
@@ -51,9 +44,6 @@ class BattlefieldDto(battlefieldHolder: BattlefieldHolder, receiverName: String)
                 queue.add(HeroInQueueDto(null, enemy))
             }
         }
-
-        battleLog = battlefieldHolder.battleLog.map { StepLogDto(it, receiverName) }
-        gameState = battlefieldHolder.gameState
     }
 
 }
