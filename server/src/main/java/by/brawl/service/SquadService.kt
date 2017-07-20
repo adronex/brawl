@@ -5,7 +5,7 @@ import by.brawl.entity.Squad
 
 interface SquadService {
 
-    val mySquads: Set<Squad>
+    fun getMySquads(): Set<Squad>
 
     fun getWithAuthorityCheck(authority: Account, squadId: String): Squad
 

@@ -9,13 +9,20 @@ import java.util.*
 class BattlefieldHolder {
 
     var gameState = GameState.NOT_STARTED
-    var currentStep: Int = 0
+    var currentStep = 0
 
     val mulliganHeroes = HashMap<String, List<HeroHolder>>()
     val battleHeroes = HashMap<String, List<HeroHolder>>()
     val connectedAccountsIds = HashSet<String>()
     val queue: Queue<HeroHolder> = LinkedList()
-    val battleLog: List<StepLogHolder> = ArrayList()
+    val battleLog = mutableListOf<StepLogHolder>()
+
+    fun isReadyForBattle() =
+            if (battleHeroes.size > PLAYERS_COUNT)
+                throw Exceptions.produceIllegalState(LOG, "Two-players battlefield contains more players than maximum allowed: ${battleHeroes.size}")
+            else battleHeroes.size == PLAYERS_COUNT
+
+    fun isGameFinished() = battleHeroes.values.count { singleList -> singleList.count { it.isAlive } == 0 } > 0
 
     fun addSquad(squad: Squad) {
         val heroes = squad.heroes.map { HeroHolder(it) }
@@ -26,16 +33,6 @@ class BattlefieldHolder {
     fun addBattleHeroes(playerId: String, battleHeroes: List<HeroHolder>) {
         this.battleHeroes.put(playerId, battleHeroes)
     }
-
-    val isReadyForBattle: Boolean?
-        get() {
-            if (battleHeroes.size > PLAYERS_COUNT) {
-                throw Exceptions.produceIllegalState(
-                        LOG,"Two-players battlefield contains more players than maximum allowed: ${battleHeroes.size}"
-                )
-            }
-            return battleHeroes.size == PLAYERS_COUNT
-        }
 
     fun prepareGame() {
         battleHeroes.values.forEach { heroHolders -> queue.addAll(heroHolders) }
@@ -51,23 +48,10 @@ class BattlefieldHolder {
         queue.addAll(newQueue)
     }
 
-    fun incrementStep() {
-        currentStep++
-    }
+    fun incrementStep() = currentStep++
 
-    val isGameFinished: Boolean?
-        get() {
-            var gameFinished: Boolean? = false
-            for ((_, value) in battleHeroes) {
-                if (value.count{ it.isAlive } == 0) {
-                    gameFinished = true
-                }
-            }
-            return gameFinished
-        }
-
-    fun getBattleHeroes(senderId: String, queryForOpponentHeroes: Boolean?): List<HeroHolder> {
-        if (queryForOpponentHeroes != null && !queryForOpponentHeroes) {
+    fun getBattleHeroes(senderId: String, queryForOpponentHeroes: Boolean): List<HeroHolder> {
+        if (!queryForOpponentHeroes) {
             return battleHeroes[senderId] ?: throw Exceptions.produceIllegalState(LOG, "No heroes for session key $senderId")
         }
         for ((key, value) in battleHeroes) {

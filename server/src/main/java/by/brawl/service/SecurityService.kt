@@ -4,6 +4,6 @@ import by.brawl.entity.Account
 
 interface SecurityService {
 
-    val currentAccount: Account
+    fun getCurrentAccount(): Account
 
 }

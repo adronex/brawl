@@ -14,7 +14,7 @@ class Judgement : SpellLogic {
                       senderId: String,
                       victimPosition: Int?,
                       forEnemy: Boolean?): BattlefieldHolder {
-        battlefieldHolder.getBattleHeroes(senderId, forEnemy)[victimPosition!!].hit(7)
+        battlefieldHolder.getBattleHeroes(senderId, forEnemy!!)[victimPosition!!].hit(7)
         val heroes = battlefieldHolder.getBattleHeroes(senderId, false)
 
         for (hero in heroes) {

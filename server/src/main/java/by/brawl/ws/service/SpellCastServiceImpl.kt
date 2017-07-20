@@ -49,7 +49,7 @@ internal class SpellCastServiceImpl : SpellCastService {
         val validMyTarget = victimPosition != null && forEnemy != null && !forEnemy && castedSpell.myTargets.contains(victimPosition)
         val validEnemyTarget = victimPosition != null && forEnemy != null && forEnemy && castedSpell.enemyTargets.contains(victimPosition)
         if (!cannotBeTargeted && !validMyTarget && !validEnemyTarget) {
-            throw Exceptions.produceIllegalArgument(LOG, "Spell targeting error. My available targets:${castedSpell.myTargets}, enemy available targets: ${castedSpell.enemyTargets}, victim position: ${victimPosition!!}, for enemy: ${forEnemy!!}.")
+            throw Exceptions.produceIllegalArgument(LOG, "Spell targeting error. My available targets:${castedSpell.myTargets}, enemy available targets: ${castedSpell.enemyTargets}, victim position: $victimPosition, for enemy: $forEnemy.")
         }
         val response = castedSpell.cast(battlefieldHolder, senderId, victimPosition, forEnemy)
         val stepLog = StepLogHolder(
@@ -57,8 +57,7 @@ internal class SpellCastServiceImpl : SpellCastService {
                 spellId,
                 casterId
         )
-        //todo: add function ?!
-        //response.battleLog.add(stepLog)
+        response.battleLog.add(stepLog)
         response.moveQueueWithDeadRemoval()
         return response
     }

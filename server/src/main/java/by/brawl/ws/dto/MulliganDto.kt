@@ -14,6 +14,8 @@ class MulliganDto(mulliganHeroes: Map<String, List<HeroHolder>>,
         private set
     val heroSpellsIds = HashMap<String, List<String>>()
 
+   // val heroSpellsIds = mulliganHeroes[receiverName]!!.associateBy ({it.id}, {it.allSpells.map { it.id }})
+
     // todo: refactor
     init {
 

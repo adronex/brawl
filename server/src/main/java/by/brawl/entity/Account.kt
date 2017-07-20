@@ -50,21 +50,28 @@ class Account : IdEntity(), UserDetails {
         return true
     }
 
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other !is Account) return false
-        val account = other as Account?
-        return id == account!!.id
-    }
-
-    override fun hashCode(): Int {
-        return Objects.hash(id, email, password)
-    }
-
     override fun toString(): String {
         return "Account{" +
                 "email='" + email + '\'' +
                 '}'
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is Account) return false
+
+        if (email != other.email) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = email.hashCode()
+        result = 31 * result + password.hashCode()
+        result = 31 * result + heroes.hashCode()
+        result = 31 * result + squads.hashCode()
+        result = 31 * result + availableSpells.hashCode()
+        return result
     }
 
 }

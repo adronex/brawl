@@ -12,7 +12,7 @@ internal class SquadServiceImpl
 constructor(private val repository: SquadRepository,
             private val securityService: SecurityService) : SquadService {
 
-    override val mySquads = repository.findByOwner(securityService.currentAccount)
+    override fun getMySquads() = repository.findByOwner(securityService.getCurrentAccount())
 
     override fun getWithAuthorityCheck(authority: Account, squadId: String): Squad {
         val squad = repository.findOne(squadId) ?: throw Exceptions.produceAccessDenied(LOG, "Squad with id $squadId is not existing in database. Calling account: $authority")

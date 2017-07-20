@@ -53,7 +53,7 @@ internal class GameServiceImpl constructor(val spellCastService: SpellCastServic
 
         battlefieldHolder.addBattleHeroes(session.id, battleHeroes)
 
-        if (battlefieldHolder.isReadyForBattle!!) {
+        if (battlefieldHolder.isReadyForBattle()) {
             battlefieldHolder.prepareGame()
             battlefieldHolder.gameState = GameState.PLAYING
             gameSessionsPool.sendBattlefieldData(battlefieldHolder)
@@ -84,7 +84,7 @@ internal class GameServiceImpl constructor(val spellCastService: SpellCastServic
                 forEnemy,
                 battlefieldHolder)
 
-        if (battlefieldHolder.isGameFinished!!) {
+        if (battlefieldHolder.isGameFinished()) {
             battlefieldHolder.gameState = GameState.END
         } else {
             battlefieldHolder.incrementStep()

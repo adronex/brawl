@@ -14,7 +14,8 @@ class SuckerPunch : SpellLogic {
                       senderId: String,
                       victimPosition: Int?,
                       forEnemy: Boolean?): BattlefieldHolder {
-        battlefieldHolder.getBattleHeroes(senderId, forEnemy)[victimPosition!!].hit(10)
+        // TODO: REWORK API!!! REMOVE ALL NULLABLE VARIABLES
+        battlefieldHolder.getBattleHeroes(senderId, forEnemy!!)[victimPosition!!].hit(10)
         return battlefieldHolder
     }
 }

@@ -27,18 +27,18 @@ constructor(private val gameSessionsPool: GameSessionsPool,
             private val gameService: GameService) : TextWebSocketHandler() {
 
     @Throws(IOException::class)
-    override fun afterConnectionEstablished(webSocketSession: WebSocketSession?) {
-        gameSessionsPool.putSession(webSocketSession!!)
+    override fun afterConnectionEstablished(webSocketSession: WebSocketSession) {
+        gameSessionsPool.putSession(webSocketSession)
         val gameSession = gameSessionsPool.getSession(webSocketSession.principal.name)
         gameSession.sendKeyValue("connected", true)
     }
 
     @Throws(IOException::class)
-    override fun handleTextMessage(webSocketSession: WebSocketSession?, message: TextMessage?) {
+    override fun handleTextMessage(webSocketSession: WebSocketSession, message: TextMessage) {
         try {
-            val gameSession = gameSessionsPool.getSession(webSocketSession!!.principal.name)
+            val gameSession = gameSessionsPool.getSession(webSocketSession.principal.name)
 
-            val request = JSONObject(message!!.payload)
+            val request = JSONObject(message.payload)
             val type = request.getEnum(ClientRequestType::class.java, "type")
             val body = request.getJSONObject("body")
 

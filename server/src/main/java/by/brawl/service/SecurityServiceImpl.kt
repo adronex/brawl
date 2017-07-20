@@ -15,8 +15,7 @@ constructor(private val accountRepository: AccountRepository) : SecurityService,
     override fun loadUserByUsername(username: String) =
             accountRepository.findByEmail(username) ?: throw Exceptions.produceUsernameNotFound(LOG, "User with name $username is not registered in database")
 
-    override val currentAccount: Account
-        get() {
+    override fun getCurrentAccount(): Account {
             val authentication = SecurityContextHolder.getContext().authentication
             if (authentication == null || authentication.name == null) {
                 throw Exceptions.produceUsernameNotFound(LOG, "Authentication object is empty")
