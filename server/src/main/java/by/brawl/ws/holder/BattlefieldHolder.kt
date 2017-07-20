@@ -31,9 +31,7 @@ class BattlefieldHolder {
         get() {
             if (battleHeroes.size > PLAYERS_COUNT) {
                 throw Exceptions.produceIllegalState(
-                        LOG,
-                        "Two-players battlefield contains more players than maximum allowed: {0}",
-                        battleHeroes.size
+                        LOG,"Two-players battlefield contains more players than maximum allowed: ${battleHeroes.size}"
                 )
             }
             return battleHeroes.size == PLAYERS_COUNT
@@ -70,14 +68,14 @@ class BattlefieldHolder {
 
     fun getBattleHeroes(senderId: String, queryForOpponentHeroes: Boolean?): List<HeroHolder> {
         if (queryForOpponentHeroes != null && !queryForOpponentHeroes) {
-            return battleHeroes[senderId] ?: throw Exceptions.produceIllegalState(LOG, "No heroes for session key {0}", senderId)
+            return battleHeroes[senderId] ?: throw Exceptions.produceIllegalState(LOG, "No heroes for session key $senderId")
         }
         for ((key, value) in battleHeroes) {
             if (senderId != key) {
                 return value
             }
         }
-        throw Exceptions.produceIllegalState(LOG, "Battle heroes does not contain enemy for player {0}", senderId)
+        throw Exceptions.produceIllegalState(LOG, "Battle heroes does not contain enemy for player $senderId")
     }
 
     companion object {

@@ -37,23 +37,18 @@ internal class GameServiceImpl constructor(val spellCastService: SpellCastServic
         if (heroesIds.size != BATTLEFIELD_HEROES_COUNT) {
             throw Exceptions.produceIllegalArgument(
                     LOG,
-                    "Wrong heroes in battle count. Expected: {0}, actual: {1}",
-                    BATTLEFIELD_HEROES_COUNT,
-                    heroesIds.size
+                    "Wrong heroes in battle count. Expected: $BATTLEFIELD_HEROES_COUNT, actual: ${heroesIds.size}"
             )
         }
 
-        val mulliganHeroes = battlefieldHolder.mulliganHeroes[session.id] ?: throw Exceptions.produceIllegalState(LOG, "No heroes for session key {0}", session.id)
+        val mulliganHeroes = battlefieldHolder.mulliganHeroes[session.id] ?: throw Exceptions.produceIllegalState(LOG, "No heroes for session key ${session.id}")
         val battleHeroes = ArrayList<HeroHolder>()
 
         for (heroId in heroesIds) {
             val battleHero = mulliganHeroes.find { h -> h.id == heroId } ?:
                     throw Exceptions.produceAccessDenied(
                             LOG,
-                            "Player {0} trying to choose hero with id {1} from available ids: {2}",
-                            session.id,
-                            heroId,
-                            mulliganHeroes.map { it.id })
+                            "Player ${session.id} is trying to choose hero with id $heroId from available ids: ${mulliganHeroes.map { it.id }}")
 
             battleHeroes.add(battleHero)
         }
@@ -76,11 +71,7 @@ internal class GameServiceImpl constructor(val spellCastService: SpellCastServic
         val currentHero = battlefieldHolder.queue.element()
 
         if (!battlefieldHolder.getBattleHeroes(playerKey, false).contains(currentHero)) {
-            throw Exceptions.produceAccessDenied(
-                    LOG,
-                    "Player {0} tries to cast spell in opponents turn",
-                    playerKey
-            )
+            throw Exceptions.produceAccessDenied(LOG,"Player $playerKey tries to cast spell in opponents turn")
         }
 
         // todo: check victimPosition and forEnemy for both being null or not null
@@ -112,10 +103,7 @@ internal class GameServiceImpl constructor(val spellCastService: SpellCastServic
             val availableSpellsIds = currentHero.allSpells.map { it.id }.toTypedArray()
             throw Exceptions.produceIllegalArgument(
                     LOG,
-                    "Player {0} casted spell {1} that does not belong to current hero. Available spells are {2}",
-                    playerKey,
-                    spellId,
-                    Arrays.toString(availableSpellsIds)
+                    "Player $playerKey casted spell $spellId that does not belong to current hero. Available spells are ${Arrays.toString(availableSpellsIds)}"
             )
         }
         val castedSpellAvailable = currentHero.availableSpells.stream()
@@ -125,10 +113,7 @@ internal class GameServiceImpl constructor(val spellCastService: SpellCastServic
             val availableSpellsIds = currentHero.availableSpells.map { it.id }
             throw Exceptions.produceIllegalArgument(
                     LOG,
-                    "Player {0} casted spell {1} that is not available (on cooldown/suspended/etc). Available spells are {2}",
-                    playerKey,
-                    spellId,
-                    availableSpellsIds.toString()
+                    "Player $playerKey casted spell $spellId that is not available (on cooldown/suspended/etc). Available spells are $availableSpellsIds"
             )
         }
         return true
@@ -139,18 +124,14 @@ internal class GameServiceImpl constructor(val spellCastService: SpellCastServic
         if (session.battlefieldHolder == null) {
             throw Exceptions.produceNullPointer(
                     LOG,
-                    "User {0} tries to play game without preliminary matchmaking",
-                    session.id
+                    "User ${session.id} tries to play game without preliminary matchmaking"
             )
         }
 
         if (gameState != session.battlefieldHolder.gameState) {
             throw Exceptions.produceIllegalState(
                     LOG,
-                    "Illegal game state. Expected: {0}, actual: {1}. Initiator: {2}",
-                    gameState,
-                    session.battlefieldHolder.gameState,
-                    session.id
+                    "Illegal game state. Expected: $gameState, actual: ${session.battlefieldHolder.gameState}. Initiator: ${session.id}"
             )
         }
 

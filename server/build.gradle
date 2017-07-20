@@ -39,6 +39,7 @@ dependencies {
     compile "org.springframework.security.oauth:spring-security-oauth2:2.0.9.RELEASE"
     compile "org.reflections:reflections:0.9.11"
     compile "org.json:json:20170516"
+    compile "org.flywaydb:flyway-core"
     testCompile "org.springframework.boot:spring-boot-starter-test"
     testCompile "junit:junit:4.12"
     runtime "mysql:mysql-connector-java"

@@ -23,11 +23,9 @@ constructor(private val repository: SquadRepository,
         }
 
     override fun getWithAuthorityCheck(authority: Account, squadId: String): Squad {
-        val squad = repository.findOne(squadId) ?: throw Exceptions.produceAccessDenied(LOG, "Squad with id {0} is not existing in database. Calling account: {1}",
-                squadId, authority)
+        val squad = repository.findOne(squadId) ?: throw Exceptions.produceAccessDenied(LOG, "Squad with id $squadId is not existing in database. Calling account: $authority")
         if (authority != squad.owner) {
-            throw Exceptions.produceAccessDenied(LOG, "Squad with id {0} is belongs for account {1} but was queried by account {2}",
-                    squadId, squad.owner.username, authority)
+            throw Exceptions.produceAccessDenied(LOG, "Squad with id $squadId belongs to account ${squad.owner.username} but was queried by account $authority")
         }
         return squad
     }

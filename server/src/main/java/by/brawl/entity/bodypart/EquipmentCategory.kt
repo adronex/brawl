@@ -5,5 +5,5 @@ enum class EquipmentCategory {
     WEAPON_CRUSHING,
     WEAPON_FIREARM,
 
-    AUXILARY_SHIELD
+    AUXILIARY_SHIELD
 }

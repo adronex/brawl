@@ -45,14 +45,13 @@ internal class SpellCastServiceImpl : SpellCastService {
                            forEnemy: Boolean?,
                            battlefieldHolder: BattlefieldHolder): BattlefieldHolder {
 
-        val castedSpell = spellsMap[spellId] ?: throw Exceptions.produceNullPointer(LOG, "Casted spell with id {0} is absent in spells pool", spellId)
+        val castedSpell = spellsMap[spellId] ?: throw Exceptions.produceNullPointer(LOG, "Casted spell with id $spellId is absent in spell pool")
         // check target for validity
         val cannotBeTargeted = victimPosition == null && !castedSpell.targetable
         val validMyTarget = victimPosition != null && forEnemy != null && !forEnemy && castedSpell.myTargets.contains(victimPosition)
         val validEnemyTarget = victimPosition != null && forEnemy != null && forEnemy && castedSpell.enemyTargets.contains(victimPosition)
         if (!cannotBeTargeted && !validMyTarget && !validEnemyTarget) {
-            throw Exceptions.produceIllegalArgument(LOG, "Spell targeting error. My available targets:{0}, enemy available targets: {1}, victim position: {2}, for enemy: {3}.",
-                    castedSpell.myTargets, castedSpell.enemyTargets, victimPosition!!, forEnemy!!)
+            throw Exceptions.produceIllegalArgument(LOG, "Spell targeting error. My available targets:${castedSpell.myTargets}, enemy available targets: ${castedSpell.enemyTargets}, victim position: ${victimPosition!!}, for enemy: ${forEnemy!!}.")
         }
         val response = castedSpell.cast(battlefieldHolder, senderId, victimPosition, forEnemy)
         val stepLog = StepLogHolder(

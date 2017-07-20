@@ -17,7 +17,7 @@ internal class SecurityServiceImpl
 constructor(private val accountRepository: AccountRepository) : SecurityService, UserDetailsService {
 
     override fun loadUserByUsername(username: String): UserDetails {
-        val account = accountRepository.findByEmail(username) ?: throw Exceptions.produceUsernameNotFound(LOG, "User with name {0} is not registered in database", username)
+        val account = accountRepository.findByEmail(username) ?: throw Exceptions.produceUsernameNotFound(LOG, "User with name $username is not registered in database")
         return account
     }
 

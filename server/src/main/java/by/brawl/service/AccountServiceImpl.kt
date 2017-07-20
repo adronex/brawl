@@ -21,7 +21,7 @@ constructor(private val repository: AccountRepository) : AccountService {
 
     override fun findByEmail(email: String) =
             repository.findByEmail(email) ?:
-                    throw Exceptions.produceIllegalArgument(LOG, "Account with email {0} does not exists!", email)
+                    throw Exceptions.produceIllegalArgument(LOG, "Account with email $email does not exists!")
 
     companion object {
 
