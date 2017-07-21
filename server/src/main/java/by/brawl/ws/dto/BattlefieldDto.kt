@@ -33,15 +33,13 @@ class BattlefieldDto(battlefieldHolder: BattlefieldHolder, receiverName: String)
                                     .toSet())
                 }
 
-        val myHeroesIds = myHeroes.map { it.id }
-
         battlefieldHolder.queue.forEach { s ->
-            val enemy = !myHeroesIds.contains(s.id)
-            val exposed = !enemy || battlefieldHolder.battleLog.count { stepLog -> stepLog.casterId == s.id } > 0
+            val my = myHeroes.count { it.id == s.id } > 0
+            val exposed = my || battlefieldHolder.battleLog.count { stepLog -> stepLog.casterId == s.id } > 0
             if (exposed) {
-                queue.add(HeroInQueueDto(s.id, enemy))
+                queue.add(HeroInQueueDto(s.id, !my))
             } else {
-                queue.add(HeroInQueueDto(null, enemy))
+                queue.add(HeroInQueueDto(null, !my))
             }
         }
     }
