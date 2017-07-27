@@ -1,0 +1,15 @@
+version: '2.1'
+services:
+  db:
+    container_name: db
+    image: mysql:5.7.18
+    ports:
+      - $MYSQL_PORT:3306
+    volumes:
+      - $DB_VOLUME_LOCATION:/var/lib/mysql/
+    environment:
+      MYSQL_ROOT_PASSWORD: $MYSQL_ROOT_PASSWORD
+      MYSQL_USER: $MYSQL_USER
+      MYSQL_PASSWORD: $MYSQL_PASSWORD
+      MYSQL_DATABASE: $MYSQL_DATABASE
+      MYSQL_HOST: localhost
