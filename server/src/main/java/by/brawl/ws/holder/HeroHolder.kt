@@ -11,9 +11,9 @@ class HeroHolder(hero: Hero) {
     var equipments = hero.equipments.map { EquipmentHolder(it) }.toCollection(LinkedHashSet<EquipmentHolder>())
     val attributes = HeroAttributesHolder(hero.bodyparts)
 
-    val availableSpells = allSpells.filter { it.isAvailable }
+    fun getAvailableSpells() = allSpells.filter { it.isAvailable }
 
-    val isAlive = attributes.health.current > 0
+    fun isAlive() = attributes.health.current > 0
 
     fun heal(value: Int) {
         attributes.health.incrementCurrent(value)

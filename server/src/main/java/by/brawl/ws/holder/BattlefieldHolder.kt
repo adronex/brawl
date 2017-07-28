@@ -22,7 +22,7 @@ class BattlefieldHolder {
                 throw Exceptions.produceIllegalState(LOG, "Two-players battlefield contains more players than maximum allowed: ${battleHeroes.size}")
             else battleHeroes.size == PLAYERS_COUNT
 
-    fun isGameFinished() = battleHeroes.values.count { singleList -> singleList.count { it.isAlive } == 0 } > 0
+    fun isGameFinished() = battleHeroes.values.count { singleList -> singleList.count { it.isAlive() } == 0 } > 0
 
     fun addSquad(squad: Squad) {
         val heroes = squad.heroes.map { HeroHolder(it) }
@@ -43,7 +43,7 @@ class BattlefieldHolder {
         val heroToMove = queue.remove()
         queue.add(heroToMove)
 
-        val newQueue = queue.filter { it.isAlive }
+        val newQueue = queue.filter { it.isAlive() }
         queue.clear()
         queue.addAll(newQueue)
     }

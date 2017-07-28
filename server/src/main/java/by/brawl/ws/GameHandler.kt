@@ -74,19 +74,9 @@ constructor(private val gameSessionsPool: GameSessionsPool,
     }
 
     private fun handleCastSpellRequest(session: GameSession, body: JSONObject) {
-        val spellId = body.optString("spellId")
-        var target: Int? = null
-        body.optInt("target")
-        try {
-            target = body.getInt("target")
-        } catch (ignored: JSONException) {
-        }
-
-        var forEnemy: Boolean? = null
-        try {
-            forEnemy = body.getBoolean("forEnemy")
-        } catch (ignored: JSONException) {
-        }
+        val spellId = body.getString("spellId")
+        val target = body.getInt("target")
+        val forEnemy = body.getBoolean("forEnemy")
 
         gameService.castSpell(session, spellId, target, forEnemy)
     }

@@ -104,11 +104,11 @@ internal class GameServiceImpl constructor(val spellCastService: SpellCastServic
                     "Player $playerKey casted spell $spellId that does not belong to current hero. Available spells are ${Arrays.toString(availableSpellsIds)}"
             )
         }
-        val castedSpellAvailable = currentHero.availableSpells.stream()
+        val castedSpellAvailable = currentHero.getAvailableSpells().stream()
                 .filter { spellHolder -> spellHolder.id == spellId }
                 .count() > 0
         if (!castedSpellAvailable) {
-            val availableSpellsIds = currentHero.availableSpells.map { it.id }
+            val availableSpellsIds = currentHero.getAvailableSpells().map { it.id }
             throw Exceptions.produceIllegalArgument(
                     LOG,
                     "Player $playerKey casted spell $spellId that is not available (on cooldown/suspended/etc). Available spells are $availableSpellsIds"
