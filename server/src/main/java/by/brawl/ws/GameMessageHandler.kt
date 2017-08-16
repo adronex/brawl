@@ -6,7 +6,6 @@ import by.brawl.ws.holder.gamesession.GameSession
 import by.brawl.ws.holder.gamesession.GameSessionsPool
 import by.brawl.ws.service.GameService
 import by.brawl.ws.service.MatchmakingService
-import org.json.JSONException
 import org.json.JSONObject
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -21,7 +20,7 @@ import java.util.*
 // Noisia - Hunter Theme
 
 @Component
-open class GameHandler @Autowired
+open class GameMessageHandler @Autowired
 constructor(private val gameSessionsPool: GameSessionsPool,
             private val matchmakingService: MatchmakingService,
             private val gameService: GameService) : TextWebSocketHandler() {
@@ -83,6 +82,6 @@ constructor(private val gameSessionsPool: GameSessionsPool,
 
     companion object {
 
-        private val LOG = LoggerFactory.getLogger(GameHandler::class.java)
+        private val LOG = LoggerFactory.getLogger(GameMessageHandler::class.java)
     }
 }

@@ -12,8 +12,8 @@ import org.springframework.stereotype.Service
 import java.util.*
 
 @Service
-internal class GameServiceImpl constructor(val spellCastService: SpellCastService,
-                                           val gameSessionsPool: GameSessionsPool) : GameService {
+internal class GameServiceImpl constructor(private val spellCastService: SpellCastService,
+                                           private val gameSessionsPool: GameSessionsPool) : GameService {
 
     override fun createTwoPlayersGame(firstSession: GameSession,
                                       secondSession: GameSession,
@@ -62,38 +62,48 @@ internal class GameServiceImpl constructor(val spellCastService: SpellCastServic
         }
     }
 
+    // validate spell - isSpellValid()
+    // roll values
+    // target the target
+    // ask permission to resolve
+    // resolve spell
     override fun castSpell(session: GameSession, spellId: String, victimPosition: Int?, forEnemy: Boolean?) {
 
-        var battlefieldHolder = getBattlefieldHolderAndCheckState(session, GameState.PLAYING)
+        val sourceBattlefieldHolder = getBattlefieldHolderAndCheckState(session, GameState.PLAYING)
         val playerKey = session.id
-        val currentHero = battlefieldHolder.queue.element()
-
-        if (!battlefieldHolder.getBattleHeroes(playerKey, false).contains(currentHero)) {
-            throw Exceptions.produceAccessDenied(LOG,"Player $playerKey tries to cast spell in opponents turn")
-        }
+        val currentHero = sourceBattlefieldHolder.queue.element()
 
         // todo: check victimPosition and forEnemy for both being null or not null
-        if (!isSpellValid(currentHero, spellId, playerKey)) {
+        if (!isSpellValid(sourceBattlefieldHolder, currentHero, spellId, playerKey)) {
             return
         }
 
-        battlefieldHolder = spellCastService.castSpell(spellId,
+        var affectedBattlefieldHolder = sourceBattlefieldHolder
+        affectedBattlefieldHolder = spellCastService.castSpell(spellId,
                 session.id,
                 currentHero.id,
                 victimPosition,
                 forEnemy,
-                battlefieldHolder)
+                affectedBattlefieldHolder)
 
-        if (battlefieldHolder.isGameFinished()) {
-            battlefieldHolder.gameState = GameState.END
+        if (affectedBattlefieldHolder.isGameFinished()) {
+            affectedBattlefieldHolder.gameState = GameState.END
         } else {
-            battlefieldHolder.incrementStep()
+            affectedBattlefieldHolder.incrementStep()
         }
 
-        gameSessionsPool.sendBattlefieldData(battlefieldHolder)
+        gameSessionsPool.sendBattlefieldData(affectedBattlefieldHolder)
     }
 
-    private fun isSpellValid(currentHero: HeroHolder, spellId: String, playerKey: String): Boolean {
+    private fun rollValues() {
+
+    }
+
+    // is current turn belongs to requester?
+    // is current hero has requested spell?
+    // is current spell available (not on suspend/cooldown)?
+    private fun isSpellValid(battlefieldHolder: BattlefieldHolder, currentHero: HeroHolder, spellId: String, playerKey: String): Boolean {
+        isSpellWasCastedInCorrectTurn(battlefieldHolder, playerKey, currentHero)
         val castedSpellBelongsToCurrentHero = currentHero.allSpells.stream()
                 .filter { spellHolder -> spellHolder.id == spellId }
                 .count() > 0
@@ -113,6 +123,13 @@ internal class GameServiceImpl constructor(val spellCastService: SpellCastServic
                     LOG,
                     "Player $playerKey casted spell $spellId that is not available (on cooldown/suspended/etc). Available spells are $availableSpellsIds"
             )
+        }
+        return true
+    }
+
+    private fun isSpellWasCastedInCorrectTurn(battlefieldHolder: BattlefieldHolder, playerKey: String, currentHero: HeroHolder): Boolean {
+        if (!battlefieldHolder.getBattleHeroes(playerKey, false).contains(currentHero)) {
+            throw Exceptions.produceAccessDenied(LOG,"Player $playerKey tries to cast spell in opponents turn")
         }
         return true
     }

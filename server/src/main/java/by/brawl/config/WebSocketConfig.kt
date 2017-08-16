@@ -1,6 +1,6 @@
 package by.brawl.config
 
-import by.brawl.ws.GameHandler
+import by.brawl.ws.GameMessageHandler
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Configuration
 import org.springframework.web.socket.config.annotation.EnableWebSocket
@@ -12,10 +12,10 @@ import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry
 open class WebSocketConfig : WebSocketConfigurer {
 
     @Autowired
-    private lateinit var gameHandler: GameHandler
+    private lateinit var gameMessageHandler: GameMessageHandler
 
     override fun registerWebSocketHandlers(registry: WebSocketHandlerRegistry) {
-        registry.addHandler(gameHandler, "/game")
+        registry.addHandler(gameMessageHandler, "/game")
     }
 
 }
