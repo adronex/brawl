@@ -6,66 +6,10 @@ let webSocket;
 
 app.controller('squadMenuController', ['$scope', '$http', function ($scope, $http) {
 
-    $scope.staticData = {
-        spells: {
-            '1': {
-                name: 'Sucker Punch',
-                targetable: true,
-                myTargets: [],
-                enemyTargets: [1, 2]
-            },
-            '2': {
-                name: 'Self Heal',
-                targetable: false,
-                myTargets: [],
-                enemyTargets: []
-            }
-            ,
-            '3': {
-                name: 'Damaged Heal',
-                targetable: true,
-                myTargets: [1, 2, 3, 4],
-                enemyTargets: []
-            }
-            ,
-            '4': {
-                name: 'Divine Comfort',
-                targetable: false,
-                myTargets: [],
-                enemyTargets: []
-            }
-            ,
-            '5': {
-                name: 'Eldrich Pull',
-                targetable: true,
-                myTargets: [],
-                enemyTargets: [4]
-            }
-            ,
-            '6': {
-                name: 'Uppercut',
-                targetable: true,
-                myTargets: [],
-                enemyTargets: [1]
-            }
-            ,
-            '7': {
-                name: 'Shoot Them All',
-                targetable: false,
-                myTargets: [],
-                enemyTargets: []
-            }
-            ,
-            '8': {
-                name: 'Judgement',
-                targetable: true,
-                myTargets: [],
-                enemyTargets: [1, 2, 3]
-            }
-        }
-    };
+    const serverUrl = 'localhost:8081';
+    $scope.staticData = {};
 
-    var init = function () {
+    let init = function () {
         $scope.connected = false;
         $scope.currentWindow = 'MENU';
 
@@ -82,8 +26,11 @@ app.controller('squadMenuController', ['$scope', '$http', function ($scope, $htt
     init();
 
     $scope.onLoad = function () {
-        $http.get('http://localhost:8080/api/squads/my').then(function (response, status) {
+        $http.get('http://' + serverUrl + '/api/squads/my').then(function (response, status) {
             $scope.availableSquads = response.data;
+        });
+        $http.get('http://' + serverUrl + '/api/static/spells').then(function (response, status) {
+            $scope.staticData.spells = response.data;
         });
     };
 
@@ -94,7 +41,7 @@ app.controller('squadMenuController', ['$scope', '$http', function ($scope, $htt
             return;
         }
         // Create a new instance of the websocket
-        webSocket = new WebSocket("ws://localhost:8080/game");
+        webSocket = new WebSocket('ws://' + serverUrl + '/game');
 
         /**
          * Binds functions to the listeners for the websocket.
@@ -124,10 +71,24 @@ app.controller('squadMenuController', ['$scope', '$http', function ($scope, $htt
             }
             if (response.myHeroes) {
                 $scope.myHeroes = response.myHeroes;
+                $scope.myHeroes.forEach(h => {
+                    h.appearance = {};
+                    h.appearance.head = getRandomColor();
+                    h.appearance.body = getRandomColor();
+                    h.appearance.arms = getRandomColor();
+                    h.appearance.legs = getRandomColor()
+                });
                 delete response.myHeroes;
             }
             if (response.enemyHeroes) {
                 $scope.enemyHeroes = response.enemyHeroes.slice().reverse();
+                $scope.enemyHeroes.forEach(h => {
+                    h.appearance = {};
+                    h.appearance.head = getRandomColor();
+                    h.appearance.body = getRandomColor();
+                    h.appearance.arms = getRandomColor();
+                    h.appearance.legs = getRandomColor()
+                });
                 delete response.enemyHeroes;
             }
             if (response.gameState) {
@@ -180,7 +141,7 @@ app.controller('squadMenuController', ['$scope', '$http', function ($scope, $htt
      */
     $scope.sendMulliganInfo = function () {
         if ($scope.mulliganChosenHeroesIds.length !== 4) {
-            $scope.messages.push('Wrrong heroes count');
+            $scope.messages.push('Wrong heroes count');
         } else {
             webSocket.send(JSON.stringify({type: 'CHOOSE_HEROES', body: {heroes: $scope.mulliganChosenHeroesIds}}));
             $scope.mulliganChosenHeroesIds = [];
@@ -209,4 +170,27 @@ app.controller('squadMenuController', ['$scope', '$http', function ($scope, $htt
     function writeResponse(text) {
         document.getElementById('messages').messagesDiv.innerHTML += "<br/>" + text;
     }
+
+    function getRandomColor() {
+        const letters = '0123456789ABCDEF';
+        let color = '#';
+        for (let i = 0; i < 6; i++) {
+            color += letters[Math.floor(Math.random() * 16)];
+        }
+        return color;
+    }
+
+    $scope.colors = [
+        "#339E42",
+        "#039BE5",
+        "#EF6C00",
+        "#A1887F",
+        "#607D8B",
+        "#039BE5",
+        "#009688",
+        "#536DFE",
+        "#AB47BC",
+        "#E53935",
+        "#3F51B5"
+    ];
 }]);

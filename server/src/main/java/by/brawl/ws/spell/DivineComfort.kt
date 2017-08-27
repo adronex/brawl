@@ -7,7 +7,7 @@ class DivineComfort : SpellLogic {
 
     override val id = "4"
     override val targetable = false
-    override val myTargets = HashSet<Int>()
+    override val myTargets = hashSetOf(1, 2, 3, 4)
     override val enemyTargets = HashSet<Int>()
 
     override fun cast(battlefieldHolder: BattlefieldHolder,

@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 
-<html data-ng-app="clockworks">
+<html ng-app="clockworks">
 <head>
     <title>Clockworks</title>
     <meta charset="UTF-8">
@@ -11,42 +11,42 @@
 </head>
 <body>
 
-<div data-ng-controller="squadMenuController"
-     data-ng-switch="currentWindow"
-     data-ng-init="onLoad()">
+<div ng-controller="squadMenuController"
+     ng-switch="currentWindow"
+     ng-init="onLoad()">
 
-    <div id="menu" data-ng-switch-when="MENU">
+    <div id="menu" ng-switch-when="MENU">
         <p>Squads: </p>
         <div id="squads">
-            <div data-ng-repeat="(index, squad) in availableSquads">
+            <div ng-repeat="(index, squad) in availableSquads">
                 <input type="radio"
-                       data-ng-model="temp[index]"
-                       data-ng-value="squad.id"
-                       data-ng-change="temp.chosenSquadId = temp[index]">
+                       ng-model="temp[index]"
+                       ng-value="squad.id"
+                       ng-change="temp.chosenSquadId = temp[index]">
                 {{squad.name}}
             </div>
         </div>
-        <button type="button" data-ng-click="openSocket()">Open</button>
+        <button type="button" ng-click="openSocket()">Open</button>
     </div>
-    <div id="game" data-ng-switch-when="GAME">
+    <div id="game" ng-switch-when="GAME">
         <div id="gameState">
             Game state: {{gameState}}
         </div>
-        <button type="button" data-ng-click="closeSocket()">Close</button>
+        <button type="button" ng-click="closeSocket()">Close</button>
         <br>
-        <button type="button" data-ng-if="gameState==='MULLIGAN'" data-ng-click="sendMulliganInfo()">Choose heroes
+        <button type="button" ng-if="gameState==='MULLIGAN'" ng-click="sendMulliganInfo()">Choose heroes
         </button>
-        <div id="currentSpell" data-ng-if="temp.castedSpell">
+        <div id="currentSpell" ng-if="temp.castedSpell">
             Choose targets for spell '{{staticData.spells[temp.castedSpell].name}}', myTargets:
             {{staticData.spells[temp.castedSpell].myTargets}}, enemyTargets:
             {{staticData.spells[temp.castedSpell].enemyTargets}}
-            <button type="button" data-ng-click="temp.castedSpell = undefined">
+            <button type="button" ng-click="temp.castedSpell = undefined">
                 Cancel
             </button>
         </div>
-        <div id="spellBar" data-ng-if="gameState==='PLAYING' && !heroesQueue[0].enemy">
-            <div data-ng-repeat="spell in heroSpells[heroesQueue[0].id]">
-                <button type="button" data-ng-click="onSpellButtonPress(spell.id)">{{staticData.spells[spell.id].name}}
+        <div id="spellBar" ng-if="gameState==='PLAYING' && !heroesQueue[0].enemy">
+            <div ng-repeat="spell in heroSpells[heroesQueue[0].id]">
+                <button type="button" ng-click="onSpellButtonPress(spell.id)">{{staticData.spells[spell.id].name}}
                     {{spell}}
                 </button>
             </div>
@@ -55,46 +55,46 @@
             Connected: {{connected}}
         </div>
         <div id="queue">
-            <span data-ng-repeat="item in heroesQueue track by $index"><- {{item ? item : '?'}}</span>
+            <span ng-repeat="item in heroesQueue track by $index"><- {{item ? item : '?'}}</span>
         </div>
         <div class="battlefield">
-            <div data-ng-class="{'myRobot' : true,
+            <div ng-class="{'myRobot' : true,
             'colorChosen' : mulliganChosenHeroesIds.includes(item.id),
             'colorCurrentTurn' : heroesQueue[0].id === item.id,
             'colorTargetable' : staticData.spells[temp.castedSpell].myTargets.includes($index + 1)}"
                  data-ng-repeat="item in myHeroes track by $index"
                  data-ng-click="onHeroClick(item.id, false)">
-                <div class="head"></div>
-                <div class="body"></div>
-                <div class="rightHand"></div>
-                <div class="legs"></div>
+                <div class="head" ng-style="{'background-color': item.appearance.head}"></div>
+                <div class="body" ng-style="{'background-color': item.appearance.body}"></div>
+                <div class="rightHand" ng-style="{'background-color': item.appearance.arms}"></div>
+                <div class="legs" ng-style="{'background-color': item.appearance.legs}"></div>
                 <progress class="healthBar" value="{{item.attributes.health.current}}" max="{{item.attributes.health.max}}">
                     <span>{{item.attributes.health.current}}/{{item.attributes.health.max}}</span>
                 </progress>
             </div>
             <div class="midSpace">
             </div>
-            <div data-ng-class="{'enemyRobot' : true,
+            <div ng-class="{'enemyRobot' : true,
             'colorCurrentTurn' : heroesQueue[0].id === item.id,
             'colorTargetable' : staticData.spells[temp.castedSpell].enemyTargets.includes($index + 1)}"
                  data-ng-repeat="item in enemyHeroes track by $index"
                  data-ng-click="onHeroClick(item.id, true)">
-                <div class="head"></div>
-                <div class="body"></div>
-                <div class="rightHand"></div>
-                <div class="legs"></div>
+                <div class="head" ng-style="{'background-color': item.appearance.head}"></div>
+                <div class="body" ng-style="{'background-color': item.appearance.body}"></div>
+                <div class="rightHand" ng-style="{'background-color': item.appearance.arms}"></div>
+                <div class="legs" ng-style="{'background-color': item.appearance.legs}"></div>
                 <progress class="healthBar" value="{{item.attributes.health.current}}" max="{{item.attributes.health.max}}">
                     <span>{{item.attributes.health.current}}/{{item.attributes.health.max}}</span>
                 </progress>
             </div>
         </div>
         <div id="log">
-            <div data-ng-repeat="item in battleLog track by $index">
+            <div ng-repeat="item in battleLog track by $index">
                 <span>Sender: {{item.senderId}}, Spell: {{item.spellId}}, Enemy: {{item.enemy}}</span>
             </div>
         </div>
         <div id="messages">
-            <div data-ng-repeat="item in messages track by $index">
+            <div ng-repeat="item in messages track by $index">
                 <span>{{item}}</span>
             </div>
         </div>
