@@ -1,13 +1,14 @@
 package by.brawl.controller
 
 import by.brawl.dto.SpellStaticDataDto
+import by.brawl.service.BodypartService
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/api/static")
-class StaticDataController {
+class StaticDataController constructor(val service: BodypartService) {
 
     val lola = mapOf(Pair(1, 2), Pair(3, 4))
 
@@ -23,5 +24,8 @@ class StaticDataController {
     )
 
     @GetMapping(path = arrayOf("/spells"))
-    fun getStaticData() = spellData
+    fun getSpellData() = spellData
+
+    @GetMapping(path = arrayOf("/bodyparts"))
+    fun getBodypartsData() = service.findAll()
 }

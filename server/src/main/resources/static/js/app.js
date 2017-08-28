@@ -20,6 +20,7 @@ app.controller('squadMenuController', ['$scope', '$http', function ($scope, $htt
         $scope.battleLog = [];
         $scope.messages = [];
         $scope.temp = {};
+        $scope.newHero = {};
         $scope.heroSpells = [];
     };
 
@@ -31,6 +32,9 @@ app.controller('squadMenuController', ['$scope', '$http', function ($scope, $htt
         });
         $http.get('http://' + serverUrl + '/api/static/spells').then(function (response, status) {
             $scope.staticData.spells = response.data;
+        });
+        $http.get('http://' + serverUrl + '/api/static/bodyparts').then(function (response, status) {
+            $scope.staticData.bodyparts = response.data;
         });
     };
 
@@ -165,6 +169,15 @@ app.controller('squadMenuController', ['$scope', '$http', function ($scope, $htt
 
     $scope.closeSocket = function () {
         webSocket.close();
+    };
+
+    $scope.toNewHeroMenu = function () {
+        $scope.newHero = {};
+        $scope.currentWindow = 'NEW_HERO'
+    };
+
+    $scope.toMainMenu = function () {
+        $scope.currentWindow = 'MENU'
     };
 
     function writeResponse(text) {

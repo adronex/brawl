@@ -16,6 +16,7 @@
      ng-init="onLoad()">
 
     <div id="menu" ng-switch-when="MENU">
+        <button type="button" ng-click="toNewHeroMenu()">New hero</button>
         <p>Squads: </p>
         <div id="squads">
             <div ng-repeat="(index, squad) in availableSquads">
@@ -28,6 +29,39 @@
         </div>
         <button type="button" ng-click="openSocket()">Open</button>
     </div>
+
+    <div id="newHero" ng-switch-when="NEW_HERO">
+        <button type="button" ng-click="toMainMenu()">Back</button>
+        <div>
+            Name:
+            <input ng-model="newHero.name">
+        </div>
+        <div>
+            Head:
+            <select ng-options="head as head.name for head in staticData.bodyparts.HEAD track by head.id" ng-model="newHero.head"></select>
+        </div>
+        <div>
+            Chest:
+            <select ng-options="chest as chest.name for chest in staticData.bodyparts.CHEST track by chest.id" ng-model="newHero.chest"></select>
+        </div>
+        <div>
+            Right arm:
+            <select ng-options="rightHand as rightHand.name for rightHand in staticData.bodyparts.RIGHT_HAND track by rightHand.id" ng-model="newHero.rightHand"></select>
+        </div>
+        <div>
+            Left arm:
+            <select ng-options="leftHand as leftHand.name for leftHand in staticData.bodyparts.LEFT_HAND track by leftHand.id" ng-model="newHero.leftHand"></select>
+        </div>
+        <div>
+            Legs:
+            <select ng-options="legs as legs.name for legs in staticData.bodyparts.LEGS track by legs.id" ng-model="newHero.legs"></select>
+        </div>
+        <div>
+            Backpack:
+            <select ng-options="backpack as backpack.name for backpack in staticData.bodyparts.BACKPACK track by backpack.id" ng-model="newHero.backpack"></select>
+        </div>
+    </div>
+
     <div id="game" ng-switch-when="GAME">
         <div id="gameState">
             Game state: {{gameState}}
