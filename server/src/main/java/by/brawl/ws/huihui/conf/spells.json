@@ -147,6 +147,19 @@
           "forwardPositions": 3
         }
       }
+    },
+    {
+      "id": "SHUFFLE_OWN",
+      "color": "U",
+      "type": "ACTIVE",
+      "additionalImpacts": [
+        {
+          "id": "SHUFFLE_OWN_HEROES"
+        },
+        {
+          "id": "HIDE_HISTORY"
+        }
+      ]
     }
   ]
 }
