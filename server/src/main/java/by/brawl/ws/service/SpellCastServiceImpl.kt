@@ -3,36 +3,12 @@ package by.brawl.ws.service
 import by.brawl.util.Exceptions
 import by.brawl.ws.holder.BattlefieldHolder
 import by.brawl.ws.holder.StepLogHolder
-import by.brawl.ws.spell.SpellLogic
-import org.reflections.Reflections
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
-import java.util.*
-import javax.annotation.PostConstruct
 
 @Service
-internal class SpellCastServiceImpl : SpellCastService {
-
-    private val spellsMap = HashMap<String, SpellLogic>()
-
-    @PostConstruct
-    @Throws(InstantiationException::class, IllegalAccessException::class)
-    fun init() {
-
-        findAllSpellsLogic(SpellLogic::class.java.`package`.name)
-    }
-
-    @Throws(IllegalAccessException::class, InstantiationException::class)
-    private fun findAllSpellsLogic(scanPackage: String) {
-
-        val reflections = Reflections(scanPackage)
-
-        val allClasses = reflections.getSubTypesOf(SpellLogic::class.java)
-        for (spellLogicClass in allClasses) {
-            val spellLogic = spellLogicClass.newInstance()
-            spellsMap.put(spellLogic.id, spellLogic)
-        }
-    }
+@Deprecated("Use huihui package")
+internal class SpellCastServiceImpl (val spells:Spells): SpellCastService {
 
     // todo: check for suspend/cooldown
     // todo: check for valid target
@@ -43,7 +19,7 @@ internal class SpellCastServiceImpl : SpellCastService {
                            forEnemy: Boolean?,
                            battlefieldHolder: BattlefieldHolder): BattlefieldHolder {
 
-        val castedSpell = spellsMap[spellId] ?: throw Exceptions.produceNullPointer(LOG, "Casted spell with id $spellId is absent in spell pool")
+        val castedSpell = spells.spellsMap[spellId] ?: throw Exceptions.produceNullPointer(LOG, "Casted spell with id $spellId is absent in spell pool")
         // check target for validity
         val cannotBeTargeted = victimPosition == null && !castedSpell.targetable
         val validMyTarget = victimPosition != null && forEnemy != null && !forEnemy && castedSpell.myTargets.contains(victimPosition)
