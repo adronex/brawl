@@ -160,6 +160,16 @@
           "id": "HIDE_HISTORY"
         }
       ]
+    },
+    {
+      "id": "STACKING_POISON",
+      "color": "B",
+      "type": "ACTIVE",
+      "targetsImpact": {
+        "effects": {
+          "id": "STACKING_POISON"
+        }
+      }
     }
   ]
 }
