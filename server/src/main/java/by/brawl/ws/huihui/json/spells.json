@@ -1,38 +1,4 @@
 {
-  "effects": [
-    {
-      "id": "ATTRIBUTE_INCREMENT",
-      "values": [
-        "ATTRIBUTE_NAME",
-        "AMOUNT"
-      ]
-    },
-    {
-      "id": "ATTRIBUTE_DECREMENT",
-      "values": [
-        "ATTRIBUTE_NAME",
-        "AMOUNT"
-      ]
-    },
-    {
-      "id": "ATTRIBUTE_DECREMENT",
-      "values": [
-        "ATTRIBUTE_NAME",
-        "COUNT"
-      ]
-    },
-    {
-      "id": "REGENERATION_ALPHA",
-      "values": [
-        "ATTRIBUTE_NAME",
-        "COUNT"
-      ]
-    },
-    {
-      "id": "STUN",
-      ""
-    }
-  ],
   "spells": [
     {
       "id": "URSA_RAGE",

@@ -1,8 +1,10 @@
 package by.brawl.ws.service
 
 import by.brawl.util.Exceptions
-import by.brawl.ws.huihui.SpellMock
+import by.brawl.ws.holder.HeroHolder
+import by.brawl.ws.huihui.conf.SpellConfig
 import by.brawl.ws.spell.SpellLogic
+import by.brawl.ws.spell.Uppercut
 import org.reflections.Reflections
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
@@ -37,9 +39,18 @@ class Spells {
     companion object {
 
         private val LOG = LoggerFactory.getLogger(Spells::class.java)
-        private val spellsMockMap = HashMap<String, SpellMock>()
+        private val spellsConfigs = HashMap<String, SpellConfig>()
 
-        fun getSpellById(spellId: String):SpellMock = spellsMockMap[spellId]
+        init {
+            val uppercut = SpellConfig(
+                    id = "UPPERCUT",
+                    casterPositions = listOf(1, 2),
+                    logic = { battlefieldHolder, heroHolder -> Uppercut.newCast(battlefieldHolder, heroHolder) }
+            )
+            spellsConfigs.put(uppercut.id, uppercut)
+        }
+
+        fun getSpellById(spellId: String): SpellConfig = spellsConfigs[spellId]
                 ?: throw Exceptions.produceIllegalState(LOG, "Spell with id $spellId is absent in spell pool")
     }
 }

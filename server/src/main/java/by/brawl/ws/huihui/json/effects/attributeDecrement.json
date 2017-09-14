@@ -1,0 +1,8 @@
+{
+  "id": "ATTRIBUTE_DECREMENT",
+  "values": [
+    "ATTRIBUTE_NAME",
+    "AMOUNT_FROM",
+    "AMOUNT_TO"
+  ]
+}

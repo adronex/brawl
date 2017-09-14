@@ -1,0 +1,7 @@
+{
+  "id": "DAMAGE_OVER_TIME",
+  "values": [
+    "AMOUNT_FROM",
+    "AMOUNT_TO"
+  ]
+}

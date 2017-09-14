@@ -1,6 +1,8 @@
 package by.brawl.ws.holder
 
 import by.brawl.entity.Hero
+import by.brawl.ws.huihui.effects.EffectHolder
+import by.brawl.ws.huihui.handlers.CheckEndGameHandler
 import java.util.*
 
 class HeroHolder(hero: Hero) {
@@ -10,17 +12,7 @@ class HeroHolder(hero: Hero) {
     var bodyparts = hero.bodyparts.map { BodypartHolder(it) }.toCollection(LinkedHashSet<BodypartHolder>())
     var equipments = hero.equipments.map { EquipmentHolder(it) }.toCollection(LinkedHashSet<EquipmentHolder>())
     val attributes = HeroAttributesHolder(hero.bodyparts)
-
-    fun getAvailableSpells() = allSpells.filter { it.isAvailable }
+    val effects = listOf<EffectHolder>()
 
     fun isAlive() = attributes.health.current > 0
-
-    fun heal(value: Int) {
-        attributes.health.incrementCurrent(value)
-    }
-
-    fun hit(value: Int) {
-        attributes.health.decrementCurrent(value)
-    }
-
 }
