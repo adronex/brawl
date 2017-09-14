@@ -1,8 +1,10 @@
 package by.brawl.ws.service
 
-import by.brawl.ws.huihui.SpellConfig
+import by.brawl.util.Exceptions
+import by.brawl.ws.huihui.SpellMock
 import by.brawl.ws.spell.SpellLogic
 import org.reflections.Reflections
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import java.util.*
 import javax.annotation.PostConstruct
@@ -10,7 +12,7 @@ import javax.annotation.PostConstruct
 @Component
 class Spells {
 
-    val spellsMap = HashMap<String, SpellLogic>()
+    private val spellsMap = HashMap<String, SpellLogic>()
 
     @PostConstruct
     @Throws(InstantiationException::class, IllegalAccessException::class)
@@ -31,5 +33,13 @@ class Spells {
         }
     }
 
-    val spellConfig = SpellConfig("Yes", false, 0, false)
+
+    companion object {
+
+        private val LOG = LoggerFactory.getLogger(Spells::class.java)
+        private val spellsMockMap = HashMap<String, SpellMock>()
+
+        fun getSpellById(spellId: String):SpellMock = spellsMockMap[spellId]
+                ?: throw Exceptions.produceIllegalState(LOG, "Spell with id $spellId is absent in spell pool")
+    }
 }

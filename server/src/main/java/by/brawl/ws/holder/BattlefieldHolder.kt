@@ -62,6 +62,9 @@ class BattlefieldHolder {
         throw Exceptions.produceIllegalState(LOG, "Battle heroes does not contain enemy for player $senderId")
     }
 
+    fun getHeroPosition(senderId: String, heroHolder: HeroHolder): Int =
+            battleHeroes[senderId]?.indexOf(heroHolder) ?: throw Exceptions.produceNullPointer(LOG, "Session for id $senderId is absent")
+
     companion object {
 
         private val LOG = LoggerFactory.getLogger(BattlefieldHolder::class.java)
