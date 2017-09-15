@@ -5,6 +5,7 @@ import by.brawl.util.Exceptions
 import by.brawl.ws.holder.BattlefieldHolder
 import by.brawl.ws.holder.GameState
 import by.brawl.ws.holder.HeroHolder
+import by.brawl.ws.holder.SpellHolder
 import by.brawl.ws.holder.gamesession.GameSession
 import by.brawl.ws.holder.gamesession.GameSessionsPool
 import org.slf4j.LoggerFactory
@@ -62,29 +63,33 @@ internal class GameServiceImpl constructor(private val spellCastService: SpellCa
         }
     }
 
-    // validate spell - isSpellValid()
-    // roll values
-    // target the target
-    // ask permission to resolve
-    // resolve spell
-    override fun castSpell(session: GameSession, spellId: String, victimPosition: Int?, forEnemy: Boolean?) {
+    override fun castSpell(session: GameSession, spellPosition: Int, targetPosition: Int) {
+
+        val caster: HeroHolder = session.battlefieldHolder.getFirstHeroFromQueue()
+        val casterPosition = session.battlefieldHolder.getPositionOfHero(caster)
+        val targetIsEnemy = targetPosition > 0
+        val target: HeroHolder = session.battlefieldHolder.getHeroByPosition(session, targetPosition, targetIsEnemy )
+        val spellHolder: SpellHolder = caster.allSpells[spellPosition]
+    }
+
+    // todo: old function, take from it all that necessary
+    fun oldcast(session: GameSession, spellPosition: Int, targetPosition: Int) {
 
         val sourceBattlefieldHolder = getBattlefieldHolderAndCheckState(session, GameState.PLAYING)
         val playerKey = session.id
         val currentHero = sourceBattlefieldHolder.queue.element()
 
-        // todo: check victimPosition and forEnemy for both being null or not null
-        if (!isSpellValid(sourceBattlefieldHolder, currentHero, spellId, playerKey)) {
-            return
-        }
+//        if (!isSpellValid(sourceBattlefieldHolder, currentHero, spellId, playerKey)) {
+//            return
+//        }
 
         var affectedBattlefieldHolder = sourceBattlefieldHolder
-        affectedBattlefieldHolder = spellCastService.castSpell(spellId,
-                session.id,
-                currentHero.id,
-                victimPosition,
-                forEnemy,
-                affectedBattlefieldHolder)
+//        affectedBattlefieldHolder = spellCastService.castSpell(spellId,
+//                session.id,
+//                currentHero.id,
+//                victimPosition,
+//                forEnemy,
+//                affectedBattlefieldHolder)
 
         if (affectedBattlefieldHolder.isGameFinished()) {
             affectedBattlefieldHolder.gameState = GameState.END
@@ -93,39 +98,35 @@ internal class GameServiceImpl constructor(private val spellCastService: SpellCa
         }
 
         gameSessionsPool.sendBattlefieldData(affectedBattlefieldHolder)
-    }
-
-    private fun rollValues() {
 
     }
-
     // is current turn belongs to requester?
     // is current hero has requested spell?
     // is current spell available (not on suspend/cooldown)?
-    private fun isSpellValid(battlefieldHolder: BattlefieldHolder, currentHero: HeroHolder, spellId: String, playerKey: String): Boolean {
-        isSpellWasCastedInCorrectTurn(battlefieldHolder, playerKey, currentHero)
-        val castedSpellBelongsToCurrentHero = currentHero.allSpells.stream()
-                .filter { spellHolder -> spellHolder.id == spellId }
-                .count() > 0
-        if (!castedSpellBelongsToCurrentHero) {
-            val availableSpellsIds = currentHero.allSpells.map { it.id }.toTypedArray()
-            throw Exceptions.produceIllegalArgument(
-                    LOG,
-                    "Player $playerKey casted spell $spellId that does not belong to current hero. Available spells are ${Arrays.toString(availableSpellsIds)}"
-            )
-        }
-        val castedSpellAvailable = currentHero.getAvailableSpells().stream()
-                .filter { spellHolder -> spellHolder.id == spellId }
-                .count() > 0
-        if (!castedSpellAvailable) {
-            val availableSpellsIds = currentHero.getAvailableSpells().map { it.id }
-            throw Exceptions.produceIllegalArgument(
-                    LOG,
-                    "Player $playerKey casted spell $spellId that is not available (on cooldown/suspended/etc). Available spells are $availableSpellsIds"
-            )
-        }
-        return true
-    }
+//    private fun isSpellValid(battlefieldHolder: BattlefieldHolder, currentHero: HeroHolder, spellId: String, playerKey: String): Boolean {
+//        isSpellWasCastedInCorrectTurn(battlefieldHolder, playerKey, currentHero)
+//        val castedSpellBelongsToCurrentHero = currentHero.allSpells.stream()
+//                .filter { spellHolder -> spellHolder.id == spellId }
+//                .count() > 0
+//        if (!castedSpellBelongsToCurrentHero) {
+//            val availableSpellsIds = currentHero.allSpells.map { it.id }.toTypedArray()
+//            throw Exceptions.produceIllegalArgument(
+//                    LOG,
+//                    "Player $playerKey casted spell $spellId that does not belong to current hero. Available spells are ${Arrays.toString(availableSpellsIds)}"
+//            )
+//        }
+//        val castedSpellAvailable = currentHero.getAvailableSpells().stream()
+//                .filter { spellHolder -> spellHolder.id == spellId }
+//                .count() > 0
+//        if (!castedSpellAvailable) {
+//            val availableSpellsIds = currentHero.getAvailableSpells().map { it.id }
+//            throw Exceptions.produceIllegalArgument(
+//                    LOG,
+//                    "Player $playerKey casted spell $spellId that is not available (on cooldown/suspended/etc). Available spells are $availableSpellsIds"
+//            )
+//        }
+//        return true
+//    }
 
     private fun isSpellWasCastedInCorrectTurn(battlefieldHolder: BattlefieldHolder, playerKey: String, currentHero: HeroHolder): Boolean {
         if (!battlefieldHolder.getBattleHeroes(playerKey, false).contains(currentHero)) {

@@ -8,49 +8,39 @@ import by.brawl.ws.service.GameService
 import by.brawl.ws.service.MatchmakingService
 import org.json.JSONObject
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.web.socket.TextMessage
 import org.springframework.web.socket.WebSocketSession
 import org.springframework.web.socket.handler.TextWebSocketHandler
-import java.io.IOException
 import java.util.*
 
 // Noisia - Machine Gun
 // Noisia - Hunter Theme
 
 @Component
-open class GameMessageHandler @Autowired
+open class GameMessageHandler
 constructor(private val gameSessionsPool: GameSessionsPool,
             private val matchmakingService: MatchmakingService,
             private val gameService: GameService) : TextWebSocketHandler() {
 
-    @Throws(IOException::class)
     override fun afterConnectionEstablished(webSocketSession: WebSocketSession) {
         gameSessionsPool.putSession(webSocketSession)
         val gameSession = gameSessionsPool.getSession(webSocketSession.principal.name)
         gameSession.sendKeyValue("connected", true)
     }
 
-    @Throws(IOException::class)
     override fun handleTextMessage(webSocketSession: WebSocketSession, message: TextMessage) {
         try {
             val gameSession = gameSessionsPool.getSession(webSocketSession.principal.name)
 
             val request = JSONObject(message.payload)
-            val type = request.getEnum(ClientRequestType::class.java, "type")
+            val type: ClientRequestType = request.getEnum(ClientRequestType::class.java, "type")
             val body = request.getJSONObject("body")
 
-            if (ClientRequestType.INITIAL == type) {
-                handleInitRequest(gameSession, body)
-            }
-
-            if (ClientRequestType.CHOOSE_HEROES == type) {
-                handleChooseHeroesRequest(gameSession, body)
-            }
-
-            if (ClientRequestType.CAST_SPELL == type) {
-                handleCastSpellRequest(gameSession, body)
+            when (type) {
+                ClientRequestType.INITIAL -> handleInitRequest(gameSession, body)
+                ClientRequestType.CHOOSE_HEROES -> handleChooseHeroesRequest(gameSession, body)
+                ClientRequestType.CAST_SPELL -> handleCastSpellRequest(gameSession, body)
             }
         } catch (e: Exception) {
             Exceptions.logError(LOG, e, e.message ?: "Unspecified exception happened.")
@@ -73,11 +63,16 @@ constructor(private val gameSessionsPool: GameSessionsPool,
     }
 
     private fun handleCastSpellRequest(session: GameSession, body: JSONObject) {
-        val spellId = body.getString("spellId")
-        val target = body.getInt("target")
-        val forEnemy = body.getBoolean("forEnemy")
+        val spellPosition = body.getInt("spellPosition")
+        if (spellPosition !in 0..3) {
+            throw Exceptions.produceIllegalArgument(LOG, "Incorrect spell position: $spellPosition, allowed: [0, 3]")
+        }
+        val targetPosition = body.getInt("targetPosition")
+        if (targetPosition !in -4..-1 || targetPosition !in 1..4) {
+            throw Exceptions.produceIllegalArgument(LOG, "Incorrect target position: $targetPosition, allowed: [-4, -1], [1, 4]")
+        }
 
-        gameService.castSpell(session, spellId, target, forEnemy)
+        gameService.castSpell(session, spellPosition, targetPosition)
     }
 
     companion object {

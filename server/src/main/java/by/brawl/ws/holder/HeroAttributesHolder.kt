@@ -5,6 +5,7 @@ import by.brawl.entity.bodypart.Bodypart
 class HeroAttributesHolder(bodyparts: Set<Bodypart>) {
 
     val health: AttributeHolder
+    val barrier: AttributeHolder
     val armor: AttributeHolder
     val evasion: AttributeHolder
     val accuracy: AttributeHolder
@@ -23,6 +24,7 @@ class HeroAttributesHolder(bodyparts: Set<Bodypart>) {
             energy += bodypart.energy
         }
         health = AttributeHolder(20)
+        barrier = AttributeHolder(0, 9999)
         armor = AttributeHolder(strength)
         evasion = AttributeHolder(agility)
         accuracy = AttributeHolder(100)

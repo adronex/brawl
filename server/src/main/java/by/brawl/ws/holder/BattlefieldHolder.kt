@@ -2,6 +2,7 @@ package by.brawl.ws.holder
 
 import by.brawl.entity.Squad
 import by.brawl.util.Exceptions
+import by.brawl.ws.holder.gamesession.GameSession
 import org.slf4j.LoggerFactory
 import java.util.*
 
@@ -62,8 +63,22 @@ class BattlefieldHolder {
         throw Exceptions.produceIllegalState(LOG, "Battle heroes does not contain enemy for player $senderId")
     }
 
-    fun getHeroPosition(senderId: String, heroHolder: HeroHolder): Int =
-            battleHeroes[senderId]?.indexOf(heroHolder) ?: throw Exceptions.produceNullPointer(LOG, "Session for id $senderId is absent")
+    fun getFirstHeroFromQueue(): HeroHolder = queue.peek()
+
+    fun getPositionOfHero(heroHolder: HeroHolder): Int =
+            battleHeroes.values.maxBy { it.indexOf(heroHolder) }?.indexOf(heroHolder)
+                    ?: throw Exceptions.produceIllegalArgument(LOG, "Hero with id ${heroHolder.id} is absent in queue")
+
+    fun getHeroByPosition(session: GameSession, position: Int, enemy: Boolean): HeroHolder {
+        val sessionKey: String
+        if (enemy) {
+            sessionKey = battleHeroes.keys.first { it != session.id }
+        } else {
+            sessionKey = session.id
+        }
+        return battleHeroes[sessionKey]?.get(position) ?: throw Exceptions.produceIllegalState(LOG, "Invalid session key: $sessionKey")
+    }
+
 
     companion object {
 

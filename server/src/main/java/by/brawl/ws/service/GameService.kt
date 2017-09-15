@@ -14,8 +14,7 @@ interface GameService {
                            heroesIds: List<String>)
 
     fun castSpell(session: GameSession,
-                  spellId: String,
-                  victimPosition: Int?,
-                  forEnemy: Boolean?)
+                  spellPosition: Int,
+                  targetPosition: Int)
 
 }

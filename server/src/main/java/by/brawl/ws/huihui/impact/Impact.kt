@@ -1,4 +1,6 @@
 package by.brawl.ws.huihui.impact
 
-open class Impact(val type: ImpactType) {
+interface Impact<E> {
+    fun getType(): ImpactType
+    fun getValue(): E
 }

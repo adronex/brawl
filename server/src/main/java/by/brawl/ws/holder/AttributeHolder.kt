@@ -10,7 +10,7 @@ class AttributeHolder {
         current = bothValues
     }
 
-    constructor(max: Int, current: Int) {
+    constructor(current: Int, max: Int) {
         this.max = max
         this.current = current
     }
