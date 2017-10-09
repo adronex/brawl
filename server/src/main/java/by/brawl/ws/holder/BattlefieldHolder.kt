@@ -74,12 +74,15 @@ class BattlefieldHolder {
             battleHeroes.values.maxBy { it.indexOf(heroHolder) }?.indexOf(heroHolder)
                     ?: throw Exceptions.produceIllegalArgument(LOG, "Hero with id ${heroHolder.id} is absent in queue")
 
+    fun getHeroByPosition(session: GameSession, position: Int): HeroHolder {
+        return getHeroByPosition(session, Math.abs(position), position > 0)
+    }
+
     fun getHeroByPosition(session: GameSession, position: Int, enemy: Boolean): HeroHolder {
-        val sessionKey: String
-        if (enemy) {
-            sessionKey = battleHeroes.keys.first { it != session.id }
+        val sessionKey: String = if (enemy) {
+            battleHeroes.keys.first { it != session.id }
         } else {
-            sessionKey = session.id
+            session.id
         }
         return battleHeroes[sessionKey]?.get(position) ?: throw Exceptions.produceIllegalState(LOG, "Invalid session key: $sessionKey")
     }

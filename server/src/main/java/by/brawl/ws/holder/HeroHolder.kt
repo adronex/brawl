@@ -8,9 +8,9 @@ class HeroHolder(hero: Hero,
                  private val battlefieldHolder: BattlefieldHolder) {
 
     val id: String = hero.id
-    var allSpells = hero.spells.map { SpellHolder(it) }.toList()
-    var bodyparts = hero.bodyparts.map { BodypartHolder(it) }.toCollection(LinkedHashSet<BodypartHolder>())
-    var equipments = hero.equipments.map { EquipmentHolder(it) }.toCollection(LinkedHashSet<EquipmentHolder>())
+    val allSpells = hero.spells.map { SpellHolder(it) }.toList()
+    val bodyparts = hero.bodyparts.map { BodypartHolder(it) }.toCollection(LinkedHashSet<BodypartHolder>())
+    val equipments = hero.equipments.map { EquipmentHolder(it) }.toCollection(LinkedHashSet<EquipmentHolder>())
     val attributes = HeroAttributesHolder(hero.bodyparts)
     val effects = mutableListOf<EffectHolder>()
 

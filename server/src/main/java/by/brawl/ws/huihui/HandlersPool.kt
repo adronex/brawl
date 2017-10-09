@@ -1,4 +1,4 @@
-package by.brawl.ws.huihui.handlers
+package by.brawl.ws.huihui
 
 import by.brawl.ws.huihui.handlers.preconditions.*
 
