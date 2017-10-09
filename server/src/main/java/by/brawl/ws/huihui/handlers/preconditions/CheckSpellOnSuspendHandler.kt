@@ -1,8 +1,9 @@
-package by.brawl.ws.huihui.handlers.check
+package by.brawl.ws.huihui.handlers.preconditions
 
 import by.brawl.ws.holder.SpellHolder
+import by.brawl.ws.huihui.handlers.HuiHandler
 
-class CheckSpellOnSuspendHandler {
+class CheckSpellOnSuspendHandler: HuiHandler {
 
     fun check(spellHolder: SpellHolder): Boolean {
         return spellHolder.suspendTurns == 0

@@ -1,4 +1,4 @@
-package by.brawl.ws.huihui.impact
+package by.brawl.ws.huihui.conf
 
 enum class ImpactType {
     DAMAGE,

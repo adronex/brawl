@@ -1,4 +1,4 @@
-package by.brawl.ws.huihui.handlers.check
+package by.brawl.ws.huihui.handlers.preconditions
 
 import by.brawl.ws.holder.HeroHolder
 import by.brawl.ws.huihui.effects.EffectType

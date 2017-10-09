@@ -3,7 +3,7 @@ package by.brawl.ws.huihui.handlers
 import by.brawl.ws.holder.HeroHolder
 import java.util.*
 
-class AccuracyHandler {
+class AccuracyHandler: HuiHandler {
 
     private val random = Random()
 

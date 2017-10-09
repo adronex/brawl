@@ -1,8 +1,6 @@
 package by.brawl.ws.spell
 
 import by.brawl.ws.holder.BattlefieldHolder
-import by.brawl.ws.holder.HeroHolder
-import by.brawl.ws.huihui.impact.Impact
 import java.util.*
 
 class Uppercut {
@@ -26,10 +24,6 @@ class Uppercut {
             sourceList.clear()
             sourceList.addAll(modifiedHeroesList)
             return battlefieldHolder
-        }
-
-        fun newCast(battlefieldHolder: BattlefieldHolder, impacts: Map<HeroHolder, List<Impact>>): BattlefieldHolder {
-
         }
     }
 }

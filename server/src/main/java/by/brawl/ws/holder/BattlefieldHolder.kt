@@ -26,7 +26,7 @@ class BattlefieldHolder {
     fun isGameFinished() = battleHeroes.values.count { singleList -> singleList.count { it.isAlive() } == 0 } > 0
 
     fun addSquad(squad: Squad) {
-        val heroes = squad.heroes.map { HeroHolder(it) }
+        val heroes = squad.heroes.map { HeroHolder(it, this) }
         mulliganHeroes.put(squad.owner.username, heroes)
         connectedAccountsIds.add(squad.owner.username)
     }
@@ -61,6 +61,11 @@ class BattlefieldHolder {
             }
         }
         throw Exceptions.produceIllegalState(LOG, "Battle heroes does not contain enemy for player $senderId")
+    }
+
+    fun getAlliedHeroes(heroHolder: HeroHolder): List<HeroHolder> {
+        return battleHeroes.values.maxBy { it.indexOf(heroHolder) }
+                ?: throw Exceptions.produceIllegalArgument(LOG, "Hero with id ${heroHolder.id} is absent in queue")
     }
 
     fun getFirstHeroFromQueue(): HeroHolder = queue.peek()

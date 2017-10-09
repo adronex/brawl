@@ -1,24 +1,48 @@
 package by.brawl.ws.huihui
 
+import by.brawl.ws.holder.BattlefieldHolder
 import by.brawl.ws.holder.HeroHolder
-import by.brawl.ws.huihui.effects.EffectHolder
-import by.brawl.ws.huihui.impact.Impact
-import by.brawl.ws.huihui.impact.ImpactType
+import by.brawl.ws.holder.SpellHolder
+import by.brawl.ws.huihui.conf.ImpactType
+import by.brawl.ws.huihui.conf.IntegerImpactConfig
+import by.brawl.ws.huihui.conf.SpellConfig
+import by.brawl.ws.huihui.handlers.HandlersPool
 
-class SpellInstance (){
+class SpellInstance(private val config: SpellConfig) {
+    private val handlersPool = HandlersPool()
     // todo: make it work
-    val impacts: Map<HeroHolder, List<Impact<Any>>> = mapOf()
+    private val impactsMap = mutableMapOf<HeroHolder, List<IntegerImpactConfig>>()
+
+    fun build(spellId: String, position: Int, battlefieldHolder: BattlefieldHolder) {
+//        battlefieldHolder.get
+    }
+
+    fun checkPreConditions(caster: HeroHolder, target: HeroHolder, spellHolder: SpellHolder) {
+//        handlersPool.checkCasterAvailabilityHandler.check(caster)
+//        handlersPool.checkCasterPositionHandler.check(config)
+//        handlersPool.checkSpellHasChargesHandler.check(spellHolder)
+//        handlersPool.checkSpellOnCooldownHandler.check(spellHolder)
+//        handlersPool.checkSpellOnSuspendHandler.check(spellHolder)
+//        handlersPool.checkTargetAvailabilityHandler.check(target)
+//        handlersPool.checkTargetPositionHandler.check(config)
+    }
+
+    fun calculate() {
+//        val casterImpacts = config.casterIntegerImpacts.map { it. } IntegerImpact(ImpactType.DAMAGE, config.targetIntegerImpacts[0].calculateValue())
+//        val impacts = listOf<Impact<Any>>()
+//        impactsMap.put(hero, impacts)
+    }
 
     fun apply() {
-        impacts.forEach{ hero, impacts ->
+        impactsMap.forEach { hero, impacts ->
             run {
                 impacts.forEach { impact ->
                     when (impact.getType()) {
-                        ImpactType.DAMAGE -> hero.hit(impact.getValue() as Int)
-                        ImpactType.HEAL -> hero.heal(impact.getValue() as Int)
-                        ImpactType.BARRIER -> hero.barrier(impact.getValue() as Int)
-                        //todo: ImpactType.MOVE
-                        ImpactType.EFFECT -> hero.effects.add(impact.getValue() as EffectHolder)
+                        ImpactType.DAMAGE -> hero.hit(impact.calculateValue())
+                        ImpactType.HEAL -> hero.heal(impact.calculateValue())
+                        ImpactType.BARRIER -> hero.barrier(impact.calculateValue())
+                        ImpactType.MOVE -> hero.move(impact.calculateValue())
+       //                 ImpactType.EFFECT -> hero.effects.add(impact.calculateValue() as EffectHolder)
                     }
                 }
             }
