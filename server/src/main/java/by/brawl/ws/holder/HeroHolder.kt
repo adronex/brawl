@@ -1,14 +1,20 @@
 package by.brawl.ws.holder
 
 import by.brawl.entity.Hero
+import by.brawl.util.Exceptions
+import by.brawl.ws.huihui.SpellsPool
 import by.brawl.ws.huihui.effects.EffectHolder
+import org.slf4j.LoggerFactory
 import java.util.*
 
 class HeroHolder(hero: Hero,
                  private val battlefieldHolder: BattlefieldHolder) {
 
     val id: String = hero.id
-    val allSpells = hero.spells.map { SpellHolder(it) }.toList()
+    val allSpells = hero.spells.map {
+        SpellHolder(SpellsPool.spellsMap[it.id]
+                ?: throw Exceptions.produceIllegalState(LOG, "Spell with id ${it.id} isn't present in spell pool."))
+    }.toList()
     val bodyparts = hero.bodyparts.map { BodypartHolder(it) }.toCollection(LinkedHashSet<BodypartHolder>())
     val equipments = hero.equipments.map { EquipmentHolder(it) }.toCollection(LinkedHashSet<EquipmentHolder>())
     val attributes = HeroAttributesHolder(hero.bodyparts)
@@ -51,5 +57,10 @@ class HeroHolder(hero: Hero,
         } else {
             Collections.rotate(heroes.subList(oldPosition, newPosition + 1), 1);
         }
+    }
+
+    companion object {
+
+        private val LOG = LoggerFactory.getLogger(HeroHolder::class.java)
     }
 }

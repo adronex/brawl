@@ -6,6 +6,6 @@ import by.brawl.ws.huihui.handlers.HuiHandler
 class CheckSpellOnSuspendHandler: HuiHandler {
 
     fun check(spellHolder: SpellHolder): Boolean {
-        return spellHolder.suspendTurns == 0
+        return spellHolder.suspend == 0
     }
 }

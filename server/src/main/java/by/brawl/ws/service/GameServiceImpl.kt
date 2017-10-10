@@ -13,8 +13,7 @@ import org.springframework.stereotype.Service
 import java.util.*
 
 @Service
-internal class GameServiceImpl constructor(private val spellCastService: SpellCastService,
-                                           private val gameSessionsPool: GameSessionsPool) : GameService {
+internal class GameServiceImpl constructor(private val gameSessionsPool: GameSessionsPool) : GameService {
 
     override fun createTwoPlayersGame(firstSession: GameSession,
                                       secondSession: GameSession,

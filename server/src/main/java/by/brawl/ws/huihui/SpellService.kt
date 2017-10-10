@@ -10,24 +10,22 @@ import by.brawl.ws.huihui.conf.IntegerImpactConfig
 import by.brawl.ws.huihui.conf.SpellConfig
 import by.brawl.ws.huihui.handlers.CheckEndGameHandler
 import org.slf4j.LoggerFactory
+import org.springframework.stereotype.Service
 
-class SpellService() {
+@Service
+class SpellService(private val preconditionsPool: HandlersPool,
+                   private val checkEndGameHandler: CheckEndGameHandler) {
 
-    private val spellsPool = SpellsPool()
-    private val preconditionHandlersPool = HandlersPool()
-    private val checkEndGameHandler = CheckEndGameHandler()
-    //  private val impactsMap = mutableMapOf<HeroHolder, List<IntegerImpactConfig>>()
-
-    fun cast(clickedSpellPosition: Int,
-             clickedHeroPosition: Int,
-             gameSession: GameSession) {
+    fun cast(gameSession: GameSession,
+             clickedSpellPosition: Int,
+             clickedHeroPosition: Int) {
         val battlefieldHolder = gameSession.battlefieldHolder
         val caster: HeroHolder = battlefieldHolder.getFirstHeroFromQueue()
         // todo: check current turn availability
         val target: HeroHolder = battlefieldHolder.getHeroByPosition(gameSession, clickedHeroPosition)
         val spellHolder: SpellHolder = caster.allSpells[clickedSpellPosition]
         // todo: check spell hero-owner
-        val config: SpellConfig = spellsPool.spellsMap[spellHolder.id]
+        val config: SpellConfig = SpellsPool.spellsMap[spellHolder.id]
                 ?: throw Exceptions.produceIllegalArgument(LOG, "Spell with id ${spellHolder.id} doesn't exist!")
         val preconditionPassed = checkPreConditions(caster, target, spellHolder, config)
         if (!preconditionPassed) {
@@ -55,13 +53,13 @@ class SpellService() {
                                    target: HeroHolder,
                                    spellHolder: SpellHolder,
                                    spellConfig: SpellConfig): Boolean =
-            preconditionHandlersPool.checkCasterAvailabilityHandler.check(caster)
-                    && preconditionHandlersPool.checkCasterPositionHandler.check(spellConfig, caster.position())
-                    && preconditionHandlersPool.checkSpellHasChargesHandler.check(spellHolder)
-                    && preconditionHandlersPool.checkSpellOnCooldownHandler.check(spellHolder)
-                    && preconditionHandlersPool.checkSpellOnSuspendHandler.check(spellHolder)
-                    && preconditionHandlersPool.checkTargetAvailabilityHandler.check(target)
-                    && preconditionHandlersPool.checkTargetPositionHandler.check(spellConfig, target.position())
+            preconditionsPool.checkCasterAvailabilityHandler.check(caster)
+                    && preconditionsPool.checkCasterPositionHandler.check(spellConfig, caster.position())
+                    && preconditionsPool.checkSpellHasChargesHandler.check(spellHolder)
+                    && preconditionsPool.checkSpellOnCooldownHandler.check(spellHolder)
+                    && preconditionsPool.checkSpellOnSuspendHandler.check(spellHolder)
+                    && preconditionsPool.checkTargetAvailabilityHandler.check(target)
+                    && preconditionsPool.checkTargetPositionHandler.check(spellConfig, target.position())
 
     private fun apply(impactsMap: Map<HeroHolder, List<IntegerImpactConfig>>) {
         impactsMap.forEach { hero, impacts ->

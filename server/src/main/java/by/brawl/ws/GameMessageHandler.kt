@@ -4,6 +4,7 @@ import by.brawl.util.Exceptions
 import by.brawl.ws.dto.ClientRequestType
 import by.brawl.ws.holder.gamesession.GameSession
 import by.brawl.ws.holder.gamesession.GameSessionsPool
+import by.brawl.ws.huihui.SpellService
 import by.brawl.ws.service.GameService
 import by.brawl.ws.service.MatchmakingService
 import org.json.JSONObject
@@ -18,10 +19,10 @@ import java.util.*
 // Noisia - Hunter Theme
 
 @Component
-open class GameMessageHandler
-constructor(private val gameSessionsPool: GameSessionsPool,
-            private val matchmakingService: MatchmakingService,
-            private val gameService: GameService) : TextWebSocketHandler() {
+open class GameMessageHandler(private val gameSessionsPool: GameSessionsPool,
+                              private val matchmakingService: MatchmakingService,
+                              private val gameService: GameService,
+                              private val spellService: SpellService) : TextWebSocketHandler() {
 
     override fun afterConnectionEstablished(webSocketSession: WebSocketSession) {
         gameSessionsPool.putSession(webSocketSession)
@@ -72,7 +73,7 @@ constructor(private val gameSessionsPool: GameSessionsPool,
             throw Exceptions.produceIllegalArgument(LOG, "Incorrect target position: $targetPosition, allowed: [-4, -1], [1, 4]")
         }
 
-        gameService.castSpell(session, spellPosition, targetPosition)
+        spellService.cast(session, spellPosition, targetPosition)
     }
 
     companion object {

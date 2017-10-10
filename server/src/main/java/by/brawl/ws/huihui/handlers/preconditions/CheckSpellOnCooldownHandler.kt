@@ -6,6 +6,6 @@ import by.brawl.ws.huihui.handlers.HuiHandler
 class CheckSpellOnCooldownHandler: HuiHandler {
 
     fun check(spellHolder: SpellHolder): Boolean {
-        return spellHolder.cooldownTurns == 0
+        return spellHolder.cooldown == 0
     }
 }

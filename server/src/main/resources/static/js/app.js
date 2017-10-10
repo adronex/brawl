@@ -6,7 +6,7 @@ let webSocket;
 
 app.controller('squadMenuController', ['$scope', '$http', function ($scope, $http) {
 
-    const serverUrl = 'localhost:8081';
+    const serverUrl = 'localhost:8082';
     $scope.staticData = {};
 
     let init = function () {
