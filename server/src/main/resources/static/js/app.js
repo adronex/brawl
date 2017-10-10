@@ -61,10 +61,6 @@ app.controller('squadMenuController', ['$scope', '$http', function ($scope, $htt
 
         webSocket.onmessage = function (event) {
             let response = JSON.parse(event.data);
-            if (response.queue) {
-                $scope.heroesQueue = response.queue;
-                delete response.queue;
-            }
             if (response.battleLog) {
                 $scope.battleLog = response.battleLog;
                 delete response.battleLog;
@@ -103,6 +99,13 @@ app.controller('squadMenuController', ['$scope', '$http', function ($scope, $htt
                 $scope.heroSpells = response.heroSpells;
                 delete response.heroSpells;
             }
+            if (response.queue) {
+                $scope.heroesQueue = response.queue;
+                if (!$scope.heroesQueue[0].enemy) {
+                    $scope.currentSpells = $scope.heroSpells[$scope.heroesQueue[0].id]
+                }
+                delete response.queue;
+            }
             if (!(Object.keys(response).length === 0 && response.constructor === Object)) {
                 $scope.messages.push(response);
             }
@@ -120,12 +123,12 @@ app.controller('squadMenuController', ['$scope', '$http', function ($scope, $htt
     $scope.onHeroClick = function(heroId, enemy) {
         if ($scope.gameState === 'MULLIGAN') {
             chooseHeroInMulligan(heroId)
-        } else if ($scope.gameState === 'PLAYING' && $scope.temp.castedSpell) {
+        } else if ($scope.gameState === 'PLAYING' && $scope.temp.castedSpellPosition) {
             let heroPosition = enemy
-                ? $scope.enemyHeroes.findIndex(hero => hero.id === heroId)
-                : $scope.myHeroes.findIndex(hero => hero.id === heroId);
-            sendSpellToServer($scope.temp.castedSpell, heroPosition + 1, enemy);
-            delete $scope.temp.castedSpell;
+                ? $scope.enemyHeroes.findIndex(hero => hero.id === heroId) + 1
+                : -$scope.myHeroes.findIndex(hero => hero.id === heroId) - 1;
+            sendSpellToServer($scope.temp.castedSpellPosition, heroPosition);
+            delete $scope.temp.castedSpellPosition;
         }
     };
 
@@ -152,19 +155,17 @@ app.controller('squadMenuController', ['$scope', '$http', function ($scope, $htt
         }
     };
 
-    $scope.onSpellButtonPress = function (spellId) {
-        let castedSpell = $scope.staticData.spells[spellId];
-        if (castedSpell && castedSpell.targetable) {
-            $scope.temp.castedSpell = spellId;
-        } else if (castedSpell && !castedSpell.targetable) {
-            sendSpellToServer(spellId);
+    $scope.onSpellButtonPress = function (index) {
+        let castedSpell = $scope.currentSpells[index];
+        if (castedSpell) {
+            $scope.temp.castedSpellPosition = index;
         } else {
             console.error('Invalid spell id');
         }
     };
 
-    let sendSpellToServer = function (spellId, targetPosition, forEnemy) {
-        webSocket.send(JSON.stringify({type: 'CAST_SPELL', body: {spellId: spellId, target: targetPosition, forEnemy: forEnemy}}));
+    let sendSpellToServer = function (spellPosition, targetPosition) {
+        webSocket.send(JSON.stringify({type: 'CAST_SPELL', body: {spellPosition: spellPosition, targetPosition: targetPosition}}));
     };
 
     $scope.closeSocket = function () {

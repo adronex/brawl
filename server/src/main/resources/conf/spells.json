@@ -1,0 +1,139 @@
+[
+  {
+    "id": "URSA_RAGE",
+    "color": "R",
+    "type": "PASSIVE",
+    "casterImpact": {
+      "triggers": [
+        {
+          "notification": "ON_DEAL_DAMAGE",
+          "effects": [
+            {
+              "id": "ATTRIBUTE_INCREMENT",
+              "attributeName": "DAMAGE",
+              "amount": 7
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "HUSKAR_SPEED",
+    "color": "R",
+    "type": "PASSIVE",
+    "casterImpact": {
+      "triggers": [
+        {
+          "notification": "ON_TAKE_DAMAGE",
+          //            "conditionHandler": {
+          //              "id": "DAMAGE_TAKEN_HANDLER",
+          //              "percentsLost": 7
+          //            },
+          "effects": [
+            {
+              "id": "ATTRIBUTE_INCREMENT",
+              "attributeName": "SPEED",
+              "amount": 2
+            }
+          ]
+        },
+        {
+          "notification": "ON_TAKE_HEALING",
+          "effects": [
+            {
+              "id": "ATTRIBUTE_DECREMENT",
+              "attributeName": "SPEED",
+              "amount": 2
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "REGENERATION_PER_TURN",
+    "color": "W",
+    "type": "ACTIVE",
+    "targetsImpact": {
+      "effects": [
+        {
+          "id": "REGENERATION_ALPHA",
+          //            "values": 4,
+          "turns": 3
+        }
+      ]
+    }
+  },
+  {
+    "id": "DIVINE_COMFORT",
+    "color": "W",
+    "type": "ACTIVE",
+    "targetsImpact": {
+      "heal": {
+        "from": 3,
+        "to": 5
+      }
+    }
+  },
+  {
+    "id": "DEAL_A_LOT_OF_DAMAGE_AND_STUN_OWN_HERO",
+    "color": "R",
+    "type": "ACTIVE",
+    "targetsImpact": {
+      "damage": {
+        "from": 12,
+        "to": 20
+      }
+    },
+    "additionalImpacts": [
+      {
+        "id": "STUN_RANDOM_OWN_HERO"
+      }
+    ]
+  },
+  {
+    "id": "SHOOT_THEM_ALL",
+    "color": "R",
+    "type": "ACTIVE",
+    "targetsImpact": {
+      "damage": {
+        "from": 4,
+        "to": 7
+      }
+    }
+  },
+  {
+    "id": "ELDRICH_PULL",
+    "color": "U",
+    "type": "ACTIVE",
+    "targetsImpact": {
+      "move": {
+        "forwardPositions": 3
+      }
+    }
+  },
+  {
+    "id": "SHUFFLE_OWN",
+    "color": "U",
+    "type": "ACTIVE",
+    "additionalImpacts": [
+      {
+        "id": "SHUFFLE_OWN_HEROES"
+      },
+      {
+        "id": "HIDE_HISTORY"
+      }
+    ]
+  },
+  {
+    "id": "STACKING_POISON",
+    "color": "B",
+    "type": "ACTIVE",
+    "targetsImpact": {
+      "effects": {
+        "id": "STACKING_POISON"
+      }
+    }
+  }
+]

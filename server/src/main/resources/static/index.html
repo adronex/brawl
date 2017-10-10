@@ -70,17 +70,17 @@
         <br>
         <button type="button" ng-if="gameState==='MULLIGAN'" ng-click="sendMulliganInfo()">Choose heroes
         </button>
-        <div id="currentSpell" ng-if="temp.castedSpell">
-            Choose targets for spell '{{staticData.spells[temp.castedSpell].name}}', myTargets:
-            {{staticData.spells[temp.castedSpell].myTargets}}, enemyTargets:
-            {{staticData.spells[temp.castedSpell].enemyTargets}}
-            <button type="button" ng-click="temp.castedSpell = undefined">
+        <div id="currentSpell" ng-if="temp.castedSpellPosition">
+            Choose targets for spell '{{staticData.spells[temp.castedSpellPosition].name}}', myTargets:
+            {{staticData.spells[temp.castedSpellPosition].myTargets}}, enemyTargets:
+            {{staticData.spells[temp.castedSpellPosition].enemyTargets}}
+            <button type="button" ng-click="temp.castedSpellPosition = undefined">
                 Cancel
             </button>
         </div>
         <div id="spellBar" ng-if="gameState==='PLAYING' && !heroesQueue[0].enemy">
-            <div ng-repeat="spell in heroSpells[heroesQueue[0].id]">
-                <button type="button" ng-click="onSpellButtonPress(spell.id)">{{staticData.spells[spell.id].name}}
+            <div ng-repeat="spell in currentSpells track by $index">
+                <button type="button" ng-click="onSpellButtonPress($index)">{{staticData.spells[spell.id].name}}
                     {{spell}}
                 </button>
             </div>
@@ -95,7 +95,7 @@
             <div ng-class="{'myRobot' : true,
             'colorChosen' : mulliganChosenHeroesIds.includes(item.id),
             'colorCurrentTurn' : heroesQueue[0].id === item.id,
-            'colorTargetable' : staticData.spells[temp.castedSpell].myTargets.includes($index + 1)}"
+            'colorTargetable' : staticData.spells[currentSpells[temp.castedSpellPosition]].myTargets.includes($index + 1)}"
                  data-ng-repeat="item in myHeroes track by $index"
                  data-ng-click="onHeroClick(item.id, false)">
                 <div class="head" ng-style="{'background-color': item.appearance.head}"></div>
@@ -110,7 +110,7 @@
             </div>
             <div ng-class="{'enemyRobot' : true,
             'colorCurrentTurn' : heroesQueue[0].id === item.id,
-            'colorTargetable' : staticData.spells[temp.castedSpell].enemyTargets.includes($index + 1)}"
+            'colorTargetable' : staticData.spells[currentSpells[temp.castedSpellPosition]].enemyTargets.includes($index + 1)}"
                  data-ng-repeat="item in enemyHeroes track by $index"
                  data-ng-click="onHeroClick(item.id, true)">
                 <div class="head" ng-style="{'background-color': item.appearance.head}"></div>

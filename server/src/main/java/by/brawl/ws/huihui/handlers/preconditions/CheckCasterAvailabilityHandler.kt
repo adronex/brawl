@@ -7,6 +7,6 @@ import by.brawl.ws.huihui.handlers.HuiHandler
 class CheckCasterAvailabilityHandler: HuiHandler {
 
     fun check(caster: HeroHolder): Boolean {
-        return caster.effects.any { it.effect.type != EffectType.STUN }
+        return !caster.effects.any { it.effect.type == EffectType.STUN }
     }
 }

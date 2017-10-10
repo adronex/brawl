@@ -45,6 +45,7 @@ open class GameMessageHandler(private val gameSessionsPool: GameSessionsPool,
             }
         } catch (e: Exception) {
             Exceptions.logError(LOG, e, e.message ?: "Unspecified exception happened.")
+            throw e;
         }
 
     }
@@ -69,7 +70,7 @@ open class GameMessageHandler(private val gameSessionsPool: GameSessionsPool,
             throw Exceptions.produceIllegalArgument(LOG, "Incorrect spell position: $spellPosition, allowed: [0, 3]")
         }
         val targetPosition = body.getInt("targetPosition")
-        if (targetPosition !in -4..-1 || targetPosition !in 1..4) {
+        if (targetPosition !in -4..-1 && targetPosition !in 1..4) {
             throw Exceptions.produceIllegalArgument(LOG, "Incorrect target position: $targetPosition, allowed: [-4, -1], [1, 4]")
         }
 
