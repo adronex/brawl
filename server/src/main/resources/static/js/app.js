@@ -123,7 +123,7 @@ app.controller('squadMenuController', ['$scope', '$http', function ($scope, $htt
     $scope.onHeroClick = function(heroId, enemy) {
         if ($scope.gameState === 'MULLIGAN') {
             chooseHeroInMulligan(heroId)
-        } else if ($scope.gameState === 'PLAYING' && $scope.temp.castedSpellPosition) {
+        } else if ($scope.gameState === 'PLAYING' && angular.isNumber($scope.temp.castedSpellPosition)) {
             let heroPosition = enemy
                 ? $scope.enemyHeroes.findIndex(hero => hero.id === heroId) + 1
                 : -$scope.myHeroes.findIndex(hero => hero.id === heroId) - 1;

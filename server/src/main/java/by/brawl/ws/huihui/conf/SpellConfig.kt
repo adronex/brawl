@@ -3,23 +3,35 @@ package by.brawl.ws.huihui.conf
 import by.brawl.ws.holder.BattlefieldHolder
 import by.brawl.ws.holder.HeroHolder
 
-class SpellConfig(val id: String,
-                  val casterPositions: List<Int> = listOf(),
-                  val targetPositions: List<Int> = listOf(),
-                  val casterIntegerImpacts: List<IntegerImpactConfig> = listOf(),
-                  val targetIntegerImpacts: List<IntegerImpactConfig> = listOf(),
-                  val additionalIntegerImpacts: Map<Int, List<IntegerImpactConfig>> = mapOf(),
-                  val logic: (battlefieldHolder: BattlefieldHolder, caster: HeroHolder) -> BattlefieldHolder = { holder, _ -> holder },
-                  val suspend: Int = 0,
-                  val cooldown: Int = 0,
-                  val channeling: Boolean = false,
-                  val channelDuration: Int = 0,
-                  val chargeable: Boolean = false,
-                  val charges: Int = 0,
+class SpellConfig(id: String,
+                  casterPositions: List<Int>?,
+                  targetPositions: List<Int>?,
+                  casterIntegerImpacts: List<IntegerImpactConfig>?,
+                  targetIntegerImpacts: List<IntegerImpactConfig>?,
+                  additionalIntegerImpacts: Map<Int, List<IntegerImpactConfig>>?,
+                  logic: ((battlefieldHolder: BattlefieldHolder, caster: HeroHolder) -> BattlefieldHolder)?,
+                  suspend: Int?,
+                  cooldown: Int?,
+                  charges: Int?,
+                  channeling: Boolean? = null,
+                  channelDuration: Int? = null,
                   val targetLinks: Map<Int, Int> = mapOf(),
                   val unlockable: Boolean = false,
-                  val unlockLogic: (() -> Boolean)? = null,
+                  val unlockLogic: (() -> Boolean) = { true },
                   val lockable: Boolean = false,
-                  val lockLogic: (() -> Boolean)? = null) {
+                  val lockLogic: (() -> Boolean) = { true }) {
 
+    val id: String = id
+    val casterPositions: List<Int> = casterPositions ?: listOf()
+    val targetPositions: List<Int> = targetPositions ?: listOf()
+    val casterIntegerImpacts: List<IntegerImpactConfig> = casterIntegerImpacts ?: listOf()
+    val targetIntegerImpacts: List<IntegerImpactConfig> = targetIntegerImpacts ?: listOf()
+    val additionalIntegerImpacts: Map<Int, List<IntegerImpactConfig>> = additionalIntegerImpacts ?: mapOf()
+    val logic: (battlefieldHolder: BattlefieldHolder, caster: HeroHolder) -> BattlefieldHolder = logic ?: { holder, _ -> holder }
+    val suspend: Int = suspend ?: 0
+    val cooldown: Int = cooldown ?: 0
+    val chargeable: Boolean = charges != null
+    val charges: Int = charges ?: 0
+    val channeling: Boolean = channeling ?: false
+    val channelDuration: Int = channelDuration ?: 0
 }

@@ -6,6 +6,6 @@ import by.brawl.ws.huihui.handlers.HuiHandler
 class CheckSpellHasChargesHandler: HuiHandler {
 
     fun check(spellHolder: SpellHolder): Boolean {
-        return spellHolder.charges > 0
+        return !spellHolder.config.chargeable || spellHolder.charges > 0
     }
 }

@@ -78,13 +78,14 @@ class BattlefieldHolder {
         return getHeroByPosition(session, Math.abs(position), position > 0)
     }
 
-    fun getHeroByPosition(session: GameSession, position: Int, enemy: Boolean): HeroHolder {
+    fun getHeroByPosition(session: GameSession, adaptedPosition: Int, enemy: Boolean): HeroHolder {
+        val realIndex = adaptedPosition - 1
         val sessionKey: String = if (enemy) {
             battleHeroes.keys.first { it != session.id }
         } else {
             session.id
         }
-        return battleHeroes[sessionKey]?.get(position) ?: throw Exceptions.produceIllegalState(LOG, "Invalid session key: $sessionKey")
+        return battleHeroes[sessionKey]?.get(realIndex) ?: throw Exceptions.produceIllegalState(LOG, "Invalid session key: $sessionKey")
     }
 
 

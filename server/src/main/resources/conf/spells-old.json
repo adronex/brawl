@@ -1,166 +1,252 @@
 [
   {
-    "id": "DAMAGED_HEAL",
-    "casterPositions": [-4, -3, -2, -1],
-    "targetPositions": [-4, -3, -2, -1],
-    "casterIntegerImpacts": [
+    "ID": "DAMAGED_HEAL",
+    "CASTER_POSITIONS": [
+      -4,
+      -3,
+      -2,
+      -1
+    ],
+    "TARGET_POSITIONS": [
+      -4,
+      -3,
+      -2,
+      -1
+    ],
+    "CASTER_IMPACTS": [
       {
-        "type": "DAMAGE",
-        "from": 5,
-        "to": 8
+        "TYPE": "DAMAGE",
+        "FROM": 5,
+        "TO": 8
       }
     ],
-    "targetIntegerImpacts": [
+    "TARGET_IMPACTS": [
       {
-        "type": "HEAL",
-        "from": 15,
-        "to": 20
+        "TYPE": "HEAL",
+        "FROM": 15,
+        "TO": 20
       }
     ]
   },
   {
-    "id": "DIVINE_COMFORT",
-    "casterPositions": [-4, -3, -2, -1],
-    "targetPositions": [-4, -3, -2, -1],
-    "additionalIntegerImpacts": {
-      "-4": [
-        {
-          "type": "HEAL",
-          "from": 3,
-          "to": 6
-        }
-      ],
-      "-3": [
-        {
-          "type": "HEAL",
-          "from": 3,
-          "to": 6
-        }
-      ],
-      "-2": [
-        {
-          "type": "HEAL",
-          "from": 3,
-          "to": 6
-        }
-      ],
-      "-1": [
-        {
-          "type": "HEAL",
-          "from": 3,
-          "to": 6
-        }
-      ]
-    },
-    "cooldown": 2
-  },
-  {
-    "id": "ELDRICH_PULL",
-    "casterPositions": [-4, -3],
-    "targetPositions": [3, 4],
-    "targetIntegerImpacts": [
-      {
-        "type": "MOVE",
-        "value": 2
-      }
+    "ID": "DIVINE_COMFORT",
+    "CASTER_POSITIONS": [
+      -4,
+      -3,
+      -2,
+      -1
     ],
-    "cooldown": 2
-  },
-  {
-    "id": "JUDGEMENT",
-    "casterPositions": [-4, -3],
-    "targetPositions": [1, 2, 3],
-    "targetIntegerImpacts": [
-      {
-        "type": "DAMAGE",
-        "from": 6,
-        "to": 9
-      }
+    "TARGET_POSITIONS": [
+      -4,
+      -3,
+      -2,
+      -1
     ],
-    "casterIntegerImpacts": [
+    "ADDITIONAL_IMPACTS": [
       {
-        "type": "HEAL",
-        "value": 4
-      }
-    ],
-    "delay": 2
-  },
-  {
-    "id": "SELF_HEAL",
-    "casterPositions": [-4, -3, -2, -1],
-    "targetPositions": [-4, -3, -2, -1],
-    "casterIntegerImpacts": [
-      {
-        "type": "HEAL",
-        "from": 10,
-        "to": 15
-      }
-    ],
-    "cooldown": 2
-  },
-  {
-    "id": "SHOOT_THEM_ALL",
-    "casterPositions": [-4, -3],
-    "additionalIntegerImpacts": {
-      "1": [
-        {
-          "type": "DAMAGE",
-          "from": 5,
-          "to": 10
-        }
-      ],
-      "2": [
-        {
-          "type": "DAMAGE",
-          "from": 5,
-          "to": 10
-        }
-      ],
-      "3": [
-        {
-          "type": "DAMAGE",
-          "from": 5,
-          "to": 10
-        }
-      ],
-      "4": [
-        {
-          "type": "DAMAGE",
-          "from": 5,
-          "to": 10
-        }
-      ]
-    },
-    "delay": 3,
-    "cooldown": 3
-  },
-  {
-    "id": "SUCKER_PUNCH",
-    "casterPositions": [-1],
-    "targetPositions": [1],
-    "targetIntegerImpacts": [
-      {
-        "type": "DAMAGE",
-        "from": 17,
-        "to": 22
-      }
-    ],
-    "delay": 3,
-    "cooldown": 3
-  },
-  {
-    "id": "UPPERCUT",
-    "casterPositions": [-2, -1],
-    "targetPositions": [1, 2],
-    "targetIntegerImpacts": [
-      {
-        "type": "DAMAGE",
-        "from": 4,
-        "to": 6
+        "TARGET": -4,
+        "IMPACTS": [
+          {
+            "TYPE": "HEAL",
+            "FROM": 3,
+            "TO": 6
+          }
+        ]
       },
       {
-        "type": "MOVE",
-        "value": 3
+        "TARGET": -3,
+        "IMPACTS": [
+          {
+            "TYPE": "HEAL",
+            "FROM": 3,
+            "TO": 6
+          }
+        ]
+      },
+      {
+        "TARGET": -2,
+        "IMPACTS": [
+          {
+            "TYPE": "HEAL",
+            "FROM": 3,
+            "TO": 6
+          }
+        ]
+      },
+      {
+        "TARGET": -1,
+        "IMPACTS": [
+          {
+            "TYPE": "HEAL",
+            "FROM": 3,
+            "TO": 6
+          }
+        ]
+      }
+    ],
+    "COOLDOWN": 2
+  },
+  {
+    "ID": "ELDRICH_PULL",
+    "CASTER_POSITIONS": [
+      -4,
+      -3
+    ],
+    "TARGET_POSITIONS": [
+      3,
+      4
+    ],
+    "TARGET_IMPACTS": [
+      {
+        "TYPE": "MOVE",
+        "VALUE": 2
+      }
+    ],
+    "COOLDOWN": 2
+  },
+  {
+    "ID": "JUDGEMENT",
+    "CASTER_POSITIONS": [
+      -4,
+      -3
+    ],
+    "TARGET_POSITIONS": [
+      1,
+      2,
+      3
+    ],
+    "CASTER_IMPACTS": [
+      {
+        "TYPE": "HEAL",
+        "VALUE": 4
+      }
+    ],
+    "TARGET_IMPACTS": [
+      {
+        "TYPE": "DAMAGE",
+        "FROM": 6,
+        "TO": 9
+      }
+    ],
+    "SUSPEND": 2
+  },
+  {
+    "ID": "SELF_HEAL",
+    "CASTER_POSITIONS": [
+      -4,
+      -3,
+      -2,
+      -1
+    ],
+    "TARGET_POSITIONS": [
+      -4,
+      -3,
+      -2,
+      -1
+    ],
+    "CASTER_IMPACTS": [
+      {
+        "TYPE": "HEAL",
+        "FROM": 10,
+        "TO": 15
+      }
+    ],
+    "COOLDOWN": 2
+  },
+  {
+    "ID": "SHOOT_THEM_ALL",
+    "CASTER_POSITIONS": [
+      -4,
+      -3
+    ],
+    "TARGET_POSITIONS": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "ADDITIONAL_IMPACTS": [
+      {
+        "TARGET": 1,
+        "IMPACTS": [
+          {
+            "TYPE": "DAMAGE",
+            "FROM": 5,
+            "TO": 10
+          }
+        ]
+      },
+      {
+        "TARGET": 2,
+        "IMPACTS": [
+          {
+            "TYPE": "DAMAGE",
+            "FROM": 5,
+            "TO": 10
+          }
+        ]
+      },
+      {
+        "TARGET": 3,
+        "IMPACTS": [
+          {
+            "TYPE": "DAMAGE",
+            "FROM": 5,
+            "TO": 10
+          }
+        ]
+      },
+      {
+        "TARGET": 4,
+        "IMPACTS": [
+          {
+            "TYPE": "DAMAGE",
+            "FROM": 5,
+            "TO": 10
+          }
+        ]
+      }
+    ],
+    "COOLDOWN": 3,
+    "CHARGES": 2
+  },
+  {
+    "ID": "SUCKER_PUNCH",
+    "CASTER_POSITIONS": [
+      -1
+    ],
+    "TARGET_POSITIONS": [
+      1
+    ],
+    "TARGET_IMPACTS": [
+      {
+        "TYPE": "DAMAGE",
+        "FROM": 17,
+        "TO": 22
+      }
+    ],
+    "SUSPEND": 3,
+    "COOLDOWN": 3
+  },
+  {
+    "ID": "UPPERCUT",
+    "CASTER_POSITIONS": [
+      -2,
+      -1
+    ],
+    "TARGET_POSITIONS": [
+      1,
+      2
+    ],
+    "TARGET_IMPACTS": [
+      {
+        "TYPE": "DAMAGE",
+        "FROM": 4,
+        "TO": 6
+      },
+      {
+        "TYPE": "MOVE",
+        "VALUE": 3
       }
     ]
   }

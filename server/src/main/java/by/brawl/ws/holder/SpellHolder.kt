@@ -2,7 +2,7 @@ package by.brawl.ws.holder
 
 import by.brawl.ws.huihui.conf.SpellConfig
 
-class SpellHolder(private val config: SpellConfig) {
+class SpellHolder(val config: SpellConfig) {
 
     val id: String = config.id
     var suspend: Int = config.suspend

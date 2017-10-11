@@ -1,7 +1,8 @@
 package by.brawl.dto
 
-data class SpellStaticDataDto(val id: String,
-                              val name: String,
-                              val targetable: Boolean,
-                              val myTargets: Set<Int>,
-                              val enemyTargets: Set<Int>)
+import by.brawl.ws.huihui.conf.SpellConfig
+
+@Deprecated("Use spellConfig directly maybe?")
+class SpellStaticDataDto(config: SpellConfig) {
+    val id = config.id
+}

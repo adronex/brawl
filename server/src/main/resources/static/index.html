@@ -70,10 +70,10 @@
         <br>
         <button type="button" ng-if="gameState==='MULLIGAN'" ng-click="sendMulliganInfo()">Choose heroes
         </button>
-        <div id="currentSpell" ng-if="temp.castedSpellPosition">
-            Choose targets for spell '{{staticData.spells[temp.castedSpellPosition].name}}', myTargets:
-            {{staticData.spells[temp.castedSpellPosition].myTargets}}, enemyTargets:
-            {{staticData.spells[temp.castedSpellPosition].enemyTargets}}
+        <div id="currentSpell" ng-if="angular.isNumber(temp.castedSpellPosition)">
+            Choose targets for spell '{{currentSpells[temp.castedSpellPosition].id}}', caster positions:
+            {{staticData.spells[currentSpells[temp.castedSpellPosition].id].casterPositions}}, targets positions:
+            {{staticData.spells[currentSpells[temp.castedSpellPosition].id].targetPositions}}
             <button type="button" ng-click="temp.castedSpellPosition = undefined">
                 Cancel
             </button>
@@ -95,7 +95,7 @@
             <div ng-class="{'myRobot' : true,
             'colorChosen' : mulliganChosenHeroesIds.includes(item.id),
             'colorCurrentTurn' : heroesQueue[0].id === item.id,
-            'colorTargetable' : staticData.spells[currentSpells[temp.castedSpellPosition]].myTargets.includes($index + 1)}"
+            'colorTargetable' : staticData.spells[currentSpells[temp.castedSpellPosition].id].targetPositions.includes(-$index - 1)}"
                  data-ng-repeat="item in myHeroes track by $index"
                  data-ng-click="onHeroClick(item.id, false)">
                 <div class="head" ng-style="{'background-color': item.appearance.head}"></div>
@@ -110,7 +110,7 @@
             </div>
             <div ng-class="{'enemyRobot' : true,
             'colorCurrentTurn' : heroesQueue[0].id === item.id,
-            'colorTargetable' : staticData.spells[currentSpells[temp.castedSpellPosition]].enemyTargets.includes($index + 1)}"
+            'colorTargetable' : staticData.spells[currentSpells[temp.castedSpellPosition].id].targetPositions.includes($index + 1)}"
                  data-ng-repeat="item in enemyHeroes track by $index"
                  data-ng-click="onHeroClick(item.id, true)">
                 <div class="head" ng-style="{'background-color': item.appearance.head}"></div>
