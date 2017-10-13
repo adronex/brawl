@@ -20,7 +20,7 @@ services:
     container_name: backend
     image: adronex/clockworks
     ports:
-      - $BACKEND_PORT:8080
+      - $BACKEND_PORT:$BACKEND_PORT
       - $BACKEND_DEBUG_PORT:8787
     environment:
       MYSQL_ROOT_PASSWORD: $MYSQL_ROOT_PASSWORD
@@ -29,3 +29,4 @@ services:
       MYSQL_DATABASE: $MYSQL_DATABASE
       MYSQL_PORT: 3306
       MYSQL_HOST: db # should be equal to database container name
+      BACKEND_PORT: $BACKEND_PORT
