@@ -1,11 +1,7 @@
 <template>
     <div>
         <div class="menu">
-            <div class="auth-block">
-                <input type="text" placeholder="Login"/>
-                <input type="password" placeholder="Password"/>
-                <input type="button" value="submit"/>
-            </div>
+            <auth-block></auth-block>
             <ul>
                 <li>
                     <v-link href="/squadEdit">Edit squad</v-link>
@@ -26,19 +22,17 @@
 
 <script>
     import VLink from '../components/Link.vue'
+    import AuthBlock from '../components/AuthBlock.vue'
 
     export default {
         components: {
-            VLink
+            VLink,
+            AuthBlock
         }
     }
 </script>
 
 <style>
-    .auth-block {
-        max-width: 135px;
-        border: thin solid;
-    }
     .menu {
         min-width: 150px;
         min-height: 200px;
