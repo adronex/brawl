@@ -26,7 +26,6 @@ open class OAuth2AuthorizationServerConfig : AuthorizationServerConfigurerAdapte
     @Autowired
     private lateinit var userDetailsService: UserDetailsService
 
-    @Throws(Exception::class)
     override fun configure(endpoints: AuthorizationServerEndpointsConfigurer?) {
         endpoints!!
                 .tokenStore(this.tokenStore)
@@ -35,7 +34,6 @@ open class OAuth2AuthorizationServerConfig : AuthorizationServerConfigurerAdapte
                 .pathMapping("/oauth/token", "/api/login")
     }
 
-    @Throws(Exception::class)
     override fun configure(clients: ClientDetailsServiceConfigurer?) {
 
         clients!!
