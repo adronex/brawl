@@ -25,3 +25,13 @@ const app = new Vue({
 window.addEventListener('popstate', () => {
     app.currentRoute = window.location.pathname
 });
+
+Vue.http.interceptors.push((request, next)  => {
+    request.headers['Authorization'] = auth.getAuthHeader();
+    next((response) => {
+        if(response.status === 401 ) {
+            auth.logout();
+            router.go('/login?unauthorized=1');
+        }
+    });
+});

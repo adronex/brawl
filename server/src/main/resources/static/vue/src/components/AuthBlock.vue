@@ -13,7 +13,7 @@
 </template>
 
 <script>
-    import config from '../configs'
+    import Auth from '../auth'
     import Vue from 'vue'
 
     export default {
@@ -21,30 +21,17 @@
             auth() {
                 const login = this.$refs.login.value;
                 const password = this.$refs.password.value;
-                const requestString = `grant_type=password&username=${login}&password=${password}`;
-                this.$http.post(`${config.serverURL}/api/login`, requestString, {
-                    headers: {
-                        'Authorization': `Basic ${btoa('Lola:Bola')}`,
-                        'Content-Type': 'application/x-www-form-urlencoded'
-                    }
-                })
-                    .then(
-                        function (response) {
-                            localStorage.setItem("login", login);
-                            response.body.claimed_in = new Date().getTime();
-                            localStorage.setItem("auth_data", JSON.stringify(response.body));
-                        },
-                        function (response) {
-                            alert(`Error: ${response.body.error}, description: ${response.body.error_description}`);
-                        }
-                    );
+                const vm = this;
+                Auth.auth(login, password).then(function () {
+                    vm.$forceUpdate();
+                });
             },
             logout() {
-                localStorage.removeItem("login");
-                localStorage.removeItem("auth_data");
+                Auth.logout();
+                this.$forceUpdate();
             },
             getLogin() {
-                return localStorage.getItem("login")
+                return Auth.getLogin();
             }
         }
     }
