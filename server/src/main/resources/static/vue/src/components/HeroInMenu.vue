@@ -1,10 +1,10 @@
 <template>
-    <div class="hero">
+    <div>
         <!--<p>Name: hero.name</p>-->
         <div>Name: {{hero.name}}</div>
         <div v-for="spell in hero.spells"
+             :style="getImageUrl(spell.id)"
              class="spell">
-            <!--<img :src="pathToCat()"/>-->
             <!--Spells: {{hero.spells}}-->
         </div>
         <!--<p>Bodyparts: {{hero.bodyparts}}</p>-->
@@ -20,11 +20,17 @@
                 required: true
             }
         },
-        computed: {
-
-        },
         methods: {
-//            pathToCat: function() { return require('./spells/SUCKER_PUNCH.png', true); }
+            getImageUrl: function (id) {
+                let backgroundProperty;
+                try {
+                    backgroundProperty = require(`../assets/img/spell/${id}.png`);
+                } catch (e) {
+                    console.warn(`Spell image with id ${id} isn't present in img/spell folder. Placeholder used instead`);
+                    backgroundProperty = require(`../assets/img/placeholder/SPELL.png`);
+                }
+                return {'background-image': `url(${backgroundProperty})`};
+            }
         }
     }
 </script>
@@ -41,9 +47,13 @@
     }
     .hero .spell {
         float: left;
-        border: solid 1px;
+        border: double 1px white;
         width: 20px;
         height: 20px;
-        /*background-image: url("./spells/SUCKER_PUNCH.img");*/
+        /*background: url("../assets/img/SUCKER_PUNCH.png");*/
+        background-size: 100%;
+    }
+    .hero .spell img {
+
     }
 </style>

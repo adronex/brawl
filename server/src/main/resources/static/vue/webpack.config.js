@@ -15,13 +15,12 @@ module.exports = {
                 exclude: /node_modules/
             },
             {
-                test: /\.(jpg|png)$/,
-                loader: 'file',
-                include: './resources/img'
-            },
-            {
                 test: /\.vue$/,
                 loader: 'vue-loader'
+            },
+            {
+                test: /\.png/,
+                loader: "file-loader"
             }
         ]
     },
