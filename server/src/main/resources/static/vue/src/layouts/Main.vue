@@ -42,6 +42,8 @@
     .content {
         min-width: 150px;
         min-height: 200px;
+        width: 30%;
+        height: auto;
         background-color: antiquewhite;
         float: left;
     }

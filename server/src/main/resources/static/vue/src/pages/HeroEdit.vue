@@ -1,30 +1,38 @@
 <template>
     <main-layout>
         <p>Hero creation or edition screen</p>
+        <hero-in-menu v-for="hero in heroes"
+                      :key="hero.id"
+                      :hero="hero">
+        </hero-in-menu>
     </main-layout>
 </template>
 
 <script>
     import MainLayout from '../layouts/Main.vue'
-    import config from '../configs.js'
+    import HeroInMenu from '../components/HeroInMenu.vue'
+    import Config from '../configs.js'
+    import Auth from '../auth.js'
 
     export default {
         components: {
-            MainLayout
+            MainLayout,
+            HeroInMenu
         },
         mounted: function(){
             this.onLoad();
         },
+        data: function() {
+            return {heroes: []}
+        },
         methods: {
             onLoad() {
-                this.$http.get(config.serverURL + 'api/static/spells').then((response) => {
-                    //success
-                    console.log(response)
-                }, (response) => {
-                    //error
-                    console.log(response)
-                });
+                loadHeroList().then(it => this.heroes = it);
             }
         }
+    }
+
+    function loadHeroList() {
+        return Auth.fetchWithAuth(`${Config.serverURL}/api/heroes/my`).then()
     }
 </script>
