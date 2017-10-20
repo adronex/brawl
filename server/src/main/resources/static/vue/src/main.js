@@ -1,6 +1,6 @@
 'use strict';
 import Vue from 'vue'
-import routes from './routes'
+import routes from './service/routes'
 import VueResource from 'vue-resource'
 
 Vue.use(VueResource);
@@ -15,7 +15,7 @@ const app = new Vue({
             const matchingView = routes[this.currentRoute];
             return matchingView
                 ? require('./pages/' + matchingView + '.vue').default
-                : require('./pages/404.vue').default
+                : require('./pages/NotFoundPage.vue').default
         }
     },
     render (h) {

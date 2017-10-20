@@ -9,10 +9,11 @@
 </template>
 
 <script>
-    import MainLayout from '../layouts/Main.vue'
+    'use strict';
+    import MainLayout from '../layouts/MenuLayout.vue'
     import HeroInMenu from '../components/menu/Hero.vue'
-    import Config from '../configs.js'
-    import Auth from '../auth.js'
+    import Urls from '../service/urls'
+    import Rest from '../service/rest'
 
     export default {
         components: {
@@ -33,6 +34,6 @@
     }
 
     function loadHeroList() {
-        return Auth.fetchWithAuth(`${Config.serverURL}/api/heroes/my`)
+        return Rest.promisedAuthenticatedRequest(Urls.api.heroes.my)
     }
 </script>

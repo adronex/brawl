@@ -19,8 +19,8 @@
 </template>
 
 <script>
-
-    import StaticData from '../../staticData.js'
+    'use strict';
+    import StaticData from '../../service/staticData.js'
 
     export default {
         data: function () {

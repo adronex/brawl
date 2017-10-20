@@ -9,7 +9,8 @@
 </template>
 
 <script>
-    import routes from '../routes'
+    'use strict';
+    import routes from '../service/routes'
     export default {
         props: {
             href: {

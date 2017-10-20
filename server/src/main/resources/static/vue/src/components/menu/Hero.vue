@@ -9,8 +9,8 @@
 </template>
 
 <script>
-
-    import StaticData from '../../staticData';
+    'use strict';
+    import StaticData from '../../service/staticData';
     import Spell from './Spell.vue';
 
     export default {

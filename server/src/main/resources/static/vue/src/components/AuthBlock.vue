@@ -13,7 +13,8 @@
 </template>
 
 <script>
-    import Auth from '../auth'
+    'use strict';
+    import Auth from '../service/auth'
     import Vue from 'vue'
 
     export default {
@@ -21,9 +22,10 @@
             auth() {
                 const login = this.$refs.login.value;
                 const password = this.$refs.password.value;
-                const vm = this;
+                const viewModel = this;
+                // todo: update state correctly (with menu etc)
                 Auth.auth(login, password).then(function () {
-                    vm.$forceUpdate();
+                    viewModel.$forceUpdate();
                 });
             },
             logout() {

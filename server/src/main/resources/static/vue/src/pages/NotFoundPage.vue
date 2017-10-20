@@ -1,11 +1,12 @@
 <template>
     <main-layout>
-        <p>About page</p>
+        <p>Page not found</p>
     </main-layout>
 </template>
 
 <script>
-    import MainLayout from '../layouts/Main.vue'
+    'use strict';
+    import MainLayout from '../layouts/MenuLayout.vue'
     export default {
         components: {
             MainLayout

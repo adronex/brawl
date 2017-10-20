@@ -21,6 +21,7 @@
 </template>
 
 <script>
+    'use strict';
     import VLink from '../components/Link.vue'
     import AuthBlock from '../components/AuthBlock.vue'
 

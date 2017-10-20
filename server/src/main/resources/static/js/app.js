@@ -14,7 +14,7 @@ app.controller('squadMenuController', ['$scope', '$http', function ($scope, $htt
         $scope.currentWindow = 'MENU';
 
         $scope.mulliganChosenHeroesIds = [];
-        $scope.myHeroes = [];
+        $scope.myHeroesUri = [];
         $scope.enemyHeroes = [];
         $scope.heroesQueue = [];
         $scope.battleLog = [];
@@ -69,16 +69,16 @@ app.controller('squadMenuController', ['$scope', '$http', function ($scope, $htt
                 $scope.connected = true;
                 delete response.connected;
             }
-            if (response.myHeroes) {
-                $scope.myHeroes = response.myHeroes;
-                $scope.myHeroes.forEach(h => {
+            if (response.myHeroesUri) {
+                $scope.myHeroesUri = response.myHeroesUri;
+                $scope.myHeroesUri.forEach(h => {
                     h.appearance = {};
                     h.appearance.head = getRandomColor();
                     h.appearance.body = getRandomColor();
                     h.appearance.arms = getRandomColor();
                     h.appearance.legs = getRandomColor()
                 });
-                delete response.myHeroes;
+                delete response.myHeroesUri;
             }
             if (response.enemyHeroes) {
                 $scope.enemyHeroes = response.enemyHeroes.slice().reverse();
@@ -126,7 +126,7 @@ app.controller('squadMenuController', ['$scope', '$http', function ($scope, $htt
         } else if ($scope.gameState === 'PLAYING' && angular.isNumber($scope.temp.castedSpellPosition)) {
             let heroPosition = enemy
                 ? $scope.enemyHeroes.findIndex(hero => hero.id === heroId) + 1
-                : -$scope.myHeroes.findIndex(hero => hero.id === heroId) - 1;
+                : -$scope.myHeroesUri.findIndex(hero => hero.id === heroId) - 1;
             sendSpellToServer($scope.temp.castedSpellPosition, heroPosition);
             delete $scope.temp.castedSpellPosition;
         }
