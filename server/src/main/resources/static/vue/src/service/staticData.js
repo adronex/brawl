@@ -22,10 +22,10 @@ onLoad();
 function getSpellBackgroundImageCssProperty(id) {
     let backgroundProperty;
     try {
-        backgroundProperty = require(`./../assets/img/spell/${id}.png`);
+        backgroundProperty = require(`images/spell/${id}.png`);
     } catch (e) {
         console.warn(`Spell image with id ${id} isn't present in img/spell folder. Placeholder used instead`);
-        backgroundProperty = require(`./../assets/img/placeholder/SPELL.png`);
+        backgroundProperty = require(`images/placeholder/SPELL.png`);
     }
     return {'background-image': `url(${backgroundProperty})`};
 }

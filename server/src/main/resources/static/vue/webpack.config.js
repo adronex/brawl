@@ -28,5 +28,10 @@ module.exports = {
         historyApiFallback: true,
         compress: true,
         port: 8001
+    },
+    resolve: {
+        alias: {
+            images: path.resolve(__dirname, 'resources/img/'),
+        }
     }
 };
