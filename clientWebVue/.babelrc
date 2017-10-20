@@ -1,4 +1,18 @@
 {
-  "presets": ["es2015", "stage-0"],
-  "plugins": ["transform-runtime"]
+  "presets": [
+    [
+      "env",
+      {
+        "targets": {
+          "browsers": [
+            "last 2 Chrome versions",
+            "last 2 Firefox versions"
+          ]
+        }
+      }
+    ]
+  ],
+  "plugins": [
+    "transform-runtime"
+  ]
 }

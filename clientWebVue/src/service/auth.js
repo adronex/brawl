@@ -19,10 +19,10 @@ function auth(login, password) {
         },
         body: requestString
     }).then(function (response) {
-            localStorage.setItem("login", login);
-            response.claimed_in = new Date().getTime();
-            localStorage.setItem("auth_data", JSON.stringify(response));
-        });
+        localStorage.setItem("login", login);
+        response.claimed_in = new Date().getTime();
+        localStorage.setItem("auth_data", JSON.stringify(response));
+    });
 }
 
 function logout() {

@@ -1,39 +1,35 @@
 <template>
     <main-layout>
         <p>Hero creation or edition screen</p>
-        <hero-in-menu v-for="hero in heroes"
-                      :key="hero.id"
-                      :hero="hero">
-        </hero-in-menu>
+        <hero v-for="hero in heroes"
+              :key="hero.id"
+              :hero="hero">
+        </hero>
+        <spell-table></spell-table>
     </main-layout>
 </template>
 
 <script>
     'use strict';
-    import MainLayout from '../layouts/MenuLayout.vue'
-    import HeroInMenu from '../components/menu/Hero.vue'
     import Urls from '../service/urls'
     import Rest from '../service/rest'
+    import MainLayout from '../layouts/MenuLayout.vue'
+    import Hero from '../components/menu/Hero.vue'
+    import SpellTable from '../components/menu/SpellTable.vue'
 
     export default {
         components: {
             MainLayout,
-            HeroInMenu
+            Hero,
+            SpellTable
         },
-        mounted: function(){
-            this.onLoad();
-        },
-        data: function() {
-            return {heroes: []}
-        },
-        methods: {
-            onLoad() {
-                loadHeroList().then(it => this.heroes = it);
+        data: function () {
+            return {
+                heroes: []
             }
+        },
+        mounted: function () {
+            Rest.promisedAuthenticatedRequest(Urls.api.heroes.my).then(it => this.heroes = it);
         }
-    }
-
-    function loadHeroList() {
-        return Rest.promisedAuthenticatedRequest(Urls.api.heroes.my)
     }
 </script>
