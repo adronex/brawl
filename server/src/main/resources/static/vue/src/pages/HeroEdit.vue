@@ -10,7 +10,7 @@
 
 <script>
     import MainLayout from '../layouts/Main.vue'
-    import HeroInMenu from '../components/HeroInMenu.vue'
+    import HeroInMenu from '../components/menu/Hero.vue'
     import Config from '../configs.js'
     import Auth from '../auth.js'
 
@@ -33,6 +33,6 @@
     }
 
     function loadHeroList() {
-        return Auth.fetchWithAuth(`${Config.serverURL}/api/heroes/my`).then()
+        return Auth.fetchWithAuth(`${Config.serverURL}/api/heroes/my`)
     }
 </script>

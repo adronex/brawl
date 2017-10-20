@@ -5,7 +5,8 @@ export default {
     auth,
     logout,
     getLogin,
-    fetchWithAuth: fetchWithAuth
+    fetchWithAuth,
+    fetchWithoutAuth
 }
 
 function auth(login, password) {
@@ -59,5 +60,9 @@ function fetchWithAuth(url, options) {
         options.headers['Authorization'] = `${tokenType} ${accessToken}`;
         options.headers['Content-Type'] = 'application/json';
     }
+    return fetchWithoutAuth(url, options);
+}
+
+function fetchWithoutAuth(url, options) {
     return fetch(url, options).then(status).then(it => it.json());
 }

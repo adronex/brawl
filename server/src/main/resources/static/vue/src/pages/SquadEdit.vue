@@ -4,8 +4,7 @@
         <div class="squad" v-for="squad in squads">
             <div class="title"> {{squad.name}} </div>
             <div class="heroes">
-                <hero-in-menu class="hero"
-                              v-for="hero in squad.heroes"
+                <hero-in-menu v-for="hero in squad.heroes"
                               :key="hero.id"
                               :hero="hero">
                 </hero-in-menu>
@@ -15,10 +14,10 @@
 </template>
 
 <script>
-    import MainLayout from '../layouts/Main.vue'
-    import HeroInMenu from '../components/HeroInMenu.vue'
-    import Config from '../configs'
-    import Auth from '../auth'
+    import MainLayout from '../layouts/Main.vue';
+    import HeroInMenu from '../components/menu/Hero.vue';
+    import Config from '../configs';
+    import Auth from '../auth';
 
     export default {
         components: {
@@ -26,7 +25,9 @@
             HeroInMenu
         },
         data: function() {
-            return {squads: []}
+            return {
+                squads: []
+            }
         },
         mounted: function () {
             loadHeroList().then(it => this.squads = it);
@@ -36,7 +37,7 @@
     }
 
     function loadHeroList() {
-        return Auth.fetchWithAuth(`${Config.serverURL}/api/squads/my`, {}).then()
+        return Auth.fetchWithAuth(`${Config.serverURL}/api/squads/my`, {})
     }
 </script>
 
