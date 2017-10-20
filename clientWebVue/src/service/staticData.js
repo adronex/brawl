@@ -3,21 +3,13 @@ import Urls from "./urls";
 import Rest from "./rest";
 
 export default {
-    getSpells,
+    getSpellsPromise,
     getSpellBackgroundImageCssProperty
 }
 
-let spells = [];
-
-function getSpells() {
-    return spells;
+function getSpellsPromise() {
+    return Rest.promisedRequest(Urls.api.static.spells);
 }
-
-function onLoad() {
-    Rest.promisedRequest(Urls.api.static.spells).then(it => spells = it);
-}
-
-onLoad();
 
 function getSpellBackgroundImageCssProperty(id) {
     let backgroundProperty;

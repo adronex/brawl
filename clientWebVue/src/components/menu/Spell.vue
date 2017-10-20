@@ -3,12 +3,12 @@
          v-on:mouseover="mouseHovered = true"
          v-on:mouseleave="mouseHovered = false">
         <div class="image"
-             :style="getImageUrl(spell.id)">
+             :style="cssProperty">
 
         </div>
         <div class="popup" v-show="mouseHovered">
             <div class="icon"
-                 :style="getImageUrl(spell.id)"></div>
+                 :style="cssProperty"></div>
             <div class="info">
                 <p>id: {{spell.id}}</p>
                 <p>Positions: {{spell.casterPositions}}</p>
@@ -26,7 +26,7 @@
         data: function () {
             return {
                 spell: {},
-                isMounted: false,
+                cssProperty: {},
                 mouseHovered: false
             }
         },
@@ -37,43 +37,37 @@
             }
         },
         mounted: function () {
-            this.spell = loadSpell(this.spellId);
-            this.isMounted = true;
-        },
-        methods: {
-            getImageUrl: function (id) {
-                // todo: check lifecycles issues
-                if (this.isMounted) {
-                    return StaticData.getSpellBackgroundImageCssProperty(id);
+            StaticData.getSpellsPromise().then(it => {
+                this.spell = it[this.spellId];
+                if (!this.spell) {
+                    this.spell = {};
+                    console.warn(`Spell static data for id ${this.spellId} is absent.}`)
                 }
-            }
+                this.cssProperty = StaticData.getSpellBackgroundImageCssProperty(this.spellId);
+            });
         }
-    }
-
-    function loadSpell(id) {
-        let spell = StaticData.getSpells()[id];
-        if (!spell) {
-            spell = {};
-            console.warn(`Spell static data for id ${id} is absent.}`)
-        }
-        return spell;
     }
 </script>
 
 <style>
-    .image {
+    .spell {
         float: left;
         border: double 1px white;
+    }
+
+    .image {
+        float: left;
+        background-size: 100%;
         width: 20px;
         height: 20px;
-        background-size: 100%;
     }
+
     .popup {
         position: absolute;
         background-color: rgb(87, 84, 86);
         width: 260px;
         height: 100px;
-        margin-left: 45px;
+        margin-left: 20px;
         margin-top: 20px;
     }
 

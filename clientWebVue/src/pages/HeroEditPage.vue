@@ -1,11 +1,19 @@
 <template>
     <main-layout>
-        <p>Hero creation or edition screen</p>
-        <hero v-for="hero in heroes"
-              :key="hero.id"
-              :hero="hero">
-        </hero>
-        <spell-table></spell-table>
+        <div class="page">
+            <p>Hero creation or edition screen</p>
+            <hero v-for="hero in heroes"
+                  :key="hero.id"
+                  :hero="hero">
+            </hero>
+        </div>
+        <div v-if="!isEditing">
+            <input type="button" value="New" v-on:click="isEditing = true"/>
+        </div>
+        <div v-else>
+            <new-hero-block></new-hero-block>
+            <input type="button" value="Close" v-on:click="isEditing = false"/>
+        </div>
     </main-layout>
 </template>
 
@@ -15,17 +23,18 @@
     import Rest from '../service/rest'
     import MainLayout from '../layouts/MenuLayout.vue'
     import Hero from '../components/menu/Hero.vue'
-    import SpellTable from '../components/menu/SpellTable.vue'
+    import NewHeroBlock from '../components/EditHeroBlock.vue'
 
     export default {
         components: {
             MainLayout,
             Hero,
-            SpellTable
+            NewHeroBlock
         },
         data: function () {
             return {
-                heroes: []
+                heroes: [],
+                isEditing: false
             }
         },
         mounted: function () {
@@ -33,3 +42,9 @@
         }
     }
 </script>
+
+<style>
+    .page {
+        float: left;
+    }
+</style>

@@ -4,7 +4,6 @@
                :key="spell.id"
                :spellId="spell.id">
         </spell>
-        <input type="button" v-on:click="hui()" value="dada"/>
     </div>
 </template>
 
@@ -23,12 +22,7 @@
             }
         },
         mounted: function () {
-            this.spells = StaticData.getSpells();
-        },
-        methods: {
-            hui: function () {
-                this.spells = StaticData.getSpells();
-            }
+            StaticData.getSpellsPromise().then(it => this.spells = it);
         }
     }
 
@@ -37,9 +31,6 @@
 <style>
     .spellTable {
         float: left;
-        width: 100px;
-        height: 100px;
-        margin-left: 50px;
-        background-color: #c6c4c4;
+        max-width: 70px;
     }
 </style>
