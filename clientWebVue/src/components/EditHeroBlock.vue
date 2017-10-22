@@ -18,7 +18,7 @@
         },
         data: function () {
             return {
-                hero: []
+                hero: [],
             }
         },
         mounted: function () {

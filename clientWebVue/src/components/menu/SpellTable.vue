@@ -1,9 +1,11 @@
 <template>
     <div class="spellTable">
-        <spell v-for="spell in spells"
-               :key="spell.id"
-               :spellId="spell.id">
-        </spell>
+        <div v-for="spell in spells"
+             v-on:click="addSpellId(spell.id)">
+            <spell :key="spell.id"
+                   :spellId="spell.id">
+            </spell>
+        </div>
     </div>
 </template>
 
@@ -18,11 +20,25 @@
         },
         data: function () {
             return {
-                spells: []
+                spells: [],
+                chosenSpellsIds: []
             }
         },
         mounted: function () {
             StaticData.getSpellsPromise().then(it => this.spells = it);
+        },
+        methods: {
+            addSpellId(id) {
+                if (this.chosenSpellsIds.includes(id)) {
+                    this.chosenSpellsIds = this.chosenSpellsIds.filter(item => item !== id);
+                } else {
+                    this.chosenSpellsIds.push(id);
+                }
+                if (this.chosenSpellsIds.length > 4) {
+                    this.chosenSpellsIds = this.chosenSpellsIds.slice(1);
+                }
+                console.log(this.chosenSpellsIds);
+            }
         }
     }
 
@@ -31,6 +47,6 @@
 <style>
     .spellTable {
         float: left;
-        max-width: 70px;
+        min-width: 70px;
     }
 </style>

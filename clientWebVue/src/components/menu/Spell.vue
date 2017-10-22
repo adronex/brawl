@@ -4,7 +4,6 @@
          v-on:mouseleave="mouseHovered = false">
         <div class="image"
              :style="cssProperty">
-
         </div>
         <div class="popup" v-show="mouseHovered">
             <div class="icon"
