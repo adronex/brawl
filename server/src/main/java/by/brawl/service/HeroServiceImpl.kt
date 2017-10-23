@@ -1,6 +1,7 @@
 package by.brawl.service
 
 import by.brawl.dto.HeroDto
+import by.brawl.dto.SubmitHeroDto
 import by.brawl.entity.Hero
 import by.brawl.repository.HeroRepository
 import by.brawl.util.Exceptions
@@ -16,6 +17,15 @@ constructor(private val repository: HeroRepository,
 
     override fun findOne(id: String): Hero = repository.findOne(id) ?:
             throw Exceptions.produceIllegalArgument(LOG, "Hero with id $id does not exists!")
+
+    override fun submit(submitHeroDto: SubmitHeroDto) {
+        val account = securityService.getCurrentAccount()
+        if (submitHeroDto.id == null) {
+            Hero(account, submitHeroDto.spells.map)
+        }
+        val hero = Hero(heroDto)
+        repository.save(hero)
+    }
 
     companion object {
 

@@ -1,9 +1,10 @@
 <template>
-    <div class="spellTable">
+    <div class="spellsTable">
         <div v-for="spell in spells"
              v-on:click="addSpellId(spell.id)">
             <spell :key="spell.id"
-                   :spellId="spell.id">
+                   :spellId="spell.id"
+                   :style="getOpacityForImage(spell.id)">
             </spell>
         </div>
     </div>
@@ -37,7 +38,10 @@
                 if (this.chosenSpellsIds.length > 4) {
                     this.chosenSpellsIds = this.chosenSpellsIds.slice(1);
                 }
-                console.log(this.chosenSpellsIds);
+            },
+            getOpacityForImage(spellId) {
+                let opacityValue = (this.chosenSpellsIds.indexOf(spellId)) !== -1 ? 1 : 0.5;
+                return {'opacity': opacityValue};
             }
         }
     }
@@ -45,7 +49,7 @@
 </script>
 
 <style>
-    .spellTable {
+    .spellsTable {
         float: left;
         min-width: 70px;
     }

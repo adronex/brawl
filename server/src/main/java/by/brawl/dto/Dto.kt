@@ -17,6 +17,12 @@ class HeroDto(hero: Hero) {
     val bodyparts = hero.bodyparts.map { IdDto(it) }
 }
 
+class SubmitHeroDto(var id:String?,
+                    val name:String,
+                    val spells:Set<String>,
+                    val bodyparts:Set<String>) {
+}
+
 class IdDto(idEntity: IdEntity) {
     val id = idEntity.id
 }

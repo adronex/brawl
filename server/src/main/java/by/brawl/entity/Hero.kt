@@ -6,7 +6,9 @@ import java.util.*
 import javax.persistence.*
 
 @Entity
-class Hero : NamedEntity() {
+class Hero(owner: Account,
+           spells: Set<Spell>,
+           bodyparts: Set<Bodypart>) : NamedEntity() {
 
     @ManyToOne
     lateinit var owner: Account
