@@ -6,7 +6,10 @@ export default {
         login: `${serverUrl}/api/login`,
         heroes: {
             my: `${serverUrl}/api/heroes/my`,
-            submit: `${serverUrl}/api/heroes/submit`
+            submit: `${serverUrl}/api/heroes/submit`,
+            delete: function (id) {
+                return `${serverUrl}/api/heroes/delete/${id}`
+            }
         },
         squads: {
             my: `${serverUrl}/api/squads/my`

@@ -56,9 +56,9 @@
                     this.hero.spells = this.$refs.spellsTable.chosenSpellsIds;
                     this.hero.bodyparts = [];
                     Rest.promisedAuthenticatedRequest(Urls.api.heroes.submit, {
-                        method: 'POST',
+                        method: 'PUT',
                         body: JSON.stringify(this.hero)
-                    });
+                    }).then(it => console.log(it));
                     return;
                 }
                 if (!spellsCountCorrect) this.errorMessages.push(`Spells count: ${spellsBeenChosen}, required: 4`);

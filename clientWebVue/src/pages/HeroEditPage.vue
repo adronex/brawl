@@ -65,7 +65,9 @@
                 }, 1);
             },
             deleteHero(hero) {
-                console.log('pisya' + hero.id);
+                Rest.promisedAuthenticatedRequest(Urls.api.heroes.delete(hero.id), {
+                    method: 'DELETE'
+                }).then(it => console.log(`Deleted. Response: ${it}`));
             }
         }
     }

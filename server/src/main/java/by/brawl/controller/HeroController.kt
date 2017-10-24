@@ -1,5 +1,7 @@
 package by.brawl.controller
 
+import by.brawl.dto.HeroDto
+import by.brawl.dto.IdDto
 import by.brawl.dto.SubmitHeroDto
 import by.brawl.service.HeroService
 import org.springframework.web.bind.annotation.*
@@ -11,9 +13,10 @@ class HeroController constructor(val service: HeroService) {
     @GetMapping(path = arrayOf("/my"))
     fun findMySquads() = service.findMy()
 
-    @PostMapping(path = arrayOf("/submit"))
-    fun submit(@RequestBody dto: SubmitHeroDto) {
-        service.submit(dto)
-    }
+    @PutMapping(path = arrayOf("/submit"))
+    fun submit(@RequestBody dto: SubmitHeroDto): HeroDto = service.submit(dto)
+
+    @DeleteMapping(path = arrayOf("/delete/{id}"))
+    fun delete(@PathVariable id: String): IdDto = service.delete(id)
 
 }
