@@ -5,7 +5,8 @@ export default {
     api: {
         login: `${serverUrl}/api/login`,
         heroes: {
-            my: `${serverUrl}/api/heroes/my`
+            my: `${serverUrl}/api/heroes/my`,
+            submit: `${serverUrl}/api/heroes/submit`
         },
         squads: {
             my: `${serverUrl}/api/squads/my`

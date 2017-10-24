@@ -4,14 +4,14 @@ import Rest from "./rest";
 
 export default {
     getSpellsPromise,
-    getSpellBackgroundImageCssProperty
+    getSpellBackgroundImageCss
 }
 
 function getSpellsPromise() {
     return Rest.promisedRequest(Urls.api.static.spells);
 }
 
-function getSpellBackgroundImageCssProperty(id) {
+function getSpellBackgroundImageCss(id) {
     let backgroundProperty;
     try {
         backgroundProperty = require(`images/spell/${id}.png`);

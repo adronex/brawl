@@ -5,7 +5,7 @@ import by.brawl.entity.IdEntity
 import by.brawl.entity.Squad
 
 class PreGameSquadDto(squad: Squad) {
-    val id: String = squad.id
+    val id: String = squad.id!!
     val name: String = squad.name
     val heroes = squad.heroes.map { HeroDto(it) }
 }
@@ -17,10 +17,11 @@ class HeroDto(hero: Hero) {
     val bodyparts = hero.bodyparts.map { IdDto(it) }
 }
 
-class SubmitHeroDto(var id:String?,
+class SubmitHeroDto(val id:String?,
                     val name:String,
                     val spells:Set<String>,
-                    val bodyparts:Set<String>) {
+                    // todo: remove mock
+                    val bodyparts:Set<String> = setOf()) {
 }
 
 class IdDto(idEntity: IdEntity) {

@@ -1,6 +1,6 @@
 package by.brawl.controller
 
-import by.brawl.dto.HeroDto
+import by.brawl.dto.SubmitHeroDto
 import by.brawl.service.HeroService
 import org.springframework.web.bind.annotation.*
 
@@ -12,6 +12,8 @@ class HeroController constructor(val service: HeroService) {
     fun findMySquads() = service.findMy()
 
     @PostMapping(path = arrayOf("/submit"))
-    fun submit(@RequestBody heroDto: HeroDto) = service.findMy()
+    fun submit(@RequestBody dto: SubmitHeroDto) {
+        service.submit(dto)
+    }
 
 }

@@ -4,7 +4,7 @@ import java.util.*
 import javax.persistence.*
 
 @Entity
-class Squad : NamedEntity() {
+class Squad : NamedEntity(name = "Default") {
 
     @ManyToOne
     lateinit var owner: Account

@@ -23,12 +23,16 @@ function promisedRequest(url, options) {
     return fetch(url, options)
         .then(status)
         .then(it => it.json())
-        .catch(error => alert(`Error: ${error}`));
+        .catch(error => alert(`${error}, see console for details`));
 }
 
 function status(response) {
     if (200 <= response.status && response.status < 300) {
         return Promise.resolve(response)
     }
-    return Promise.reject(new Error(response.statusText))
+    let status = response.status;
+    return response.json().then(it => {
+        console.error(it);
+        return Promise.reject(new Error(status));
+    });
 }

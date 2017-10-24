@@ -7,11 +7,9 @@ import javax.persistence.Id
 import javax.persistence.MappedSuperclass
 
 @MappedSuperclass
-abstract class IdEntity {
-
-    @Id
-    @GeneratedValue(generator = "uuid")
-    @GenericGenerator(name = "uuid", strategy = "uuid2")
-    lateinit var id: String private set
+abstract class IdEntity(@Id
+                        @GeneratedValue(generator = "uuid")
+                        @GenericGenerator(name = "uuid", strategy = "uuid2")
+                        val id: String? = null) {
 
 }

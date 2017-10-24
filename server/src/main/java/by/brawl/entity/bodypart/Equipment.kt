@@ -7,7 +7,7 @@ import javax.persistence.EnumType
 import javax.persistence.Enumerated
 
 @Entity
-class Equipment : NamedEntity() {
+class Equipment : NamedEntity(name = "Default") {
 
     @Enumerated(EnumType.STRING)
     val type = EquipmentType.UNKNOWN

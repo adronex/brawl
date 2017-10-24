@@ -1,11 +1,12 @@
 <template>
     <div class="editHeroBlock">
         <div>
-            <spells-table ref="spellsTable"></spells-table>
+            <spells-table ref="spellsTable"
+                          :oldHeroSpellsIds="hero.spells"></spells-table>
             <input class="heroNameInput"
                    type="text"
                    placeholder="Hero name"
-                   v-model="heroName"/>
+                   v-model="hero.name"/>
             <input type="button"
                    value="Submit"
                    v-on:click="submitHero()"/>
@@ -18,6 +19,8 @@
 
 <script>
     'use strict';
+    import Rest from '../service/rest'
+    import Urls from '../service/urls'
     import Hero from '../components/menu/Hero.vue'
     import SpellsTable from './menu/SpellsTable.vue'
 
@@ -28,21 +31,34 @@
         },
         data: function () {
             return {
-                hero: [],
-                heroName: ``,
+                hero: {},
                 errorMessages: []
             }
         },
-        mounted: function () {
+        props: {
+            oldHero: {
+                type: Object,
+                required: true
+            }
+        },
+        beforeMount: function () {
+            let newHero = JSON.parse(JSON.stringify(this.oldHero));
+            newHero.spells = newHero.spells.map(it => it.id);
+            this.hero = newHero;
         },
         methods: {
             submitHero() {
                 this.errorMessages = [];
                 let spellsBeenChosen = this.$refs.spellsTable.chosenSpellsIds.length;
                 let spellsCountCorrect = spellsBeenChosen === 4;
-                let heroNameCorrect = !!this.heroName;
+                let heroNameCorrect = !!this.hero.name;
                 if (spellsCountCorrect && heroNameCorrect) {
-                    console.log('yep');
+                    this.hero.spells = this.$refs.spellsTable.chosenSpellsIds;
+                    this.hero.bodyparts = [];
+                    Rest.promisedAuthenticatedRequest(Urls.api.heroes.submit, {
+                        method: 'POST',
+                        body: JSON.stringify(this.hero)
+                    });
                     return;
                 }
                 if (!spellsCountCorrect) this.errorMessages.push(`Spells count: ${spellsBeenChosen}, required: 4`);

@@ -20,7 +20,7 @@ constructor(private val accountRepository: AccountRepository) : SecurityService,
             if (authentication == null || authentication.name == null) {
                 throw Exceptions.produceUsernameNotFound(LOG, "Authentication object is empty")
             }
-            return accountRepository.findByEmail(authentication.name) ?: throw Exceptions.produceUsernameNotFound(LOG, "Authentication object doesn't connect to any existing account")
+            return accountRepository.findByEmail(authentication.name) ?: throw Exceptions.produceUsernameNotFound(LOG, "Authentication object isn't connected to any existing account")
         }
 
     companion object {

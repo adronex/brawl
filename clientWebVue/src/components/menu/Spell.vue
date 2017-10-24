@@ -3,13 +3,14 @@
          v-on:mouseover="mouseHovered = true"
          v-on:mouseleave="mouseHovered = false">
         <div class="image"
-             :style="cssProperty">
+             :style="cssBackgroundImage">
         </div>
         <div class="popup" v-show="mouseHovered">
             <div class="icon"
-                 :style="cssProperty"></div>
+                 :style="cssBackgroundImage"></div>
             <div class="info">
                 <p>id: {{spell.id}}</p>
+                <p>Color: {{spell.color}}</p>
                 <p>Positions: {{spell.casterPositions}}</p>
                 <p>Targets: {{spell.targetPositions}}</p>
             </div>
@@ -25,7 +26,7 @@
         data: function () {
             return {
                 spell: {},
-                cssProperty: {},
+                cssBackgroundImage: {},
                 mouseHovered: false
             }
         },
@@ -42,7 +43,7 @@
                     this.spell = {};
                     console.warn(`Spell static data for id ${this.spellId} is absent.}`)
                 }
-                this.cssProperty = StaticData.getSpellBackgroundImageCssProperty(this.spellId);
+                this.cssBackgroundImage = StaticData.getSpellBackgroundImageCss(this.spellId);
             });
         }
     }
@@ -64,6 +65,7 @@
     .popup {
         position: absolute;
         background-color: rgb(87, 84, 86);
+        border: groove 3px white;
         width: 260px;
         height: 100px;
         margin-left: 20px;
@@ -72,7 +74,7 @@
 
     .popup .icon {
         float: left;
-        border: double 1px white;
+        border: groove 3px white;
         width: 50px;
         height: 50px;
         background-size: 100%;

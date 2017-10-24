@@ -8,7 +8,7 @@ interface HeroService {
 
     fun findMy(): List<HeroDto>
 
-    fun findOne(id: String): Hero
+    fun getById(id: String): Hero
 
     fun submit(submitHeroDto: SubmitHeroDto)
 }

@@ -10,7 +10,7 @@ import java.util.*
 class HeroHolder(hero: Hero,
                  private val battlefieldHolder: BattlefieldHolder) {
 
-    val id: String = hero.id
+    val id: String = hero.id!!
     val allSpells = hero.spells.map {
         SpellHolder(SpellsPool.spellsMap[it.id]
                 ?: throw Exceptions.produceIllegalState(LOG, "Spell with id ${it.id} isn't present in spell pool."))

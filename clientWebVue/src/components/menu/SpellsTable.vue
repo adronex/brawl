@@ -25,8 +25,15 @@
                 chosenSpellsIds: []
             }
         },
+        props: {
+            oldHeroSpellsIds: {
+                type: Array,
+                required: true
+            }
+        },
         mounted: function () {
             StaticData.getSpellsPromise().then(it => this.spells = it);
+            this.chosenSpellsIds = this.oldHeroSpellsIds;
         },
         methods: {
             addSpellId(id) {
