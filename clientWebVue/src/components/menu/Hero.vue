@@ -36,4 +36,8 @@
         margin-top: 5%;
         margin-bottom: 5%;
     }
+    .spell {
+        height: 20px;
+        width: 20px;
+    }
 </style>

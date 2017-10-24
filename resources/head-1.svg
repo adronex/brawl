@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Creator: CorelDRAW X8 -->
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="0.666661in" height="0.666661in" version="1.1" style="shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd"
+viewBox="0 0 667 667"
+ xmlns:xlink="http://www.w3.org/1999/xlink">
+ <defs>
+  <style type="text/css">
+   <![CDATA[
+    .str0 {stroke:#2B2A29;stroke-width:6.94488}
+    .fil3 {fill:none}
+    .fil0 {fill:url(#id0)}
+    .fil1 {fill:url(#id1)}
+    .fil2 {fill:url(#id2)}
+   ]]>
+  </style>
+  <linearGradient id="id0" gradientUnits="userSpaceOnUse" x1="433.768" y1="59.2795" x2="196.445" y2="634.606">
+   <stop offset="0" style="stop-opacity:1; stop-color:#FDE4C8"/>
+   <stop offset="1" style="stop-opacity:1; stop-color:#E63C24"/>
+  </linearGradient>
+  <linearGradient id="id1" gradientUnits="userSpaceOnUse" x1="372.043" y1="203.035" x2="233.224" y2="220.055">
+   <stop offset="0" style="stop-opacity:1; stop-color:#FDE902"/>
+   <stop offset="0.411765" style="stop-opacity:1; stop-color:#FDF380"/>
+   <stop offset="1" style="stop-opacity:1; stop-color:#FEFEFE"/>
+  </linearGradient>
+  <linearGradient id="id2" gradientUnits="userSpaceOnUse" x1="209.543" y1="608.921" x2="275.98" y2="437.547">
+   <stop offset="0" style="stop-opacity:1; stop-color:#2B2A29"/>
+   <stop offset="1" style="stop-opacity:1; stop-color:#FEFEFE"/>
+  </linearGradient>
+ </defs>
+ <g id="Layer_x0020_1">
+  <metadata id="CorelCorpID_0Corel-Layer"/>
+  <path class="fil0 str0" d="M74 117l299 -108 97 7c130,10 130,-3 126,19l-62 326 -169 40 11 229c1,23 -147,31 -169,26l-163 -36c-22,-5 90,-19 94,-42l65 -457c3,-22 -147,2 -129,-4z"/>
+  <polygon class="fil1 str0" points="232,214 398,178 326,235 232,250 "/>
+  <polygon class="fil2 str0" points="211,376 315,397 308,602 178,570 "/>
+  <line class="fil3 str0" x1="202" y1="576" x2="234" y2= "381" />
+  <line class="fil3 str0" x1="263" y1="386" x2="230" y2= "583" />
+  <line class="fil3 str0" x1="290" y1="392" x2="267" y2= "592" />
+ </g>
+</svg>
