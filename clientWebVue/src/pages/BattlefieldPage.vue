@@ -43,7 +43,8 @@
 
         <div class="heroBar">
             <div class="heroBlock">
-                <div class="heroAvatar"><img src="images/2.jpg"></div>
+                <div class="heroAvatar"
+                     :style="currentHeroAvatarCss"></div>
                 <div class="heroDescription">
                     <p>MNOGA-MNOGA BYKAFFF</p>
                     <p>MNOGA-MNOGA BYKAFFF</p>
@@ -76,13 +77,13 @@
 
         <div class="heroBar chosenHeroBar">
             <div class="heroBlock">
-                <div class="heroAvatar"><img src="images/2.JPG"></div>
+                <div class="heroAvatar"
+                     :style="targetHeroAvatarCss"></div>
                 <div class="heroDescription">
                     <p>MNOGA-MNOGA BYKAFFF</p>
                     <p>MNOGA-MNOGA BYKAFFF</p>
                     <p>MNOGA-MNOGA BYKAFFF</p>
                     <p>MNOGA-MNOGA BYKAFFF</p>
-
                 </div>
             </div>
             <div class="spellBlock">
@@ -124,6 +125,8 @@
         },
         data: function () {
             return {
+                currentHeroAvatarCss: {},
+                targetHeroAvatarCss: {},
                 login: Auth.getLogin(),
                 hero: {},
                 errorMessages: []
@@ -136,8 +139,17 @@
 //            }
         },
         beforeMount: function () {
+            let backgroundProperty1 = require(`vectors/bodyparts/head-3.svg`);
+            let backgroundProperty2 = require(`vectors/bodyparts/head-2.svg`);
+            this.currentHeroAvatarCss = {'background': `url(${backgroundProperty1})`, 'background-size': '100% 100%', 'transform': 'scaleX(-1)'};
+            this.targetHeroAvatarCss = {'background': `url(${backgroundProperty2})`, 'background-size': '100% 100%'};
         },
-        methods: {}
+        methods: {
+//            getHeroAvatarCss() {
+//                let backgroundProperty = require(`vectors/bodyparts/head-3.svg`);
+//                return {'background-image': `url(${backgroundProperty})`};
+//            }
+        }
     }
 </script>
 <style>
@@ -230,7 +242,7 @@
         height: 50px;
     }
 
-    .heroBar .heroAvatar img {
+    .heroBar .heroAvatar {
         width: 200px;
         height: 200px;
         float: left;

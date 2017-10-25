@@ -21,6 +21,10 @@ module.exports = {
             {
                 test: /\.png/,
                 loader: "file-loader"
+            },
+            {
+                test: /\.svg/,
+                loader: "file-loader"
             }
         ]
     },
@@ -32,6 +36,7 @@ module.exports = {
     resolve: {
         alias: {
             images: path.resolve(__dirname, 'resources/img/'),
+            vectors: path.resolve(__dirname, 'resources/svg/'),
         }
     }
 };

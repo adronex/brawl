@@ -14,10 +14,10 @@ function getSpellsPromise() {
 function getSpellBackgroundImageCss(id) {
     let backgroundProperty;
     try {
-        backgroundProperty = require(`images/spell/${id}.png`);
+        backgroundProperty = require(`images/spells/${id}.png`);
     } catch (e) {
         console.warn(`Spell image with id ${id} isn't present in img/spell folder. Placeholder used instead`);
-        backgroundProperty = require(`images/placeholder/SPELL.png`);
+        backgroundProperty = require(`images/placeholders/SPELL.png`);
     }
     return {'background-image': `url(${backgroundProperty})`};
 }
