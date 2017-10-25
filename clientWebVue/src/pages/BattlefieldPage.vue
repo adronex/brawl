@@ -1,66 +1,71 @@
 <template>
     <div class="page">
-        <div class="gallery">
-            <div class="menu">
-                <div>
-                    Login as {{ login }}
-                </div>
-                <v-link href="/">Menu</v-link>
+
+        <div class="menu">
+            <div>
+                Login as {{ login }}
             </div>
-            <div class="images">
-                <img src="images/1.jpg">
-                <img src="images/2.JPG">
-                <img src="images/3.jpg">
-                <img src="images/4.jpeg">
-                <img src="images/5.jpg">
-                <img src="images/6.jpg">
-                <img src="images/7.jpg">
-                <img src="images/8.jpg">
-            </div>
-            <div class="team">
-                <div class="myTeam">
-                    <div class="hero my"></div>
-                    <div class="hero my"></div>
-                    <div class="hero my"></div>
-                    <div class="hero my"></div>
-                    <div class="hero my"></div>
-                    <div class="hero my"></div>
-                </div>
-            </div>
-            <div class="team">
-                <div class="enemyTeam">
-                    <div class="hero enemy"></div>
-                    <div class="hero enemy"></div>
-                    <div class="hero enemy"></div>
-                    <div class="hero enemy"></div>
-                    <div class="hero enemy"></div>
-                    <div class="hero enemy"></div>
-                </div>
+            <v-link href="/">Menu</v-link>
+        </div>
+
+        <div class="queue">
+            <img src="images/1.jpg">
+            <img src="images/2.JPG">
+            <img src="images/3.jpg">
+            <img src="images/4.jpeg">
+            <img src="images/5.jpg">
+            <img src="images/6.jpg">
+            <img src="images/7.jpg">
+            <img src="images/8.jpg">
+        </div>
+
+
+        <div class="team">
+            <div class="myTeam">
+                <div class="hero my"></div>
+                <div class="hero my"></div>
+                <div class="hero my"></div>
+                <div class="hero my"></div>
+                <div class="hero my"></div>
+                <div class="hero my"></div>
             </div>
         </div>
-        <div class="footer">
-            <div class="heroBar">
-                <div class="main_image"><img src="images/2.jpg"></div>
+        <div class="team">
+            <div class="enemyTeam">
+                <div class="hero enemy"></div>
+                <div class="hero enemy"></div>
+                <div class="hero enemy"></div>
+                <div class="hero enemy"></div>
+                <div class="hero enemy"></div>
+                <div class="hero enemy"></div>
+            </div>
+        </div>
+
+        <div class="heroBar">
+            <div class="heroBlock">
+                <div class="heroAvatar"><img src="images/2.jpg"></div>
+                <div class="heroDescription">
+                    <p>MNOGA-MNOGA BYKAFFF</p>
+                    <p>MNOGA-MNOGA BYKAFFF</p>
+                    <p>MNOGA-MNOGA BYKAFFF</p>
+                    <p>MNOGA-MNOGA BYKAFFF</p>
+                </div>
+            </div>
+            <div class="spellBlock">
                 <div class="spellBar">
                     <spell :spellId="'ELDRICH_PULL'"></spell>
                     <spell :spellId="'DIVINE_COMFORT'"></spell>
                     <spell :spellId="'UPPERCUT'"></spell>
                     <spell :spellId="'SELF_HEAL'"></spell>
                 </div>
-                <div class="heroDescription">
-                    <p>MNOGA-MNOGA BYKAFFF</p>
-                    <p>MNOGA-MNOGA BYKAFFF</p>
-                    <p>MNOGA-MNOGA BYKAFFF</p>
-                    <p>MNOGA-MNOGA BYKAFFF</p>
-                    <p>MNOGA-MNOGA BYKAFFF</p>
-                    <p>MNOGA-MNOGA BYKAFFF</p>
-                    <p>MNOGA-MNOGA BYKAFFF</p>
-                    <p>MNOGA-MNOGA BYKAFFF</p>
-                    <p>MNOGA-MNOGA BYKAFFF</p>
-                    <p>MNOGA-MNOGA BYKAFFF</p>
-                    <p>MNOGA-MNOGA BYKAFFF</p>
-                </div>
                 <div class="spellDescription">
+                    <p>MNOGA-MNOGA BYKAFFF</p>
+                    <p>MNOGA-MNOGA BYKAFFF</p>
+                    <p>MNOGA-MNOGA BYKAFFF</p>
+                    <p>MNOGA-MNOGA BYKAFFF</p>
+                    <p>MNOGA-MNOGA BYKAFFF</p>
+                    <p>MNOGA-MNOGA BYKAFFF</p>
+                    <p>MNOGA-MNOGA BYKAFFF</p>
                     <p>MNOGA-MNOGA BYKAFFF</p>
                     <p>MNOGA-MNOGA BYKAFFF</p>
                     <p>MNOGA-MNOGA BYKAFFF</p>
@@ -70,31 +75,35 @@
         </div>
 
         <div class="heroBar chosenHeroBar">
-            <div class="main_image"><img src="images/2.JPG"></div>
-            <div class="spellBar">
-                <spell :spellId="'SUCKER_PUNCH'"></spell>
-                <spell :spellId="'SHOOT_THEM_ALL'"></spell>
-                <spell :spellId="'SUCKER_PUNCH'"></spell>
-                <spell :spellId="'SUCKER_PUNCH'"></spell>
-            </div>
-            <div class="heroDescription">
-                <p>MNOGA-MNOGA BYKAFFF</p>
-                <p>MNOGA-MNOGA BYKAFFF</p>
-                <p>MNOGA-MNOGA BYKAFFF</p>
-                <p>MNOGA-MNOGA BYKAFFF</p>
-                <p>MNOGA-MNOGA BYKAFFF</p>
-                <p>MNOGA-MNOGA BYKAFFF</p>
-                <p>MNOGA-MNOGA BYKAFFF</p>
-                <p>MNOGA-MNOGA BYKAFFF</p>
-                <p>MNOGA-MNOGA BYKAFFF</p>
-                <p>MNOGA-MNOGA BYKAFFF</p>
+            <div class="heroBlock">
+                <div class="heroAvatar"><img src="images/2.JPG"></div>
+                <div class="heroDescription">
+                    <p>MNOGA-MNOGA BYKAFFF</p>
+                    <p>MNOGA-MNOGA BYKAFFF</p>
+                    <p>MNOGA-MNOGA BYKAFFF</p>
+                    <p>MNOGA-MNOGA BYKAFFF</p>
 
+                </div>
             </div>
-            <div class="spellDescription">
-                <p>MNOGA-MNOGA BYKAFFF</p>
-                <p>MNOGA-MNOGA BYKAFFF</p>
-                <p>MNOGA-MNOGA BYKAFFF</p>
-                <p>MNOGA-MNOGA BYKAFFF</p>
+            <div class="spellBlock">
+                <div class="spellBar">
+                    <spell :spellId="'SUCKER_PUNCH'"></spell>
+                    <spell :spellId="'SHOOT_THEM_ALL'"></spell>
+                    <spell :spellId="'SUCKER_PUNCH'"></spell>
+                    <spell :spellId="'SUCKER_PUNCH'"></spell>
+                </div>
+                <div class="spellDescription">
+                    <p>MNOGA-MNOGA BYKAFFF</p>
+                    <p>MNOGA-MNOGA BYKAFFF</p>
+                    <p>MNOGA-MNOGA BYKAFFF</p>
+                    <p>MNOGA-MNOGA BYKAFFF</p>
+                    <p>MNOGA-MNOGA BYKAFFF</p>
+                    <p>MNOGA-MNOGA BYKAFFF</p>
+                    <p>MNOGA-MNOGA BYKAFFF</p>
+                    <p>MNOGA-MNOGA BYKAFFF</p>
+                    <p>MNOGA-MNOGA BYKAFFF</p>
+                    <p>MNOGA-MNOGA BYKAFFF</p>
+                </div>
             </div>
         </div>
     </div>
@@ -139,37 +148,23 @@
         font-size: 14px;
     }
 
-    .gallery {
-        width: 100%;
-        height: 50%;
-        background-color: #ecf7f7;
-    }
-
     .menu {
         display: block;
         float: left;
         background-color: #d3ffb5;
     }
 
-    .images {
+    .queue {
+        background-color: #ecf7f7;
         display: block;
         width: 640px;
         height: 80px;
         margin: auto;
     }
 
-    .images img {
+    .queue img {
         min-width: 50px;
         min-height: 50px;
-    }
-
-    .spellBar {
-        margin-top: 15px;
-    }
-
-    .spellBar .spell {
-        width: 50px;
-        height: 50px;
     }
 
     .team {
@@ -189,7 +184,7 @@
         padding-left: 20px;
     }
 
-    .hero {
+    .team .hero {
         display: inline-block;
         width: 70px;
         height: 140px;
@@ -198,11 +193,11 @@
         background-color: brown;
     }
 
-    .hero.my {
+    .team .hero.my {
         float: right;
     }
 
-    .hero.enemy {
+    .team .hero.enemy {
         float: left;
     }
 
@@ -217,20 +212,38 @@
         background-color: #aeb1f2;
     }
 
-    .main_image img {
+    .heroBar .heroBlock {
+        max-width: 300px;
+        float: left;
+    }
+
+    .heroBar .spellBlock {
+        float: left;
+    }
+
+    .heroBar .spellBlock .spellBar {
+        margin-top: 15px;
+    }
+
+    .heroBar .spellBlock .spellBar .spell {
+        width: 50px;
+        height: 50px;
+    }
+
+    .heroBar .heroAvatar img {
         width: 200px;
         height: 200px;
         float: left;
         margin: 40px;
     }
 
-    .heroDescription {
+    .heroBar .heroDescription {
         width: 200px;
         float: left;
         margin-left: 40px;
     }
 
-    .spellDescription {
+    .heroBar .spellBlock .spellDescription {
         width: 200px;
         margin-left: 40px;
     }
