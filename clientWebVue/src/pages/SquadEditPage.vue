@@ -31,14 +31,10 @@
             }
         },
         mounted: function () {
-            loadSquadsList().then(it => this.squads = it);
+            Rest.promisedAuthenticatedRequest(Urls.api.squads.my).then(it => this.squads = it);
         },
         methods: {
         }
-    }
-
-    function loadSquadsList() {
-        return Rest.promisedAuthenticatedRequest(Urls.api.squads.my)
     }
 </script>
 

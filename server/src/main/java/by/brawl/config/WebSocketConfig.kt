@@ -15,7 +15,7 @@ open class WebSocketConfig : WebSocketConfigurer {
     private lateinit var gameMessageHandler: GameMessageHandler
 
     override fun registerWebSocketHandlers(registry: WebSocketHandlerRegistry) {
-        registry.addHandler(gameMessageHandler, "/game")
+        registry.addHandler(gameMessageHandler, "/game").setAllowedOrigins("*")
     }
 
 }

@@ -6,6 +6,7 @@ export default {
     auth,
     logout,
     getLogin,
+    getAccessToken,
     isAuthenticated
 }
 
@@ -37,4 +38,9 @@ function isAuthenticated() {
 
 function getLogin() {
     return localStorage.getItem("login")
+}
+
+function getAccessToken() {
+    isAuthenticated();
+    return JSON.parse(localStorage.getItem("auth_data")).access_token;
 }

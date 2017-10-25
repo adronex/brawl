@@ -1,11 +1,12 @@
 <template>
-    <a
+    <button
             v-bind:href="href"
             v-bind:class="{ active: isActive }"
             v-on:click="go"
+            value="href"
     >
         <slot></slot>
-    </a>
+    </button>
 </template>
 
 <script>

@@ -1,7 +1,7 @@
 <template>
     <div class="page">
 
-        <div class="menu">
+        <div class="backToMenu">
             <div>
                 Login as {{ login }}
             </div>
@@ -107,12 +107,18 @@
                 </div>
             </div>
         </div>
+
+
+        <div class="battleLogBlock">
+            <p v-for="message in battleLogMessages">{{message}}</p>
+        </div>
     </div>
 </template>
 
 <script>
     'use strict';
     import Auth from '../service/auth'
+    import Game from '../service/game'
     import VLink from '../components/Link.vue'
     import Spell from '../components/battlefield/Spell.vue'
 
@@ -128,8 +134,7 @@
                 currentHeroAvatarCss: {},
                 targetHeroAvatarCss: {},
                 login: Auth.getLogin(),
-                hero: {},
-                errorMessages: []
+                battleLogMessages: []
             }
         },
         props: {
@@ -139,17 +144,20 @@
 //            }
         },
         beforeMount: function () {
+            this.battleLog = Game.getBattleLog();
+            Game.subscribe(onWebsocketMessage);
+
             let backgroundProperty1 = require(`vectors/bodyparts/head-3.svg`);
             let backgroundProperty2 = require(`vectors/bodyparts/head-2.svg`);
             this.currentHeroAvatarCss = {'background': `url(${backgroundProperty1})`, 'background-size': '100% 100%', 'transform': 'scaleX(-1)'};
             this.targetHeroAvatarCss = {'background': `url(${backgroundProperty2})`, 'background-size': '100% 100%'};
         },
         methods: {
-//            getHeroAvatarCss() {
-//                let backgroundProperty = require(`vectors/bodyparts/head-3.svg`);
-//                return {'background-image': `url(${backgroundProperty})`};
-//            }
         }
+    }
+
+    function onWebsocketMessage(notification) {
+        this.battleLogMessages = notification;
     }
 </script>
 <style>
@@ -160,7 +168,7 @@
         font-size: 14px;
     }
 
-    .menu {
+    .backToMenu {
         display: block;
         float: left;
         background-color: #d3ffb5;
@@ -170,13 +178,17 @@
         background-color: #ecf7f7;
         display: block;
         width: 640px;
-        height: 80px;
+        height: 60px;
         margin: auto;
+        text-align: center;
+        vertical-align: middle;
+        padding-top: 10px;
     }
 
     .queue img {
         min-width: 50px;
         min-height: 50px;
+        background-color: darkgrey;
     }
 
     .team {
@@ -218,6 +230,7 @@
         width: 50%;
         max-height: 300px;
         background-color: #ffcfec;
+        overflow-y: auto;
     }
 
     .heroBar.chosenHeroBar {
@@ -258,5 +271,13 @@
     .heroBar .spellBlock .spellDescription {
         width: 200px;
         margin-left: 40px;
+    }
+
+    .battleLogBlock {
+        float: left;
+        width: 50%;
+        max-height: 300px;
+        background-color: #ded9ff;
+        overflow-y: auto;
     }
 </style>

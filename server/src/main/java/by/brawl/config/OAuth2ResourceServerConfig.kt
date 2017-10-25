@@ -11,7 +11,6 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.R
 @EnableResourceServer
 open class OAuth2ResourceServerConfig : ResourceServerConfigurerAdapter() {
 
-    @Throws(Exception::class)
     override fun configure(http: HttpSecurity?) {
         http!!
                 .authorizeRequests()

@@ -10,7 +10,7 @@
                     <v-link href="/heroEdit">Edit hero</v-link>
                 </li>
                 <li>
-                    <v-link href="/battlefield">Play</v-link>
+                    <v-link href="/play">Play</v-link>
                 </li>
             </ul>
         </div>

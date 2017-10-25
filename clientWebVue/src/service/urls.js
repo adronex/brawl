@@ -1,21 +1,33 @@
 'use strict';
-const serverUrl = 'http://localhost:8082';
+const lobbyProtocol = 'http';
+const lobbyHost = 'localhost';
+const lobbyPort = '8082';
+
+const gameProtocol = 'ws';
+const gameHost = 'localhost';
+const gamePort = '8082';
+
+const lobbyUrl = `${lobbyProtocol}://${lobbyHost}:${lobbyPort}`;
+const gameUrl = `${gameProtocol}://${gameHost}:${gamePort}`;
+
 export default {
-    serverUrl,
     api: {
-        login: `${serverUrl}/api/login`,
+        login: `${lobbyUrl}/api/login`,
         heroes: {
-            my: `${serverUrl}/api/heroes/my`,
-            submit: `${serverUrl}/api/heroes/submit`,
+            my: `${lobbyUrl}/api/heroes/my`,
+            submit: `${lobbyUrl}/api/heroes/submit`,
             delete: function (id) {
-                return `${serverUrl}/api/heroes/delete/${id}`
+                return `${lobbyUrl}/api/heroes/delete/${id}`
             }
         },
         squads: {
-            my: `${serverUrl}/api/squads/my`
+            my: `${lobbyUrl}/api/squads/my`
         },
         static: {
-            spells: `${serverUrl}/api/static/spells`
+            spells: `${lobbyUrl}/api/static/spells`
         }
+    },
+    ws: {
+        game: `${gameUrl}/game`
     }
 }
