@@ -8,105 +8,38 @@
             <v-link href="/">Menu</v-link>
         </div>
 
-        <div class="queue">
-            <img src="images/1.jpg">
-            <img src="images/2.JPG">
-            <img src="images/3.jpg">
-            <img src="images/4.jpeg">
-            <img src="images/5.jpg">
-            <img src="images/6.jpg">
-            <img src="images/7.jpg">
-            <img src="images/8.jpg">
+        <div class="queueWrapper">
+            <div class="queue" v-show="queue.length > 0">
+                <img src="images/1.jpg">
+                <img src="images/2.JPG">
+                <img src="images/3.jpg">
+                <img src="images/4.jpeg">
+                <img src="images/5.jpg">
+                <img src="images/6.jpg">
+                <img src="images/7.jpg">
+                <img src="images/8.jpg">
+            </div>
         </div>
 
 
         <div class="team">
             <div class="myTeam">
-                <div class="hero my"></div>
-                <div class="hero my"></div>
-                <div class="hero my"></div>
-                <div class="hero my"></div>
-                <div class="hero my"></div>
-                <div class="hero my"></div>
+                <div class="hero my" v-for="battleHero in myHeroes" v-on:click="chosenHero = battleHero">
+                    {{ battleHero.id }}
+                </div>
             </div>
         </div>
         <div class="team">
             <div class="enemyTeam">
-                <div class="hero enemy"></div>
-                <div class="hero enemy"></div>
-                <div class="hero enemy"></div>
-                <div class="hero enemy"></div>
-                <div class="hero enemy"></div>
-                <div class="hero enemy"></div>
+                <div class="hero enemy" v-for="battleHero in enemyHeroes" v-on:click="chosenHero = battleHero"></div>
             </div>
         </div>
 
-        <div class="heroBar">
-            <div class="heroBlock">
-                <div class="heroAvatar"
-                     :style="currentHeroAvatarCss"></div>
-                <div class="heroDescription">
-                    <p>MNOGA-MNOGA BYKAFFF</p>
-                    <p>MNOGA-MNOGA BYKAFFF</p>
-                    <p>MNOGA-MNOGA BYKAFFF</p>
-                    <p>MNOGA-MNOGA BYKAFFF</p>
-                </div>
-            </div>
-            <div class="spellBlock">
-                <div class="spellBar">
-                    <spell :spellId="'ELDRICH_PULL'"></spell>
-                    <spell :spellId="'DIVINE_COMFORT'"></spell>
-                    <spell :spellId="'UPPERCUT'"></spell>
-                    <spell :spellId="'SELF_HEAL'"></spell>
-                </div>
-                <div class="spellDescription">
-                    <p>MNOGA-MNOGA BYKAFFF</p>
-                    <p>MNOGA-MNOGA BYKAFFF</p>
-                    <p>MNOGA-MNOGA BYKAFFF</p>
-                    <p>MNOGA-MNOGA BYKAFFF</p>
-                    <p>MNOGA-MNOGA BYKAFFF</p>
-                    <p>MNOGA-MNOGA BYKAFFF</p>
-                    <p>MNOGA-MNOGA BYKAFFF</p>
-                    <p>MNOGA-MNOGA BYKAFFF</p>
-                    <p>MNOGA-MNOGA BYKAFFF</p>
-                    <p>MNOGA-MNOGA BYKAFFF</p>
-                    <p>MNOGA-MNOGA BYKAFFF</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="heroBar chosenHeroBar">
-            <div class="heroBlock">
-                <div class="heroAvatar"
-                     :style="targetHeroAvatarCss"></div>
-                <div class="heroDescription">
-                    <p>MNOGA-MNOGA BYKAFFF</p>
-                    <p>MNOGA-MNOGA BYKAFFF</p>
-                    <p>MNOGA-MNOGA BYKAFFF</p>
-                    <p>MNOGA-MNOGA BYKAFFF</p>
-                </div>
-            </div>
-            <div class="spellBlock">
-                <div class="spellBar">
-                    <spell :spellId="'SUCKER_PUNCH'"></spell>
-                    <spell :spellId="'SHOOT_THEM_ALL'"></spell>
-                    <spell :spellId="'SUCKER_PUNCH'"></spell>
-                    <spell :spellId="'SUCKER_PUNCH'"></spell>
-                </div>
-                <div class="spellDescription">
-                    <p>MNOGA-MNOGA BYKAFFF</p>
-                    <p>MNOGA-MNOGA BYKAFFF</p>
-                    <p>MNOGA-MNOGA BYKAFFF</p>
-                    <p>MNOGA-MNOGA BYKAFFF</p>
-                    <p>MNOGA-MNOGA BYKAFFF</p>
-                    <p>MNOGA-MNOGA BYKAFFF</p>
-                    <p>MNOGA-MNOGA BYKAFFF</p>
-                    <p>MNOGA-MNOGA BYKAFFF</p>
-                    <p>MNOGA-MNOGA BYKAFFF</p>
-                    <p>MNOGA-MNOGA BYKAFFF</p>
-                </div>
-            </div>
-        </div>
+        <hero-block class="currentHeroBar"
+                    :hero="currentHero"></hero-block>
+        <hero-block class="chosenHeroBar"
+                    :hero="chosenHero"
+                    v-show="chosenHero.id"></hero-block>
 
 
         <div class="battleLogBlock">
@@ -117,24 +50,29 @@
 
 <script>
     'use strict';
+    import Routes from '../service/routes'
     import Auth from '../service/auth'
-    import Game from '../service/game'
+    import Ws from '../service/ws'
+
     import VLink from '../components/Link.vue'
     import Spell from '../components/battlefield/Spell.vue'
+    import HeroBlock from '../components/battlefield/HeroBlock.vue'
 
     export default {
         components: {
             VLink,
-            Spell
-//            Hero,
-//            SpellsTable
+            Spell,
+            HeroBlock
         },
         data: function () {
             return {
-                currentHeroAvatarCss: {},
-                targetHeroAvatarCss: {},
                 login: Auth.getLogin(),
-                battleLogMessages: []
+                battleLogMessages: [],
+                queue: [],
+                myHeroes: [],
+                enemyHeroes: [],
+                currentHero: {},
+                chosenHero: {}
             }
         },
         props: {
@@ -143,22 +81,37 @@
 //                required: true
 //            }
         },
-        beforeMount: function () {
-            this.battleLog = Game.getBattleLog();
-            Game.subscribe(onWebsocketMessage);
-
-            let backgroundProperty1 = require(`vectors/bodyparts/head-3.svg`);
-            let backgroundProperty2 = require(`vectors/bodyparts/head-2.svg`);
-            this.currentHeroAvatarCss = {'background': `url(${backgroundProperty1})`, 'background-size': '100% 100%', 'transform': 'scaleX(-1)'};
-            this.targetHeroAvatarCss = {'background': `url(${backgroundProperty2})`, 'background-size': '100% 100%'};
+        mounted: function () {
+            if (!Ws.isConnected()) {
+                Routes.go(this, '/play');
+                console.log('Websocket connection lost. Redirecting to play screen.');
+            }
+            Ws.subscribeOnMessageEvent(this);
         },
         methods: {
+            handleNotification(notification) {
+                // IGNORED PROPERTIES because Vuejs doesn't support 'key = undefined' or 'delete key'
+                let ignoredProperties = [];
+                if (notification.myHeroes) {
+                    this.myHeroes = notification.myHeroes;
+                    ignoredProperties.push('myHeroes');
+                }
+                if (notification.enemyHeroes) {
+                    this.enemyHeroes = notification.enemyHeroes;
+                    ignoredProperties.push('enemyHeroes');
+                }
+                Object.keys(notification).forEach(key => {
+                    if (ignoredProperties.indexOf(key) === -1) {
+                        const message = {
+                            [key]: notification[key]
+                        };
+                        this.battleLogMessages.push(message);
+                    }
+                });
+            }
         }
     }
 
-    function onWebsocketMessage(notification) {
-        this.battleLogMessages = notification;
-    }
 </script>
 <style>
     .page {
@@ -174,8 +127,7 @@
         background-color: #d3ffb5;
     }
 
-    .queue {
-        background-color: #ecf7f7;
+    .queueWrapper {
         display: block;
         width: 640px;
         height: 60px;
@@ -185,7 +137,11 @@
         padding-top: 10px;
     }
 
-    .queue img {
+    .queueWrapper .queue {
+        background-color: #ecf7f7;
+    }
+
+    .queueWrapper .queue img {
         min-width: 50px;
         min-height: 50px;
         background-color: darkgrey;
@@ -225,59 +181,19 @@
         float: left;
     }
 
-    .heroBar {
-        float: left;
-        width: 50%;
-        max-height: 300px;
-        background-color: #ffcfec;
-        overflow-y: auto;
-    }
-
-    .heroBar.chosenHeroBar {
-        background-color: #aeb1f2;
-    }
-
-    .heroBar .heroBlock {
-        max-width: 300px;
-        float: left;
-    }
-
-    .heroBar .spellBlock {
-        float: left;
-    }
-
-    .heroBar .spellBlock .spellBar {
-        margin-top: 15px;
-    }
-
-    .heroBar .spellBlock .spellBar .spell {
-        width: 50px;
-        height: 50px;
-    }
-
-    .heroBar .heroAvatar {
-        width: 200px;
-        height: 200px;
-        float: left;
-        margin: 40px;
-    }
-
-    .heroBar .heroDescription {
-        width: 200px;
-        float: left;
-        margin-left: 40px;
-    }
-
-    .heroBar .spellBlock .spellDescription {
-        width: 200px;
-        margin-left: 40px;
-    }
-
     .battleLogBlock {
         float: left;
         width: 50%;
         max-height: 300px;
         background-color: #ded9ff;
         overflow-y: auto;
+    }
+
+    .currentHeroBar {
+        background-color: #ffcfec;
+    }
+
+    .chosenHeroBar {
+        background-color: #aeb1f2;
     }
 </style>

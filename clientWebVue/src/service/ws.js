@@ -1,18 +1,21 @@
 import Auth from './auth';
 import Urls from './urls';
 
+export default {
+    isConnected,
+    findGame,
+    subscribeOnMessageEvent
+}
+
 let webSocket;
-let battleLogMessages = [];
 let subscribers = [];
 
-export default {
-    findGame,
-    getBattleLog,
-    subscribe
+function isConnected() {
+    return webSocket !== undefined && webSocket.readyState !== WebSocket.CLOSED;
 }
 
 function findGame(squadId) {
-    if (webSocket !== undefined && webSocket.readyState !== WebSocket.CLOSED) {
+    if (isConnected()) {
         throw new Error("WebSocket is already opened.");
     }
     webSocket = new WebSocket(`${Urls.ws.game}?access_token=${Auth.getAccessToken()}`);
@@ -26,28 +29,15 @@ function findGame(squadId) {
     }
 }
 
-function getBattleLog() {
-    return battleLogMessages;
-}
-
-function subscribe(subscriber) {
+function subscribeOnMessageEvent(subscriber) {
     subscribers.push(subscriber);
 }
 
-function notifyAll(notification){
-    subscribers.forEach(it => it(notification));
+function notifyAll(response){
+    subscribers.forEach(it => it.handleNotification(response));
 }
 
 function handleMessage(responseAsText) {
-    console.log(responseAsText);
     let response = JSON.parse(responseAsText);
-    if (response.battleLog) {
-        handleBattleLogObject(response.battleLog)
-    }
     notifyAll(response);
-}
-
-function handleBattleLogObject(battleLog) {
-    battleLogMessages.push(battleLog);
-    console.log(battleLog);
 }

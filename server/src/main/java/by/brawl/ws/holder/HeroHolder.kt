@@ -11,6 +11,7 @@ class HeroHolder(hero: Hero,
                  private val battlefieldHolder: BattlefieldHolder) {
 
     val id: String = hero.id!!
+    val name: String = hero.name
     val allSpells = hero.spells.map {
         SpellHolder(SpellsPool.spellsMap[it.id]
                 ?: throw Exceptions.produceIllegalState(LOG, "Spell with id ${it.id} isn't present in spell pool."))

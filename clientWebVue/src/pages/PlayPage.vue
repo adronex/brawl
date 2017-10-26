@@ -6,7 +6,7 @@
 
 <script>
     'use strict';
-    import Game from '../service/game'
+    import Game from '../service/ws'
     import Rest from '../service/rest'
     import Urls from '../service/urls'
     import Routes from '../service/routes'

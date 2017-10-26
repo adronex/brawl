@@ -12,9 +12,6 @@ class MulliganDto(mulliganHeroes: Map<String, List<HeroHolder>>,
         private set
     var enemyHeroes: List<HeroDto> = ArrayList()
         private set
-    val heroSpellsIds = HashMap<String, List<String>>()
-
-   // val heroSpellsIds = mulliganHeroes[receiverName]!!.associateBy ({it.id}, {it.allSpells.map { it.id }})
 
     // todo: refactor
     init {
@@ -27,12 +24,8 @@ class MulliganDto(mulliganHeroes: Map<String, List<HeroHolder>>,
             }
         }
 
-        mulliganHeroes.forEach { key, _ ->
-            if (key == receiverName) {
-                for (heroHolder in mulliganHeroes[receiverName]!!) {
-                    heroSpellsIds.put(heroHolder.id, heroHolder.allSpells.map { it.id })
-                }
-            }
+        enemyHeroes.forEach {
+            it.spells.clear()
         }
     }
 
