@@ -44,10 +44,4 @@ open class GameSessionsPool {
             receiver.sendDto(dto)
         }
     }
-
-    companion object {
-
-        private val LOG = LoggerFactory.getLogger(GameSessionsPool::class.java)
-    }
-
 }

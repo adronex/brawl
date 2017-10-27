@@ -19,7 +19,7 @@ class HeroServiceImpl(private val repository: HeroRepository,
     override fun findMy() = repository.findByOwner(securityService.getCurrentAccount()).map { HeroDto(it) }
 
     override fun getById(id: String): Hero = repository.findOne(id) ?:
-            throw Exceptions.produceIllegalArgument(LOG, "Hero with id $id does not exists!")
+            throw IllegalArgumentException("Hero with id $id does not exists!")
 
     override fun submit(submitHeroDto: SubmitHeroDto): HeroDto {
         val account = securityService.getCurrentAccount()
@@ -28,7 +28,7 @@ class HeroServiceImpl(private val repository: HeroRepository,
         } else {
             val existingHero = getById(submitHeroDto.id)
             if (existingHero.owner != account) {
-                throw Exceptions.produceIllegalArgument(LOG, "Hero owner is ${existingHero.owner.username} where requester is ${account.username}")
+                throw IllegalArgumentException("Hero owner is ${existingHero.owner.username} where requester is ${account.username}")
             }
             Hero.from(submitHeroDto.name, account, submitHeroDto.spells.map { spellReadonlyService.findOne(it) }.toSet(), getDefaultBodyparts(), existingHero.id)
         }
@@ -44,15 +44,10 @@ class HeroServiceImpl(private val repository: HeroRepository,
         val hero = repository.findOne(id)
         val account = securityService.getCurrentAccount()
         if (hero.owner != account) {
-            throw Exceptions.produceAccessDenied(LOG, "Account ${account.username} tries to delete ${hero.owner.username}'s hero")
+            throw IllegalAccessException("Account ${account.username} tries to delete ${hero.owner.username}'s hero")
         }
         repository.delete(hero)
         return IdDto(hero)
-    }
-
-    companion object {
-
-        private val LOG = LoggerFactory.getLogger(HeroServiceImpl::class.java)
     }
 
 }

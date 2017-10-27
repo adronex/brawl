@@ -31,23 +31,17 @@ open class GameMessageHandler(private val gameSessionsPool: GameSessionsPool,
     }
 
     override fun handleTextMessage(webSocketSession: WebSocketSession, message: TextMessage) {
-        try {
-            val gameSession = gameSessionsPool.getSession(webSocketSession.principal.name)
+        val gameSession = gameSessionsPool.getSession(webSocketSession.principal.name)
 
-            val request = JSONObject(message.payload)
-            val type: ClientRequestType = request.getEnum(ClientRequestType::class.java, "type")
-            val body = request.getJSONObject("body")
+        val request = JSONObject(message.payload)
+        val type: ClientRequestType = request.getEnum(ClientRequestType::class.java, "type")
+        val body = request.getJSONObject("body")
 
-            when (type) {
-                ClientRequestType.INITIAL -> handleInitRequest(gameSession, body)
-                ClientRequestType.CHOOSE_HEROES -> handleChooseHeroesRequest(gameSession, body)
-                ClientRequestType.CAST_SPELL -> handleCastSpellRequest(gameSession, body)
-            }
-        } catch (e: Exception) {
-            Exceptions.logError(LOG, e, e.message ?: "Unspecified exception happened.")
-            throw e;
+        when (type) {
+            ClientRequestType.INITIAL -> handleInitRequest(gameSession, body)
+            ClientRequestType.CHOOSE_HEROES -> handleChooseHeroesRequest(gameSession, body)
+            ClientRequestType.CAST_SPELL -> handleCastSpellRequest(gameSession, body)
         }
-
     }
 
     private fun handleInitRequest(session: GameSession, body: JSONObject) {
@@ -68,14 +62,9 @@ open class GameMessageHandler(private val gameSessionsPool: GameSessionsPool,
         val spellId = body.getString("spellPosition")
         val targetPosition = body.getInt("targetPosition")
         if (targetPosition !in -4..-1 && targetPosition !in 1..4) {
-            throw Exceptions.produceIllegalArgument(LOG, "Incorrect target position: $targetPosition, allowed: [-4, -1], [1, 4]")
+            throw IllegalArgumentException("Incorrect target position: $targetPosition, allowed: [-4, -1], [1, 4]")
         }
 
         spellService.cast(session, spellId, targetPosition)
-    }
-
-    companion object {
-
-        private val LOG = LoggerFactory.getLogger(GameMessageHandler::class.java)
     }
 }

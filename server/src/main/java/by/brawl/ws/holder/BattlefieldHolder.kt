@@ -20,7 +20,7 @@ class BattlefieldHolder {
 
     fun isReadyForBattle() =
             if (battleHeroes.size > PLAYERS_COUNT)
-                throw Exceptions.produceIllegalState(LOG, "Two-players battlefield contains more players than maximum allowed: ${battleHeroes.size}")
+                throw IllegalStateException("Two-players battlefield contains more players than maximum allowed: ${battleHeroes.size}")
             else battleHeroes.size == PLAYERS_COUNT
 
     fun isGameFinished() = battleHeroes.values.count { singleList -> singleList.count { it.isAlive() } == 0 } > 0
@@ -53,19 +53,19 @@ class BattlefieldHolder {
 
     fun getBattleHeroes(senderId: String, queryForOpponentHeroes: Boolean): List<HeroHolder> {
         if (!queryForOpponentHeroes) {
-            return battleHeroes[senderId] ?: throw Exceptions.produceIllegalState(LOG, "No heroes for session key $senderId")
+            return battleHeroes[senderId] ?: throw IllegalStateException("No heroes for session key $senderId")
         }
         for ((key, value) in battleHeroes) {
             if (senderId != key) {
                 return value
             }
         }
-        throw Exceptions.produceIllegalState(LOG, "Battle heroes does not contain enemy for player $senderId")
+        throw IllegalStateException("Battle heroes does not contain enemy for player $senderId")
     }
 
     fun getAlliedHeroes(heroHolder: HeroHolder): List<HeroHolder> {
         return battleHeroes.values.maxBy { it.indexOf(heroHolder) }
-                ?: throw Exceptions.produceIllegalArgument(LOG, "Hero with id ${heroHolder.id} is absent in queue")
+                ?: throw IllegalArgumentException("Hero with id ${heroHolder.id} is absent in queue")
     }
 
     fun getFirstHeroFromQueue(): HeroHolder = queue.peek()
@@ -73,10 +73,10 @@ class BattlefieldHolder {
     fun getPositionOfHero(heroHolder: HeroHolder): Int {
         if (gameState == GameState.MULLIGAN) {
             return mulliganHeroes.values.maxBy { it.indexOf(heroHolder) }?.indexOf(heroHolder)
-                    ?: throw Exceptions.produceIllegalArgument(LOG, "Hero with id ${heroHolder.id} is absent in queue")
+                    ?: throw IllegalArgumentException("Hero with id ${heroHolder.id} is absent in queue")
         }
         return battleHeroes.values.maxBy { it.indexOf(heroHolder) }?.indexOf(heroHolder)
-                ?: throw Exceptions.produceIllegalArgument(LOG, "Hero with id ${heroHolder.id} is absent in queue")
+                ?: throw IllegalArgumentException("Hero with id ${heroHolder.id} is absent in queue")
     }
 
 
@@ -91,13 +91,11 @@ class BattlefieldHolder {
         } else {
             session.id
         }
-        return battleHeroes[sessionKey]?.get(realIndex) ?: throw Exceptions.produceIllegalState(LOG, "Invalid session key: $sessionKey")
+        return battleHeroes[sessionKey]?.get(realIndex) ?: throw IllegalStateException("Invalid session key: $sessionKey")
     }
 
 
     companion object {
-
-        private val LOG = LoggerFactory.getLogger(BattlefieldHolder::class.java)
         private val PLAYERS_COUNT = 2
     }
 

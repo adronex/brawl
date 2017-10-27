@@ -23,10 +23,10 @@ class SpellService(private val preconditionsPool: HandlersPool,
         val caster: HeroHolder = battlefieldHolder.getFirstHeroFromQueue()
         // todo: check current turn availability
         val target: HeroHolder = battlefieldHolder.getHeroByPosition(gameSession, clickedHeroPosition)
-        val spellHolder: SpellHolder = caster.allSpells.find { it.id == spellId } ?: throw Exceptions.produceIllegalArgument(LOG, "Spell with id $spellId doesn't belong to caster")
+        val spellHolder: SpellHolder = caster.allSpells.find { it.id == spellId } ?: throw IllegalArgumentException("Spell with id $spellId doesn't belong to caster")
         // todo: check spell hero-owner
         val config: SpellConfig = SpellsPool.spellsMap[spellHolder.id]
-                ?: throw Exceptions.produceIllegalArgument(LOG, "Spell with id ${spellHolder.id} doesn't exist!")
+                ?: throw IllegalArgumentException("Spell with id ${spellHolder.id} doesn't exist!")
         checkPreConditions(caster, target, spellHolder, config)
         // BUILDING IMPACTS MAP
         val impactsMap = mutableMapOf<HeroHolder, List<IntegerImpactConfig>>()
@@ -51,25 +51,25 @@ class SpellService(private val preconditionsPool: HandlersPool,
                                    spellHolder: SpellHolder,
                                    spellConfig: SpellConfig): Boolean {
         if (!preconditionsPool.checkCasterAvailabilityHandler.check(caster)) {
-            throw Exceptions.produceIllegalState(LOG, "Caster is not available (under stun etc)")
+            throw IllegalStateException("Caster is not available (under stun etc)")
         }
         if (!preconditionsPool.checkCasterPositionHandler.check(spellConfig, caster.position())) {
-            throw Exceptions.produceIllegalState(LOG, "Caster position check failed")
+            throw IllegalStateException("Caster position check failed")
         }
         if (!preconditionsPool.checkSpellHasChargesHandler.check(spellHolder)) {
-            throw Exceptions.produceIllegalState(LOG, "Spell is out of charges")
+            throw IllegalStateException("Spell is out of charges")
         }
         if (!preconditionsPool.checkSpellOnCooldownHandler.check(spellHolder)) {
-            throw Exceptions.produceIllegalState(LOG, "Spell is on cooldown")
+            throw IllegalStateException("Spell is on cooldown")
         }
         if (!preconditionsPool.checkSpellOnSuspendHandler.check(spellHolder)) {
-            throw Exceptions.produceIllegalState(LOG, "Spell is on suspend")
+            throw IllegalStateException("Spell is on suspend")
         }
         if (!preconditionsPool.checkTargetAvailabilityHandler.check(target)) {
-            throw Exceptions.produceIllegalState(LOG, "Target is not available (invisible etc)")
+            throw IllegalStateException("Target is not available (invisible etc)")
         }
         if (!preconditionsPool.checkTargetPositionHandler.check(spellConfig, target.position())) {
-            throw Exceptions.produceIllegalState(LOG, "Incorrect target position")
+            throw IllegalStateException("Incorrect target position")
         }
         return true
     }
@@ -88,10 +88,5 @@ class SpellService(private val preconditionsPool: HandlersPool,
                 }
             }
         }
-    }
-
-    companion object {
-
-        private val LOG = LoggerFactory.getLogger(BattlefieldHolder::class.java)
     }
 }

@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/api/squads")
-class SquadController constructor(val service: SquadService) {
+class SquadController (service: SquadService): GenericController<SquadService>(service) {
 
     @GetMapping(path = arrayOf("/my"))
     fun findMySquads() = service.getMySquads().map { PreGameSquadDto(it) }.toSet()

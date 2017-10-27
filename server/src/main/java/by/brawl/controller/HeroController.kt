@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/api/heroes")
-class HeroController constructor(val service: HeroService) {
+class HeroController (service: HeroService): GenericController<HeroService>(service) {
 
     @GetMapping(path = arrayOf("/my"))
     fun findMySquads() = service.findMy()

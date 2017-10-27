@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/api/static")
-class StaticDataController constructor(val service: BodypartService) {
+class StaticDataController(service: BodypartService): GenericController<BodypartService>(service) {
 
     @GetMapping(path = arrayOf("/spells"))
     fun getSpellData(): Map<String, SpellConfig> = SpellsPool.spellsMap

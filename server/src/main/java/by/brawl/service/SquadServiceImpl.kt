@@ -15,16 +15,11 @@ constructor(private val repository: SquadRepository,
     override fun getMySquads() = repository.findByOwner(securityService.getCurrentAccount())
 
     override fun getWithAuthorityCheck(authority: Account, squadId: String): Squad {
-        val squad = repository.findOne(squadId) ?: throw Exceptions.produceAccessDenied(LOG, "Squad with id $squadId is not existing in database. Calling account: $authority")
+        val squad = repository.findOne(squadId) ?: throw IllegalAccessException("Squad with id $squadId is not existing in database. Calling account: $authority")
         if (authority != squad.owner) {
-            throw Exceptions.produceAccessDenied(LOG, "Squad with id $squadId belongs to account ${squad.owner.username} but was queried by account $authority")
+            throw IllegalAccessException("Squad with id $squadId belongs to account ${squad.owner.username} but was queried by account $authority")
         }
         return squad
-    }
-
-    companion object {
-
-        private val LOG = LoggerFactory.getLogger(SquadServiceImpl::class.java)
     }
 
 }

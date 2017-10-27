@@ -1,6 +1,5 @@
 package by.brawl.ws.huihui
 
-import by.brawl.util.Exceptions
 import by.brawl.ws.huihui.conf.*
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
@@ -38,9 +37,9 @@ class SpellsPool {
             val tempMap = mutableMapOf<String, SpellConfig>()
             val mapper = jacksonObjectMapper()
             val source = this::class.java.getResource(FILE_PATH).readText()
-            val spellsTree: JsonNode = mapper.readTree(source) ?: throw Exceptions.produceIllegalState(LOG, "Spells configs are absent!")
+            val spellsTree: JsonNode = mapper.readTree(source) ?: throw IllegalStateException("Spells configs are absent!")
             spellsTree.forEach { spell ->
-                val id: String = spell.get(KEYS.ID)?.textValue() ?: throw Exceptions.produceIllegalState(LOG, "Id of spell is absent, json: ${spell.textValue()}")
+                val id: String = spell.get(KEYS.ID)?.textValue() ?: throw IllegalStateException("Id of spell is absent, json: ${spell.textValue()}")
                 val casterPositions: List<Int>? = spell.get(KEYS.CASTER_POSITIONS)?.map { it.intValue() }
                 val targetPositions: List<Int>? = spell.get(KEYS.TARGET_POSITIONS)?.map { it.intValue() }
                 val casterImpacts: List<IntegerImpactConfig>? = spell.get(KEYS.CASTER_IMPACTS)?.map { getImpacts(it, id) }
@@ -49,9 +48,9 @@ class SpellsPool {
 
                 spell.get(KEYS.ADDITIONAL_IMPACTS)?.forEach { impact ->
                     val key = impact.get(KEYS.TARGET)?.intValue()
-                            ?: throw Exceptions.produceIllegalState(LOG, "Target of additional impact is absent for spell $id")
+                            ?: throw IllegalStateException("Target of additional impact is absent for spell $id")
                     val value = impact.get(KEYS.IMPACTS)?.map { getImpacts(it, id) }
-                            ?: throw Exceptions.produceIllegalState(LOG, "Impacts object of additional impact are absent for spell $id")
+                            ?: throw IllegalStateException("Impacts object of additional impact are absent for spell $id")
                     additionalImpacts.put(key, value)
                 }
                 val suspend: Int? = spell.get(KEYS.SUSPEND)?.intValue()
@@ -74,12 +73,12 @@ class SpellsPool {
         }
 
         private fun getImpacts(node: JsonNode, spellId: String): IntegerImpactConfig {
-            val impactType = ImpactType.valueOf(node.get(KEYS.TYPE)?.textValue() ?: throw Exceptions.produceIllegalState(LOG, "Type of impact is absent for spell $spellId"))
+            val impactType = ImpactType.valueOf(node.get(KEYS.TYPE)?.textValue() ?: throw IllegalStateException("Type of impact is absent for spell $spellId"))
             return if (node.get(KEYS.VALUE) != null) {
                 SingleIntegerImpactConfig(impactType, node.get(KEYS.VALUE)!!.intValue())
             } else {
-                val from = node.get(KEYS.FROM)?.intValue() ?: throw Exceptions.produceIllegalState(LOG, "Type impact is 'RANGED` but `FROM` is absent for spell $spellId")
-                val to = node.get(KEYS.TO)?.intValue() ?: throw Exceptions.produceIllegalState(LOG, "Type impact is 'RANGED` but `TO` is absent for spell $spellId")
+                val from = node.get(KEYS.FROM)?.intValue() ?: throw IllegalStateException("Type impact is 'RANGED` but `FROM` is absent for spell $spellId")
+                val to = node.get(KEYS.TO)?.intValue() ?: throw IllegalStateException("Type impact is 'RANGED` but `TO` is absent for spell $spellId")
                 RangeIntegerImpactConfig(impactType, from, to)
             }
         }

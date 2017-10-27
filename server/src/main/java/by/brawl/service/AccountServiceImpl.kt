@@ -17,11 +17,6 @@ internal class AccountServiceImpl
 constructor(private val repository: AccountRepository) : AccountService {
 
     override fun findByEmail(email: String) = repository.findByEmail(email) ?:
-            throw Exceptions.produceIllegalArgument(LOG, "Account with email $email does not exists!")
-
-    companion object {
-
-        private val LOG = LoggerFactory.getLogger(GameSessionsPool::class.java)
-    }
+            throw IllegalArgumentException("Account with email $email does not exists!")
 
 }
