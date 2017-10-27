@@ -13,7 +13,6 @@ class MulliganDto(mulliganHeroes: Map<String, List<HeroHolder>>,
     var enemyHeroes: List<HeroDto> = ArrayList()
         private set
 
-    // todo: refactor
     init {
 
         mulliganHeroes.forEach { key, value ->
