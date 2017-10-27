@@ -17,20 +17,17 @@ class SpellService(private val preconditionsPool: HandlersPool,
                    private val checkEndGameHandler: CheckEndGameHandler) {
 
     fun cast(gameSession: GameSession,
-             clickedSpellPosition: Int,
+             spellId: String,
              clickedHeroPosition: Int) {
         val battlefieldHolder = gameSession.battlefieldHolder
         val caster: HeroHolder = battlefieldHolder.getFirstHeroFromQueue()
         // todo: check current turn availability
         val target: HeroHolder = battlefieldHolder.getHeroByPosition(gameSession, clickedHeroPosition)
-        val spellHolder: SpellHolder = caster.allSpells[clickedSpellPosition]
+        val spellHolder: SpellHolder = caster.allSpells.find { it.id == spellId } ?: throw Exceptions.produceIllegalArgument(LOG, "Spell with id $spellId doesn't belong to caster")
         // todo: check spell hero-owner
         val config: SpellConfig = SpellsPool.spellsMap[spellHolder.id]
                 ?: throw Exceptions.produceIllegalArgument(LOG, "Spell with id ${spellHolder.id} doesn't exist!")
-        val preconditionPassed = checkPreConditions(caster, target, spellHolder, config)
-        if (!preconditionPassed) {
-            throw Exceptions.produceIllegalState(LOG, "Preconditions check failed!")
-        }
+        checkPreConditions(caster, target, spellHolder, config)
         // BUILDING IMPACTS MAP
         val impactsMap = mutableMapOf<HeroHolder, List<IntegerImpactConfig>>()
         impactsMap.put(caster, config.casterIntegerImpacts)
@@ -52,14 +49,30 @@ class SpellService(private val preconditionsPool: HandlersPool,
     private fun checkPreConditions(caster: HeroHolder,
                                    target: HeroHolder,
                                    spellHolder: SpellHolder,
-                                   spellConfig: SpellConfig): Boolean =
-            preconditionsPool.checkCasterAvailabilityHandler.check(caster)
-                    && preconditionsPool.checkCasterPositionHandler.check(spellConfig, caster.position())
-                    && preconditionsPool.checkSpellHasChargesHandler.check(spellHolder)
-                    && preconditionsPool.checkSpellOnCooldownHandler.check(spellHolder)
-                    && preconditionsPool.checkSpellOnSuspendHandler.check(spellHolder)
-                    && preconditionsPool.checkTargetAvailabilityHandler.check(target)
-                    && preconditionsPool.checkTargetPositionHandler.check(spellConfig, target.position())
+                                   spellConfig: SpellConfig): Boolean {
+        if (!preconditionsPool.checkCasterAvailabilityHandler.check(caster)) {
+            throw Exceptions.produceIllegalState(LOG, "Caster is not available (under stun etc)")
+        }
+        if (!preconditionsPool.checkCasterPositionHandler.check(spellConfig, caster.position())) {
+            throw Exceptions.produceIllegalState(LOG, "Caster position check failed")
+        }
+        if (!preconditionsPool.checkSpellHasChargesHandler.check(spellHolder)) {
+            throw Exceptions.produceIllegalState(LOG, "Spell is out of charges")
+        }
+        if (!preconditionsPool.checkSpellOnCooldownHandler.check(spellHolder)) {
+            throw Exceptions.produceIllegalState(LOG, "Spell is on cooldown")
+        }
+        if (!preconditionsPool.checkSpellOnSuspendHandler.check(spellHolder)) {
+            throw Exceptions.produceIllegalState(LOG, "Spell is on suspend")
+        }
+        if (!preconditionsPool.checkTargetAvailabilityHandler.check(target)) {
+            throw Exceptions.produceIllegalState(LOG, "Target is not available (invisible etc)")
+        }
+        if (!preconditionsPool.checkTargetPositionHandler.check(spellConfig, target.position())) {
+            throw Exceptions.produceIllegalState(LOG, "Incorrect target position")
+        }
+        return true
+    }
 
     private fun apply(impactsMap: Map<HeroHolder, List<IntegerImpactConfig>>) {
         impactsMap.forEach { hero, impacts ->

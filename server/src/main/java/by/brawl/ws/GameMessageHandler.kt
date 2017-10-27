@@ -65,16 +65,13 @@ open class GameMessageHandler(private val gameSessionsPool: GameSessionsPool,
     }
 
     private fun handleCastSpellRequest(session: GameSession, body: JSONObject) {
-        val spellPosition = body.getInt("spellPosition")
-        if (spellPosition !in 0..3) {
-            throw Exceptions.produceIllegalArgument(LOG, "Incorrect spell position: $spellPosition, allowed: [0, 3]")
-        }
+        val spellId = body.getString("spellPosition")
         val targetPosition = body.getInt("targetPosition")
         if (targetPosition !in -4..-1 && targetPosition !in 1..4) {
             throw Exceptions.produceIllegalArgument(LOG, "Incorrect target position: $targetPosition, allowed: [-4, -1], [1, 4]")
         }
 
-        spellService.cast(session, spellPosition, targetPosition)
+        spellService.cast(session, spellId, targetPosition)
     }
 
     companion object {

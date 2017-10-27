@@ -4,6 +4,7 @@ import Urls from './urls';
 export default {
     isConnected,
     findGame,
+    sendMessage,
     subscribeOnMessageEvent
 }
 
@@ -27,6 +28,10 @@ function findGame(squadId) {
     webSocket.onmessage = function (response) {
         handleMessage(response.data);
     }
+}
+
+function sendMessage(type, body) {
+    webSocket.send(JSON.stringify({type: type, body: body }));
 }
 
 function subscribeOnMessageEvent(subscriber) {

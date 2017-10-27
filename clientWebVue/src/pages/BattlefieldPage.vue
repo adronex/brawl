@@ -5,41 +5,55 @@
             <div>
                 Login as {{ login }}
             </div>
-            <v-link href="/">Menu</v-link>
+            <v-link href="/play">Menu</v-link>
         </div>
 
         <div class="queueWrapper">
             <div class="queue" v-show="queue.length > 0">
-                <img src="images/1.jpg">
-                <img src="images/2.JPG">
-                <img src="images/3.jpg">
-                <img src="images/4.jpeg">
-                <img src="images/5.jpg">
-                <img src="images/6.jpg">
-                <img src="images/7.jpg">
-                <img src="images/8.jpg">
+                <div class="heroInQueue"
+                     v-for="heroInQueue in queue">
+                    {{ heroInQueue.id }}
+                </div>
             </div>
         </div>
 
 
         <div class="team">
             <div class="myTeam">
-                <div class="hero my" v-for="battleHero in myHeroes" v-on:click="chosenHero = battleHero">
+                <div class="hero my"
+                     v-for="battleHero in myHeroes"
+                     v-on:click="onHeroClick(battleHero)"
+                     v-on:mouseover="onHeroHover(battleHero)"
+                     :style="getHeroStyle(battleHero)">
                     {{ battleHero.id }}
                 </div>
             </div>
         </div>
         <div class="team">
             <div class="enemyTeam">
-                <div class="hero enemy" v-for="battleHero in enemyHeroes" v-on:click="chosenHero = battleHero"></div>
+                <div class="hero enemy"
+                     v-for="battleHero in enemyHeroes"
+                     v-on:click="onHeroClick(battleHero)"
+                     v-on:mouseover="onHeroHover(battleHero)"
+                     :style="getHeroStyle(battleHero)"></div>
             </div>
         </div>
 
-        <hero-block class="currentHeroBar"
-                    :hero="currentHero"></hero-block>
-        <hero-block class="chosenHeroBar"
+        <div class="startButton">
+            <input type="button"
+                   value="Start"
+                   v-show="mulliganHeroesIds.length === 4"
+                   v-on:click="startGame()"/>
+        </div>
+
+        <hero-block class="currentHeroBlock"
+                    :hero="currentHero"
+                    ref="currentHeroBlock">
+        </hero-block>
+        <hero-block class="chosenHeroBlock"
                     :hero="chosenHero"
-                    v-show="chosenHero.id"></hero-block>
+                    v-show="chosenHero.id">
+        </hero-block>
 
 
         <div class="battleLogBlock">
@@ -72,7 +86,9 @@
                 myHeroes: [],
                 enemyHeroes: [],
                 currentHero: {},
-                chosenHero: {}
+                chosenHero: {},
+                gameState: {},
+                mulliganHeroesIds: []
             }
         },
         props: {
@@ -100,6 +116,21 @@
                     this.enemyHeroes = notification.enemyHeroes;
                     ignoredProperties.push('enemyHeroes');
                 }
+                if (notification.gameState) {
+                    this.gameState = notification.gameState;
+                    ignoredProperties.push('gameState');
+                }
+                if (notification.queue) {
+                    this.queue = notification.queue;
+                    ignoredProperties.push('queue');
+                    if (this.queue.length > 0) {
+                        let currentHero = this.myHeroes.find(it => it.id === this.queue[0].id);
+                        if (!currentHero) {
+                            currentHero = this.enemyHeroes.find(it => it.id === this.queue[0].id);
+                        }
+                        this.currentHero = currentHero;
+                    }
+                }
                 Object.keys(notification).forEach(key => {
                     if (ignoredProperties.indexOf(key) === -1) {
                         const message = {
@@ -108,6 +139,45 @@
                         this.battleLogMessages.push(message);
                     }
                 });
+            },
+            onHeroHover(hero) {
+                this.chosenHero = hero;
+            },
+            onHeroClick(hero) {
+                if (this.gameState === 'MULLIGAN') {
+                    if (this.mulliganHeroesIds.includes(hero.id)) {
+                        this.mulliganHeroesIds = this.mulliganHeroesIds.filter(item => item !== hero.id);
+                    } else {
+                        this.mulliganHeroesIds.push(hero.id);
+                    }
+                    if (this.mulliganHeroesIds.length > 4) {
+                        this.mulliganHeroesIds = this.mulliganHeroesIds.slice(1);
+                    }
+                }
+                if (this.gameState === 'PLAYING') {
+                    const chosenSpellId = this.$refs.currentHeroBlock.chosenSpell.id;
+                    if (this.myHeroes.some(it => it.id === this.currentHero.id)) {
+                        Ws.sendMessage('CAST_SPELL', {spellPosition: chosenSpellId, targetPosition: hero.position})
+                    }
+                }
+            },
+            getHeroStyle(hero) {
+                if (this.gameState === 'MULLIGAN') {
+                    if (this.mulliganHeroesIds.includes(hero.id)) {
+                        return {'background-color': 'cyan'};
+                    }
+                }
+                if (this.gameState === 'PLAYING') {
+                    const chosenSpell = this.$refs.currentHeroBlock.chosenSpell;
+                    if (chosenSpell.id && chosenSpell.targetPositions.includes(hero.position)) {
+                        return {'background-color': 'yellow'}
+                    }
+                }
+                return {'background-color': 'brown'};
+            },
+            startGame() {
+                Ws.sendMessage('CHOOSE_HEROES', { heroes: this.mulliganHeroesIds });
+                this.mulliganHeroesIds = [];
             }
         }
     }
@@ -139,11 +209,16 @@
 
     .queueWrapper .queue {
         background-color: #ecf7f7;
+        height: 100%;
+        width: max-content;
+        margin: 0 auto;
     }
 
-    .queueWrapper .queue img {
-        min-width: 50px;
-        min-height: 50px;
+    .queueWrapper .queue .heroInQueue {
+        float: left;
+        width: 50px;
+        height: 50px;
+        margin: 5px;
         background-color: darkgrey;
     }
 
@@ -189,11 +264,15 @@
         overflow-y: auto;
     }
 
-    .currentHeroBar {
+    .currentHeroBlock {
         background-color: #ffcfec;
     }
 
-    .chosenHeroBar {
+    .chosenHeroBlock {
         background-color: #aeb1f2;
+    }
+
+    .startButton {
+        margin: 10px;
     }
 </style>

@@ -13,6 +13,8 @@ class BattlefieldDto(battlefieldHolder: BattlefieldHolder, receiverName: String)
     val gameState = battlefieldHolder.gameState
 
     init {
+        myHeroes.forEach { it.position = it.position * (-1) - 1 }
+        enemyHeroes.forEach { it.position++ }
         enemyHeroes.forEach { enemyHero ->
             run {
                 val iterator = enemyHero.spells.iterator()

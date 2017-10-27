@@ -70,9 +70,15 @@ class BattlefieldHolder {
 
     fun getFirstHeroFromQueue(): HeroHolder = queue.peek()
 
-    fun getPositionOfHero(heroHolder: HeroHolder): Int =
-            battleHeroes.values.maxBy { it.indexOf(heroHolder) }?.indexOf(heroHolder)
+    fun getPositionOfHero(heroHolder: HeroHolder): Int {
+        if (gameState == GameState.MULLIGAN) {
+            return mulliganHeroes.values.maxBy { it.indexOf(heroHolder) }?.indexOf(heroHolder)
                     ?: throw Exceptions.produceIllegalArgument(LOG, "Hero with id ${heroHolder.id} is absent in queue")
+        }
+        return battleHeroes.values.maxBy { it.indexOf(heroHolder) }?.indexOf(heroHolder)
+                ?: throw Exceptions.produceIllegalArgument(LOG, "Hero with id ${heroHolder.id} is absent in queue")
+    }
+
 
     fun getHeroByPosition(session: GameSession, position: Int): HeroHolder {
         return getHeroByPosition(session, Math.abs(position), position > 0)

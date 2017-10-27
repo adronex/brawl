@@ -6,6 +6,7 @@ import java.util.*
 class HeroDto(heroHolder: HeroHolder) {
 
     val id: String = heroHolder.id
+    var position: Int = heroHolder.position()
     val name: String = heroHolder.name
     var spells = heroHolder.allSpells.map { SpellDto(it) }.toMutableList()
     var bodyparts = heroHolder.bodyparts.map { BodypartDto(it) }.toCollection(LinkedHashSet<BodypartDto>())

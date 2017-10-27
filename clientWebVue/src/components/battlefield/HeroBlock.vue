@@ -12,11 +12,15 @@
         </div>
         <div class="spellBlock">
             <div class="spellBar">
-                <spell v-for="spell in hero.spells"
-                       :key="spell.id"
-                       :spellId="spell.id"></spell>
+                <div class="spell"
+                     v-for="spell in hero.spells"
+                     v-on:click="onSpellClick(spell)">
+                    <spell :key="spell.id"
+                           :spellId="spell.id"></spell>
+                </div>
             </div>
             <div class="spellDescription">
+                <p>{{chosenSpell.id}}</p>
                 <p>MNOGA-MNOGA BYKAFFF</p>
                 <p>MNOGA-MNOGA BYKAFFF</p>
                 <p>MNOGA-MNOGA BYKAFFF</p>
@@ -25,8 +29,7 @@
                 <p>MNOGA-MNOGA BYKAFFF</p>
                 <p>MNOGA-MNOGA BYKAFFF</p>
                 <p>MNOGA-MNOGA BYKAFFF</p>
-                <p>MNOGA-MNOGA BYKAFFF</p>
-                <p>MNOGA-MNOGA BYKAFFF</p>
+                <p>MNOGA-MNOGA BYKAFF</p>
             </div>
         </div>
     </div>
@@ -43,7 +46,8 @@
         },
         data: function () {
             return {
-                cssBackgroundImage: {}
+                cssBackgroundImage: {},
+                chosenSpell: {}
             }
         },
         props: {
@@ -56,6 +60,17 @@
             let backgroundProperty2 = require(`vectors/bodyparts/head-2.svg`);
 //            this.currentHeroAvatarCss = {'background': `url(${backgroundProperty1})`, 'background-size': '100% 100%', 'transform': 'scaleX(-1)'};
 //            this.targetHeroAvatarCss = {'background': `url(${backgroundProperty2})`, 'background-size': '100% 100%'};
+        },
+        methods: {
+            onSpellClick(spell) {
+                StaticData.getSpellsPromise().then(it => {
+                    this.chosenSpell = it[spell.id];
+                    if (!this.spell) {
+                        this.spell = {};
+                        console.warn(`Spell static data for id ${this.spellId} is absent.}`)
+                    }
+                });
+            }
         }
     }
 </script>
