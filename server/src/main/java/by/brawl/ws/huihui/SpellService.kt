@@ -1,7 +1,5 @@
 package by.brawl.ws.huihui
 
-import by.brawl.util.Exceptions
-import by.brawl.ws.holder.BattlefieldHolder
 import by.brawl.ws.holder.HeroHolder
 import by.brawl.ws.holder.SpellHolder
 import by.brawl.ws.holder.gamesession.GameSession
@@ -9,7 +7,6 @@ import by.brawl.ws.huihui.conf.ImpactType
 import by.brawl.ws.huihui.conf.IntegerImpactConfig
 import by.brawl.ws.huihui.conf.SpellConfig
 import by.brawl.ws.huihui.handlers.CheckEndGameHandler
-import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 
 @Service

@@ -1,7 +1,6 @@
 package by.brawl.ws.service
 
 import by.brawl.entity.Squad
-import by.brawl.util.Exceptions
 import by.brawl.ws.holder.BattlefieldHolder
 import by.brawl.ws.holder.GameState
 import by.brawl.ws.holder.HeroHolder

@@ -2,7 +2,7 @@
     <div class="heroBlock">
         <div class="heroInfo">
             <div class="heroAvatar"
-                 :style="cssBackgroundImage"></div>
+                 :style="cssHeroAvatar"></div>
             <div class="heroDescription">
                 <p>{{hero.name}}</p>
                 <p>MNOGA-MNOGA BYKAFFF</p>
@@ -46,7 +46,7 @@
         },
         data: function () {
             return {
-                cssBackgroundImage: {},
+                cssHeroAvatar: {},
                 chosenSpell: {}
             }
         },
@@ -54,12 +54,15 @@
             hero: Object,
             required: true
         },
+        watch: {
+            hero: function (val) {
+                let head = this.hero.bodyparts.find(it => it.type === 'HEAD');
+                this.cssHeroAvatar = StaticData.getBodypartCss(head.id);
+            }
+        },
         mounted: function () {
-
-            let backgroundProperty1 = require(`../../../resources/svg/bodyparts/HEAD3.svg`);
-            let backgroundProperty2 = require(`../../../resources/svg/bodyparts/HEAD2.svg`);
-//            this.currentHeroAvatarCss = {'background': `url(${backgroundProperty1})`, 'background-size': '100% 100%', 'transform': 'scaleX(-1)'};
-//            this.targetHeroAvatarCss = {'background': `url(${backgroundProperty2})`, 'background-size': '100% 100%'};
+// todo: apply transform to one avatar
+// this.targetHeroAvatarCss = {'transform': 'scaleX(-1)'};
         },
         methods: {
             onSpellClick(spell) {
@@ -107,6 +110,7 @@
         height: 200px;
         float: left;
         margin: 40px 40px 10px;
+        background-size: 100% 100%;
     }
 
     .heroBlock .heroDescription {

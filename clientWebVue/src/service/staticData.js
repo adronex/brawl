@@ -4,7 +4,8 @@ import Rest from "./rest";
 
 export default {
     getSpellsPromise,
-    getSpellBackgroundImageCss
+    getSpellBackgroundImageCss,
+    getBodypartCss
 }
 
 function getSpellsPromise() {
@@ -12,12 +13,19 @@ function getSpellsPromise() {
 }
 
 function getSpellBackgroundImageCss(id) {
-    let backgroundProperty;
+    let imageUrl;
     try {
-        backgroundProperty = require(`images/spells/${id}.png`);
+        imageUrl = require(`images/spells/${id}.png`);
     } catch (e) {
         console.warn(`Spell image with id ${id} isn't present in img/spell folder. Placeholder used instead`);
-        backgroundProperty = require(`images/placeholders/SPELL.png`);
+        imageUrl = require(`images/placeholders/SPELL.png`);
     }
-    return {'background-image': `url(${backgroundProperty})`};
+    return {'background-image': `url(${imageUrl})`};
+}
+
+function getBodypartCss(id) {
+    let headSvgPath = require(`vectors/bodyparts/${id}.svg`);
+    return {
+        'background-image': `url(${headSvgPath})`
+    };
 }
