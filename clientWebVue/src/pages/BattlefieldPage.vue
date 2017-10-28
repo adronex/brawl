@@ -8,15 +8,7 @@
             <v-link href="/play">Menu</v-link>
         </div>
 
-        <div class="queueWrapper">
-            <div class="queue" v-show="queue.length > 0">
-                <div class="heroInQueue"
-                     v-for="heroInQueue in queue">
-                    {{ heroInQueue.id }}
-                </div>
-            </div>
-        </div>
-
+        <queue :queue="queue"></queue>
 
         <div class="team">
             <div class="myTeam">
@@ -55,7 +47,6 @@
                     v-show="chosenHero.id">
         </hero-block>
 
-
         <div class="battleLogBlock">
             <p v-for="message in battleLogMessages">{{message}}</p>
         </div>
@@ -70,12 +61,14 @@
 
     import VLink from '../components/Link.vue'
     import Spell from '../components/battlefield/Spell.vue'
+    import Queue from '../components/battlefield/Queue.vue'
     import HeroBlock from '../components/battlefield/HeroBlock.vue'
 
     export default {
         components: {
             VLink,
             Spell,
+            Queue,
             HeroBlock
         },
         data: function () {
@@ -90,12 +83,6 @@
                 gameState: {},
                 mulliganHeroesIds: []
             }
-        },
-        props: {
-//            squadId: {
-//                type: Object,
-//                required: true
-//            }
         },
         mounted: function () {
             if (!Ws.isConnected()) {
@@ -195,31 +182,6 @@
         display: block;
         float: left;
         background-color: #d3ffb5;
-    }
-
-    .queueWrapper {
-        display: block;
-        width: 640px;
-        height: 60px;
-        margin: auto;
-        text-align: center;
-        vertical-align: middle;
-        padding-top: 10px;
-    }
-
-    .queueWrapper .queue {
-        background-color: #ecf7f7;
-        height: 100%;
-        width: max-content;
-        margin: 0 auto;
-    }
-
-    .queueWrapper .queue .heroInQueue {
-        float: left;
-        width: 50px;
-        height: 50px;
-        margin: 5px;
-        background-color: darkgrey;
     }
 
     .team {

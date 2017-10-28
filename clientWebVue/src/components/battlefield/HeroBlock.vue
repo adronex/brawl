@@ -56,8 +56,8 @@
         },
         mounted: function () {
 
-            let backgroundProperty1 = require(`vectors/bodyparts/head-3.svg`);
-            let backgroundProperty2 = require(`vectors/bodyparts/head-2.svg`);
+            let backgroundProperty1 = require(`../../../resources/svg/bodyparts/HEAD3.svg`);
+            let backgroundProperty2 = require(`../../../resources/svg/bodyparts/HEAD2.svg`);
 //            this.currentHeroAvatarCss = {'background': `url(${backgroundProperty1})`, 'background-size': '100% 100%', 'transform': 'scaleX(-1)'};
 //            this.targetHeroAvatarCss = {'background': `url(${backgroundProperty2})`, 'background-size': '100% 100%'};
         },
