@@ -1,10 +1,8 @@
 package by.brawl.ws.holder
 
 import by.brawl.entity.Hero
-import by.brawl.util.Exceptions
 import by.brawl.ws.huihui.SpellsPool
 import by.brawl.ws.huihui.effects.EffectHolder
-import org.slf4j.LoggerFactory
 import java.util.*
 
 class HeroHolder(hero: Hero,

@@ -3,8 +3,6 @@ package by.brawl.service
 import by.brawl.entity.Account
 import by.brawl.entity.Squad
 import by.brawl.repository.SquadRepository
-import by.brawl.util.Exceptions
-import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 
 @Service

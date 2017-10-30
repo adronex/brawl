@@ -3,7 +3,6 @@ package by.brawl.ws.holder.gamesession
 import by.brawl.ws.dto.BattlefieldDto
 import by.brawl.ws.dto.MulliganDto
 import by.brawl.ws.holder.BattlefieldHolder
-import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import org.springframework.web.socket.WebSocketSession
 import java.util.*

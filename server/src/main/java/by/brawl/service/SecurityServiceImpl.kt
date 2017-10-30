@@ -2,8 +2,6 @@ package by.brawl.service
 
 import by.brawl.entity.Account
 import by.brawl.repository.AccountRepository
-import by.brawl.util.Exceptions
-import org.slf4j.LoggerFactory
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.core.userdetails.UsernameNotFoundException

@@ -1,9 +1,6 @@
 package by.brawl.service
 
 import by.brawl.repository.AccountRepository
-import by.brawl.util.Exceptions
-import by.brawl.ws.holder.gamesession.GameSessionsPool
-import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 
 /**

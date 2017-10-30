@@ -1,6 +1,5 @@
 package by.brawl.ws
 
-import by.brawl.util.Exceptions
 import by.brawl.ws.dto.ClientRequestType
 import by.brawl.ws.holder.gamesession.GameSession
 import by.brawl.ws.holder.gamesession.GameSessionsPool
@@ -8,7 +7,6 @@ import by.brawl.ws.huihui.SpellService
 import by.brawl.ws.service.GameService
 import by.brawl.ws.service.MatchmakingService
 import org.json.JSONObject
-import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import org.springframework.web.socket.TextMessage
 import org.springframework.web.socket.WebSocketSession

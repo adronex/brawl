@@ -6,9 +6,6 @@ import by.brawl.dto.SubmitHeroDto
 import by.brawl.entity.Hero
 import by.brawl.entity.bodypart.Bodypart
 import by.brawl.repository.HeroRepository
-import by.brawl.util.Exceptions
-import org.slf4j.LoggerFactory
-import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 
 @Service

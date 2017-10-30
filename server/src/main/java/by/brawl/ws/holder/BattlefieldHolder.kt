@@ -1,9 +1,7 @@
 package by.brawl.ws.holder
 
 import by.brawl.entity.Squad
-import by.brawl.util.Exceptions
 import by.brawl.ws.holder.gamesession.GameSession
-import org.slf4j.LoggerFactory
 import java.util.*
 
 

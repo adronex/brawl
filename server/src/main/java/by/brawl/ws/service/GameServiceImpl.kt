@@ -7,7 +7,6 @@ import by.brawl.ws.holder.HeroHolder
 import by.brawl.ws.holder.SpellHolder
 import by.brawl.ws.holder.gamesession.GameSession
 import by.brawl.ws.holder.gamesession.GameSessionsPool
-import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import java.util.*
 
