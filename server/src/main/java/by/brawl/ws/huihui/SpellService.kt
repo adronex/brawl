@@ -15,11 +15,16 @@ class SpellService(private val preconditionsPool: HandlersPool,
 
     fun cast(gameSession: GameSession,
              spellId: String,
-             clickedHeroPosition: Int) {
-        val battlefieldHolder = gameSession.battlefieldHolder
-        val caster: HeroHolder = battlefieldHolder.getFirstHeroFromQueue()
+             clickedHeroPosition: Int,
+             targetEnemy: Boolean) {
+        val roomHolder = gameSession.roomHolder
+        val caster: HeroHolder = roomHolder.getFirstHeroFromQueue()
         // todo: check current turn availability
-        val target: HeroHolder = battlefieldHolder.getHeroByPosition(gameSession, clickedHeroPosition)
+        val target: HeroHolder =
+                if (targetEnemy)
+                    roomHolder.battleHolder.enemyHeroes(gameSession.username)[clickedHeroPosition]
+                else
+                    roomHolder.battleHolder.myHeroes(gameSession.username)[clickedHeroPosition]
         val spellHolder: SpellHolder = caster.allSpells.find { it.id == spellId } ?: throw IllegalArgumentException("Spell with id $spellId doesn't belong to caster")
         // todo: check spell hero-owner
         val config: SpellConfig = SpellsPool.spellsMap[spellHolder.id]
@@ -29,16 +34,17 @@ class SpellService(private val preconditionsPool: HandlersPool,
         val impactsMap = mutableMapOf<HeroHolder, List<IntegerImpactConfig>>()
         impactsMap.put(caster, config.casterIntegerImpacts)
         impactsMap.put(target, config.targetIntegerImpacts)
-        config.additionalIntegerImpacts.forEach { position, impacts ->
-            run {
-                val hero = battlefieldHolder.getHeroByPosition(gameSession, position)
-                impactsMap.put(hero, impacts)
-            }
-        }
+        // todo: rework additional impacts
+//        config.additionalIntegerImpacts.forEach { position, impacts ->
+//            run {
+//                val hero = roomHolder.getHeroByPosition(gameSession, position)
+//                impactsMap.put(hero, impacts)
+//            }
+//        }
         // todo: check resists and evasions
         apply(impactsMap)
         spellHolder.onCast()
-        checkEndGameHandler.check(battlefieldHolder)
+        checkEndGameHandler.check(roomHolder)
         // todo: run endTurnHandler
         // todo: run startTurnHandler
     }

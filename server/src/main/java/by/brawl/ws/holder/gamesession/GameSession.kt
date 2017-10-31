@@ -2,7 +2,7 @@ package by.brawl.ws.holder.gamesession
 
 import by.brawl.ws.dto.JsonDto
 import by.brawl.ws.dto.MessageDto
-import by.brawl.ws.holder.BattlefieldHolder
+import by.brawl.ws.holder.RoomHolder
 import org.codehaus.jackson.map.ObjectMapper
 import org.springframework.web.socket.TextMessage
 import org.springframework.web.socket.WebSocketSession
@@ -10,8 +10,8 @@ import java.util.*
 
 class GameSession(private val session: WebSocketSession) {
 
-    val id: String = session.principal.name
-    lateinit var battlefieldHolder: BattlefieldHolder
+    val username: String = session.principal.name
+    lateinit var roomHolder: RoomHolder
 
     fun sendInfoMessage(text: String) {
         sendDto(MessageDto(text))

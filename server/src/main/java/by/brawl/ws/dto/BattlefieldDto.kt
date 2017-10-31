@@ -1,16 +1,16 @@
 package by.brawl.ws.dto
 
-import by.brawl.ws.holder.BattlefieldHolder
+import by.brawl.ws.holder.RoomHolder
 import java.util.*
 
-class BattlefieldDto(battlefieldHolder: BattlefieldHolder, receiverName: String) : AbstractDto(), JsonDto {
+class BattlefieldDto(roomHolder: RoomHolder, receiverName: String) : AbstractDto(), JsonDto {
 
-    val myHeroes = battlefieldHolder.getBattleHeroes(receiverName, false).map { HeroDto(it) }
-    val enemyHeroes = battlefieldHolder.getBattleHeroes(receiverName, true).map { HeroDto(it) }
+    val myHeroes = roomHolder.battleHolder.myHeroes(receiverName).map { HeroDto(it) }
+    val enemyHeroes = roomHolder.battleHolder.enemyHeroes(receiverName).map { HeroDto(it) }
     val queue: Queue<HeroInQueueDto> = LinkedList()
-    val currentStep = battlefieldHolder.currentStep
-    var battleLog = battlefieldHolder.battleLog.map { StepLogDto(it, receiverName) }
-    val gameState = battlefieldHolder.gameState
+    val currentStep = roomHolder.currentStep
+    var battleLog = roomHolder.battleLog.map { StepLogDto(it, receiverName) }
+    val gameState = roomHolder.gameState
 
     init {
         myHeroes.forEach { it.position = it.position * (-1) - 1 }
@@ -20,17 +20,17 @@ class BattlefieldDto(battlefieldHolder: BattlefieldHolder, receiverName: String)
                 val iterator = enemyHero.spells.iterator()
                 while (iterator.hasNext()) {
                     val spellHolder = iterator.next()
-                    val beenCasted = battlefieldHolder.battleLog.any { stepLog -> stepLog.spellId == spellHolder.id && stepLog.casterId == enemyHero.id }
+                    val beenCasted = roomHolder.battleLog.any { stepLog -> stepLog.spellId == spellHolder.id && stepLog.casterId == enemyHero.id }
                     if (!beenCasted) iterator.remove()
                 }
             }
         }
-//        battlefieldHolder.getBattleHeroes(receiverName, true)
+//        roomHolder.getBattleHeroes(receiverName, true)
 //                .forEach { heroHolder ->
 //                    heroSpells.put(heroHolder.id,
 //                                   heroHolder.allSpells
 //                                           .filter { spellHolder ->
-//                                               battlefieldHolder
+//                                               roomHolder
 //                                                       .battleLog
 //                                                       .any { stepLog ->
 //                                                           stepLog.spellId == spellHolder
@@ -42,9 +42,9 @@ class BattlefieldDto(battlefieldHolder: BattlefieldHolder, receiverName: String)
 //                                           .toSet())
 //                }
 
-        battlefieldHolder.queue.forEach { s ->
+        roomHolder.queue.forEach { s ->
             val my = myHeroes.any { it.id == s.id }
-            val exposed = my || battlefieldHolder.battleLog.any { stepLog -> stepLog.casterId == s.id }
+            val exposed = my || roomHolder.battleLog.any { stepLog -> stepLog.casterId == s.id }
             if (exposed) {
                 queue.add(HeroInQueueDto(s.id, !my))
             } else {

@@ -1,6 +1,6 @@
 package by.brawl.ws.huihui.conf
 
-import by.brawl.ws.holder.BattlefieldHolder
+import by.brawl.ws.holder.RoomHolder
 import by.brawl.ws.holder.HeroHolder
 
 class SpellConfig(id: String,
@@ -9,7 +9,7 @@ class SpellConfig(id: String,
                   casterIntegerImpacts: List<IntegerImpactConfig>?,
                   targetIntegerImpacts: List<IntegerImpactConfig>?,
                   additionalIntegerImpacts: Map<Int, List<IntegerImpactConfig>>?,
-                  logic: ((battlefieldHolder: BattlefieldHolder, caster: HeroHolder) -> BattlefieldHolder)?,
+                  logic: ((roomHolder: RoomHolder, caster: HeroHolder) -> RoomHolder)?,
                   suspend: Int?,
                   cooldown: Int?,
                   charges: Int?,
@@ -26,8 +26,9 @@ class SpellConfig(id: String,
     val targetPositions: List<Int> = targetPositions ?: listOf()
     val casterIntegerImpacts: List<IntegerImpactConfig> = casterIntegerImpacts ?: listOf()
     val targetIntegerImpacts: List<IntegerImpactConfig> = targetIntegerImpacts ?: listOf()
-    val additionalIntegerImpacts: Map<Int, List<IntegerImpactConfig>> = additionalIntegerImpacts ?: mapOf()
-    val logic: (battlefieldHolder: BattlefieldHolder, caster: HeroHolder) -> BattlefieldHolder = logic ?: { holder, _ -> holder }
+    // todo: additional own/enemies impacts
+   // val additionalIntegerImpacts: Map<Int, List<IntegerImpactConfig>> = additionalIntegerImpacts ?: mapOf()
+    val logic: (roomHolder: RoomHolder, caster: HeroHolder) -> RoomHolder = logic ?: { holder, _ -> holder }
     val suspend: Int = suspend ?: 0
     val cooldown: Int = cooldown ?: 0
     val chargeable: Boolean = charges != null

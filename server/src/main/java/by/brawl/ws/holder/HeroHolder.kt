@@ -6,7 +6,7 @@ import by.brawl.ws.huihui.effects.EffectHolder
 import java.util.*
 
 class HeroHolder(hero: Hero,
-                 private val battlefieldHolder: BattlefieldHolder) {
+                 private val squadHolder: SquadHolder) {
 
     val id: String = hero.id!!
     val name: String = hero.name
@@ -39,22 +39,20 @@ class HeroHolder(hero: Hero,
         attributes.barrier.incrementCurrent(value)
     }
 
-    fun position() = battlefieldHolder.getPositionOfHero(this)
+    fun position(): Int = squadHolder.heroes.indexOf(this)
 
     fun move(value: Int) {
-        val heroes = battlefieldHolder.getAlliedHeroes(this)
-
         val oldPosition = position()
         var newPosition = oldPosition + value
         if (newPosition < 0) {
             newPosition = 0
-        } else if (newPosition > heroes.size - 1) {
-            newPosition = heroes.size - 1
+        } else if (newPosition > squadHolder.heroes.size - 1) {
+            newPosition = squadHolder.heroes.size - 1
         }
         if (oldPosition <= newPosition) {
-            Collections.rotate(heroes.subList(oldPosition, newPosition + 1), -1);
+            Collections.rotate(squadHolder.heroes.subList(oldPosition, newPosition + 1), -1);
         } else {
-            Collections.rotate(heroes.subList(oldPosition, newPosition + 1), 1);
+            Collections.rotate(squadHolder.heroes.subList(oldPosition, newPosition + 1), 1);
         }
     }
 }

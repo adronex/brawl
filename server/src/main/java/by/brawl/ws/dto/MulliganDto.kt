@@ -2,28 +2,15 @@ package by.brawl.ws.dto
 
 import by.brawl.ws.holder.GameState
 import by.brawl.ws.holder.HeroHolder
+import by.brawl.ws.holder.SquadHolder
 import java.util.*
 
-class MulliganDto(mulliganHeroes: Map<String, List<HeroHolder>>,
-                  receiverName: String,
+class MulliganDto(val myHeroes: List<HeroDto>,
+                  val enemyHeroes: List<HeroDto>,
                   val gameState: GameState) : AbstractDto(), JsonDto {
 
-    var myHeroes: List<HeroDto> = ArrayList()
-        private set
-    var enemyHeroes: List<HeroDto> = ArrayList()
-        private set
-
     init {
-
-        mulliganHeroes.forEach { key, value ->
-            if (key == receiverName) {
-                myHeroes = value.map { HeroDto(it) }
-            } else {
-                enemyHeroes = value.map { HeroDto(it) }
-            }
-        }
-
-        enemyHeroes.forEach {
+        this.enemyHeroes.forEach {
             it.spells.clear()
         }
     }

@@ -18,7 +18,7 @@ constructor(private val accountService: AccountService,
 
     override fun addInPool(session: GameSession, squadId: String) {
 
-        val account = accountService.findByEmail(session.id)
+        val account = accountService.findByEmail(session.username)
         val squad = squadService.getWithAuthorityCheck(account, squadId)
         waitingPool.add(Pair.of(session, squad))
         // todo: remake to scheduled version

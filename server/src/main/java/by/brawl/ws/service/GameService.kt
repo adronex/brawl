@@ -11,11 +11,5 @@ interface GameService {
                              secondSquad: Squad)
 
     fun setHeroesPositions(session: GameSession,
-                           heroesIds: List<String>)
-
-    @Deprecated("Use SpellService from HuiHui package")
-    fun castSpell(session: GameSession,
-                  spellPosition: Int,
-                  targetPosition: Int)
-
+                           battleHeroesIds: List<String>)
 }

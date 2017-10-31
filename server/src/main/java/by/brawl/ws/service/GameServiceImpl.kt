@@ -1,14 +1,10 @@
 package by.brawl.ws.service
 
 import by.brawl.entity.Squad
-import by.brawl.ws.holder.BattlefieldHolder
-import by.brawl.ws.holder.GameState
-import by.brawl.ws.holder.HeroHolder
-import by.brawl.ws.holder.SpellHolder
+import by.brawl.ws.holder.*
 import by.brawl.ws.holder.gamesession.GameSession
 import by.brawl.ws.holder.gamesession.GameSessionsPool
 import org.springframework.stereotype.Service
-import java.util.*
 
 @Service
 internal class GameServiceImpl constructor(private val gameSessionsPool: GameSessionsPool) : GameService {
@@ -18,96 +14,51 @@ internal class GameServiceImpl constructor(private val gameSessionsPool: GameSes
                                       firstSquad: Squad,
                                       secondSquad: Squad) {
 
-        val battlefieldHolder = BattlefieldHolder()
-        battlefieldHolder.addSquad(firstSquad)
-        battlefieldHolder.addSquad(secondSquad)
-        firstSession.battlefieldHolder = battlefieldHolder
-        secondSession.battlefieldHolder = battlefieldHolder
-        battlefieldHolder.gameState = GameState.MULLIGAN
-        gameSessionsPool.sendMulliganData(battlefieldHolder)
+        val roomHolder = RoomHolder()
+        roomHolder.mulliganHolder.addSquad(SquadHolder(firstSquad))
+        roomHolder.mulliganHolder.addSquad(SquadHolder(secondSquad))
+        roomHolder.addPlayersSessions(firstSession, secondSession)
+        firstSession.roomHolder = roomHolder
+        secondSession.roomHolder = roomHolder
+        roomHolder.gameState = GameState.MULLIGAN
+        gameSessionsPool.sendMulliganData(roomHolder)
     }
 
-    override fun setHeroesPositions(session: GameSession, heroesIds: List<String>) {
+    override fun setHeroesPositions(session: GameSession, battleHeroesIds: List<String>) {
 
-        val battlefieldHolder = getBattlefieldHolderAndCheckState(session, GameState.MULLIGAN)
-        if (heroesIds.size != BATTLEFIELD_HEROES_COUNT) {
-            throw IllegalArgumentException("Wrong heroes in battle count. Expected: $BATTLEFIELD_HEROES_COUNT, actual: ${heroesIds.size}"
-            )
+        val roomHolder = getBattlefieldHolderAndCheckState(session, GameState.MULLIGAN)
+        if (battleHeroesIds.size != BATTLEFIELD_HEROES_COUNT) {
+            throw IllegalArgumentException("Wrong heroes in battle count. Expected: $BATTLEFIELD_HEROES_COUNT, actual: ${battleHeroesIds.size}")
         }
 
-        val mulliganHeroes = battlefieldHolder.mulliganHeroes[session.id] ?: throw IllegalStateException("No heroes for session key ${session.id}")
-        val battleHeroes = ArrayList<HeroHolder>()
+        val mulliganHeroes: List<HeroHolder> = roomHolder.mulliganHolder.myHeroes(session.username)
+        val battleHeroes = mutableListOf<HeroHolder>()
 
-        for (heroId in heroesIds) {
+        for (heroId in battleHeroesIds) {
             val battleHero = mulliganHeroes.find { h -> h.id == heroId } ?:
-                    throw IllegalAccessException("Player ${session.id} is trying to choose hero with id $heroId from available ids: ${mulliganHeroes.map { it.id }}")
+                    throw IllegalAccessException("Player ${session.username} is trying to choose hero with id $heroId from available ids: ${mulliganHeroes.map { it.id }}")
 
             battleHeroes.add(battleHero)
         }
 
-        battlefieldHolder.addBattleHeroes(session.id, battleHeroes)
+        roomHolder.battleHolder.addSquad(SquadHolder(session.username, battleHeroes))
 
-        if (battlefieldHolder.isReadyForBattle()) {
-            battlefieldHolder.prepareGame()
-            battlefieldHolder.gameState = GameState.PLAYING
-            gameSessionsPool.sendBattlefieldData(battlefieldHolder)
+        if (roomHolder.battleHolder.isReady()) {
+            roomHolder.prepareGame()
+            roomHolder.gameState = GameState.PLAYING
+            gameSessionsPool.sendBattlefieldData(roomHolder)
         } else {
             session.sendInfoMessage("Opponent is still choosing.")
         }
     }
 
-    override fun castSpell(session: GameSession, spellPosition: Int, targetPosition: Int) {
+    private fun getBattlefieldHolderAndCheckState(session: GameSession, gameState: GameState): RoomHolder {
 
-        val caster: HeroHolder = session.battlefieldHolder.getFirstHeroFromQueue()
-        val casterPosition = session.battlefieldHolder.getPositionOfHero(caster)
-        val targetIsEnemy = targetPosition > 0
-        val target: HeroHolder = session.battlefieldHolder.getHeroByPosition(session, targetPosition, targetIsEnemy )
-        val spellHolder: SpellHolder = caster.allSpells[spellPosition]
-    }
-
-    // todo: old function, take from it all that necessary
-    fun oldcast(session: GameSession, spellPosition: Int, targetPosition: Int) {
-
-        val sourceBattlefieldHolder = getBattlefieldHolderAndCheckState(session, GameState.PLAYING)
-        val playerKey = session.id
-        val currentHero = sourceBattlefieldHolder.queue.element()
-
-//        if (!isSpellValid(sourceBattlefieldHolder, currentHero, spellId, playerKey)) {
-//            return
-//        }
-
-        var affectedBattlefieldHolder = sourceBattlefieldHolder
-//        affectedBattlefieldHolder = spellCastService.castSpell(spellId,
-//                session.id,
-//                currentHero.id,
-//                victimPosition,
-//                forEnemy,
-//                affectedBattlefieldHolder)
-
-        if (affectedBattlefieldHolder.isGameFinished()) {
-            affectedBattlefieldHolder.gameState = GameState.END
-        } else {
-            affectedBattlefieldHolder.incrementStep()
+        if (gameState != session.roomHolder.gameState) {
+            throw IllegalStateException("Illegal game state. Expected: $gameState, actual: ${session.roomHolder.gameState}. Initiator: ${session.username}")
         }
 
-        gameSessionsPool.sendBattlefieldData(affectedBattlefieldHolder)
-
-    }
-
-    private fun isSpellWasCastedInCorrectTurn(battlefieldHolder: BattlefieldHolder, playerKey: String, currentHero: HeroHolder): Boolean {
-        if (!battlefieldHolder.getBattleHeroes(playerKey, false).contains(currentHero)) {
-            throw IllegalAccessException("Player $playerKey tries to cast spell in opponents turn")
-        }
-        return true
-    }
-
-    private fun getBattlefieldHolderAndCheckState(session: GameSession, gameState: GameState): BattlefieldHolder {
-
-        if (gameState != session.battlefieldHolder.gameState) {
-            throw IllegalStateException("Illegal game state. Expected: $gameState, actual: ${session.battlefieldHolder.gameState}. Initiator: ${session.id}")
-        }
-
-        return session.battlefieldHolder
+        return session.roomHolder
     }
 
     companion object {
