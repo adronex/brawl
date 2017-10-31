@@ -14,7 +14,8 @@ class SpellsPool {
         private enum class KEYS() {
             ID,
             CASTER_POSITIONS,
-            TARGET_POSITIONS,
+            TARGET_OWN_POSITIONS,
+            TARGET_ENEMY_POSITIONS,
             CASTER_IMPACTS,
             TARGET_IMPACTS,
             ADDITIONAL_OWN_IMPACTS,
@@ -43,7 +44,8 @@ class SpellsPool {
             spellsTree.forEach { spell ->
                 val id: String = spell.get(KEYS.ID)?.textValue() ?: throw IllegalStateException("Id of spell is absent, json: ${spell.textValue()}")
                 val casterPositions: List<Int>? = spell.get(KEYS.CASTER_POSITIONS)?.map { it.intValue() }
-                val targetPositions: List<Int>? = spell.get(KEYS.TARGET_POSITIONS)?.map { it.intValue() }
+                val targetOwnPositions: List<Int>? = spell.get(KEYS.TARGET_OWN_POSITIONS)?.map { it.intValue() }
+                val targetEnemyPositions: List<Int>? = spell.get(KEYS.TARGET_ENEMY_POSITIONS)?.map { it.intValue() }
                 val casterImpacts: List<IntegerImpactConfig>? = spell.get(KEYS.CASTER_IMPACTS)?.map { getImpacts(it, id) }
                 val targetImpacts: List<IntegerImpactConfig>? = spell.get(KEYS.TARGET_IMPACTS)?.map { getImpacts(it, id) }
                 val additionalOwnImpacts = mutableMapOf<Int, List<IntegerImpactConfig>>()
@@ -69,7 +71,8 @@ class SpellsPool {
                 val charges: Int? = spell.get(KEYS.CHARGES)?.intValue()
                 val config = SpellConfig(id,
                                          casterPositions,
-                                         targetPositions,
+                                         targetOwnPositions,
+                                         targetEnemyPositions,
                                          casterImpacts,
                                          targetImpacts,
                                          additionalOwnImpacts,

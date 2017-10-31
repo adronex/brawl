@@ -75,7 +75,7 @@ class SpellService(private val preconditionsPool: HandlersPool,
         if (!preconditionsPool.checkTargetAvailabilityHandler.check(target)) {
             throw IllegalStateException("Target is not available (invisible etc)")
         }
-        if (!preconditionsPool.checkTargetPositionHandler.check(spellHolder, target)) {
+        if (!preconditionsPool.checkTargetPositionHandler.check(spellHolder, caster, target)) {
             throw IllegalStateException("Incorrect target position")
         }
         return true

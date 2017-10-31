@@ -43,6 +43,10 @@ class HeroHolder {
 
     fun isAlive() = attributes.health.current > 0
 
+    fun position(): Int = squadHolder.heroes.indexOf(this)
+
+    fun isAllyTo(heroHolder: HeroHolder): Boolean = squadHolder.heroes.contains(heroHolder)
+
     fun heal(value: Int) {
         attributes.health.incrementCurrent(value)
     }
@@ -60,8 +64,6 @@ class HeroHolder {
     fun barrier(value: Int) {
         attributes.barrier.incrementCurrent(value)
     }
-
-    fun position(): Int = squadHolder.heroes.indexOf(this)
 
     fun move(value: Int) {
         val oldPosition = position()

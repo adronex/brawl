@@ -5,7 +5,8 @@ import by.brawl.ws.holder.HeroHolder
 
 class SpellConfig(id: String,
                   casterPositions: List<Int>?,
-                  targetPositions: List<Int>?,
+                  targetOwnPositions: List<Int>?,
+                  targetEnemyPositions: List<Int>?,
                   casterIntegerImpacts: List<IntegerImpactConfig>?,
                   targetIntegerImpacts: List<IntegerImpactConfig>?,
                   additionalOwnIntegerImpacts: Map<Int, List<IntegerImpactConfig>>?,
@@ -24,7 +25,8 @@ class SpellConfig(id: String,
 
     val id: String = id
     val casterPositions: List<Int> = casterPositions ?: listOf()
-    val targetPositions: List<Int> = targetPositions ?: listOf()
+    val targetOwnPositions: List<Int> = targetOwnPositions ?: listOf()
+    val targetEnemyPositions: List<Int> = targetEnemyPositions ?: listOf()
     val casterIntegerImpacts: List<IntegerImpactConfig> = casterIntegerImpacts ?: listOf()
     val targetIntegerImpacts: List<IntegerImpactConfig> = targetIntegerImpacts ?: listOf()
     val additionalOwnIntegerImpacts: Map<Int, List<IntegerImpactConfig>> = additionalOwnIntegerImpacts ?: mapOf()

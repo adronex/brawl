@@ -7,7 +7,7 @@
       2,
       3
     ],
-    "TARGET_POSITIONS": [
+    "TARGET_OWN_POSITIONS": [
       0,
       1,
       2,
@@ -36,7 +36,7 @@
       2,
       3
     ],
-    "TARGET_POSITIONS": [
+    "TARGET_OWN_POSITIONS": [
       0,
       1,
       2,
@@ -92,7 +92,7 @@
       2,
       3
     ],
-    "TARGET_POSITIONS": [
+    "TARGET_ENEMY_POSITIONS": [
       2,
       3
     ],
@@ -110,7 +110,7 @@
       2,
       3
     ],
-    "TARGET_POSITIONS": [
+    "TARGET_ENEMY_POSITIONS": [
       1,
       2,
       3
@@ -138,7 +138,7 @@
       2,
       3
     ],
-    "TARGET_POSITIONS": [
+    "TARGET_OWN_POSITIONS": [
       0,
       1,
       2,
@@ -159,7 +159,7 @@
       2,
       3
     ],
-    "TARGET_POSITIONS": [
+    "TARGET_ENEMY_POSITIONS": [
       0,
       1,
       2,
@@ -215,7 +215,7 @@
     "CASTER_POSITIONS": [
       0
     ],
-    "TARGET_POSITIONS": [
+    "TARGET_ENEMY_POSITIONS": [
       1
     ],
     "TARGET_IMPACTS": [
@@ -234,7 +234,7 @@
       0,
       1
     ],
-    "TARGET_POSITIONS": [
+    "TARGET_ENEMY_POSITIONS": [
       0,
       1
     ],
