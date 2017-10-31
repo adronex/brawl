@@ -2,16 +2,16 @@
   {
     "ID": "DAMAGED_HEAL",
     "CASTER_POSITIONS": [
-      -4,
-      -3,
-      -2,
-      -1
+      0,
+      1,
+      2,
+      3
     ],
     "TARGET_POSITIONS": [
-      -4,
-      -3,
-      -2,
-      -1
+      0,
+      1,
+      2,
+      3
     ],
     "CASTER_IMPACTS": [
       {
@@ -31,20 +31,20 @@
   {
     "ID": "DIVINE_COMFORT",
     "CASTER_POSITIONS": [
-      -4,
-      -3,
-      -2,
-      -1
+      0,
+      1,
+      2,
+      3
     ],
     "TARGET_POSITIONS": [
-      -4,
-      -3,
-      -2,
-      -1
+      0,
+      1,
+      2,
+      3
     ],
-    "ADDITIONAL_IMPACTS": [
+    "ADDITIONAL_OWN_IMPACTS": [
       {
-        "TARGET": -4,
+        "TARGET": 0,
         "IMPACTS": [
           {
             "TYPE": "HEAL",
@@ -54,7 +54,7 @@
         ]
       },
       {
-        "TARGET": -3,
+        "TARGET": 1,
         "IMPACTS": [
           {
             "TYPE": "HEAL",
@@ -64,7 +64,7 @@
         ]
       },
       {
-        "TARGET": -2,
+        "TARGET": 2,
         "IMPACTS": [
           {
             "TYPE": "HEAL",
@@ -74,7 +74,7 @@
         ]
       },
       {
-        "TARGET": -1,
+        "TARGET": 3,
         "IMPACTS": [
           {
             "TYPE": "HEAL",
@@ -89,12 +89,12 @@
   {
     "ID": "ELDRICH_PULL",
     "CASTER_POSITIONS": [
-      -4,
-      -3
+      2,
+      3
     ],
     "TARGET_POSITIONS": [
-      3,
-      4
+      2,
+      3
     ],
     "TARGET_IMPACTS": [
       {
@@ -107,8 +107,8 @@
   {
     "ID": "JUDGEMENT",
     "CASTER_POSITIONS": [
-      -4,
-      -3
+      2,
+      3
     ],
     "TARGET_POSITIONS": [
       1,
@@ -133,16 +133,16 @@
   {
     "ID": "SELF_HEAL",
     "CASTER_POSITIONS": [
-      -4,
-      -3,
-      -2,
-      -1
+      0,
+      1,
+      2,
+      3
     ],
     "TARGET_POSITIONS": [
-      -4,
-      -3,
-      -2,
-      -1
+      0,
+      1,
+      2,
+      3
     ],
     "CASTER_IMPACTS": [
       {
@@ -156,16 +156,16 @@
   {
     "ID": "SHOOT_THEM_ALL",
     "CASTER_POSITIONS": [
-      -4,
-      -3
+      2,
+      3
     ],
     "TARGET_POSITIONS": [
+      0,
       1,
       2,
-      3,
-      4
+      3
     ],
-    "ADDITIONAL_IMPACTS": [
+    "ADDITIONAL_ENEMY_IMPACTS": [
       {
         "TARGET": 1,
         "IMPACTS": [
@@ -213,7 +213,7 @@
   {
     "ID": "SUCKER_PUNCH",
     "CASTER_POSITIONS": [
-      -1
+      0
     ],
     "TARGET_POSITIONS": [
       1
@@ -231,12 +231,12 @@
   {
     "ID": "UPPERCUT",
     "CASTER_POSITIONS": [
-      -2,
-      -1
+      0,
+      1
     ],
     "TARGET_POSITIONS": [
-      1,
-      2
+      0,
+      1
     ],
     "TARGET_IMPACTS": [
       {

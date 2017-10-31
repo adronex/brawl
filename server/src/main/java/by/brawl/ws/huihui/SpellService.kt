@@ -24,23 +24,28 @@ class SpellService(private val preconditionsPool: HandlersPool,
                 if (targetEnemy)
                     roomHolder.battleHolder.enemyHeroes(gameSession.username)[clickedHeroPosition]
                 else
-                    roomHolder.battleHolder.myHeroes(gameSession.username)[clickedHeroPosition]
+                    roomHolder.battleHolder.ownHeroes(gameSession.username)[clickedHeroPosition]
         val spellHolder: SpellHolder = caster.allSpells.find { it.id == spellId } ?: throw IllegalArgumentException("Spell with id $spellId doesn't belong to caster")
         // todo: check spell hero-owner
         val config: SpellConfig = SpellsPool.spellsMap[spellHolder.id]
                 ?: throw IllegalArgumentException("Spell with id ${spellHolder.id} doesn't exist!")
-        checkPreConditions(caster, target, spellHolder, config)
+        checkPreConditions(caster, target, spellHolder)
         // BUILDING IMPACTS MAP
         val impactsMap = mutableMapOf<HeroHolder, List<IntegerImpactConfig>>()
         impactsMap.put(caster, config.casterIntegerImpacts)
         impactsMap.put(target, config.targetIntegerImpacts)
-        // todo: rework additional impacts
-//        config.additionalIntegerImpacts.forEach { position, impacts ->
-//            run {
-//                val hero = roomHolder.getHeroByPosition(gameSession, position)
-//                impactsMap.put(hero, impacts)
-//            }
-//        }
+        config.additionalOwnIntegerImpacts.forEach { position, impacts ->
+            run {
+                val hero = roomHolder.battleHolder.ownHeroes(gameSession.username)[position]
+                impactsMap.put(hero, impacts)
+            }
+        }
+        config.additionalEnemyIntegerImpacts.forEach { position, impacts ->
+            run {
+                val hero = roomHolder.battleHolder.enemyHeroes(gameSession.username)[position]
+                impactsMap.put(hero, impacts)
+            }
+        }
         // todo: check resists and evasions
         apply(impactsMap)
         spellHolder.onCast()
@@ -51,12 +56,11 @@ class SpellService(private val preconditionsPool: HandlersPool,
 
     private fun checkPreConditions(caster: HeroHolder,
                                    target: HeroHolder,
-                                   spellHolder: SpellHolder,
-                                   spellConfig: SpellConfig): Boolean {
+                                   spellHolder: SpellHolder): Boolean {
         if (!preconditionsPool.checkCasterAvailabilityHandler.check(caster)) {
             throw IllegalStateException("Caster is not available (under stun etc)")
         }
-        if (!preconditionsPool.checkCasterPositionHandler.check(spellConfig, caster.position())) {
+        if (!preconditionsPool.checkCasterPositionHandler.check(spellHolder, caster)) {
             throw IllegalStateException("Caster position check failed")
         }
         if (!preconditionsPool.checkSpellHasChargesHandler.check(spellHolder)) {
@@ -71,7 +75,7 @@ class SpellService(private val preconditionsPool: HandlersPool,
         if (!preconditionsPool.checkTargetAvailabilityHandler.check(target)) {
             throw IllegalStateException("Target is not available (invisible etc)")
         }
-        if (!preconditionsPool.checkTargetPositionHandler.check(spellConfig, target.position())) {
+        if (!preconditionsPool.checkTargetPositionHandler.check(spellHolder, target)) {
             throw IllegalStateException("Incorrect target position")
         }
         return true

@@ -8,7 +8,8 @@ class SpellConfig(id: String,
                   targetPositions: List<Int>?,
                   casterIntegerImpacts: List<IntegerImpactConfig>?,
                   targetIntegerImpacts: List<IntegerImpactConfig>?,
-                  additionalIntegerImpacts: Map<Int, List<IntegerImpactConfig>>?,
+                  additionalOwnIntegerImpacts: Map<Int, List<IntegerImpactConfig>>?,
+                  additionalEnemyIntegerImpacts: Map<Int, List<IntegerImpactConfig>>?,
                   logic: ((roomHolder: RoomHolder, caster: HeroHolder) -> RoomHolder)?,
                   suspend: Int?,
                   cooldown: Int?,
@@ -26,8 +27,8 @@ class SpellConfig(id: String,
     val targetPositions: List<Int> = targetPositions ?: listOf()
     val casterIntegerImpacts: List<IntegerImpactConfig> = casterIntegerImpacts ?: listOf()
     val targetIntegerImpacts: List<IntegerImpactConfig> = targetIntegerImpacts ?: listOf()
-    // todo: additional own/enemies impacts
-   // val additionalIntegerImpacts: Map<Int, List<IntegerImpactConfig>> = additionalIntegerImpacts ?: mapOf()
+    val additionalOwnIntegerImpacts: Map<Int, List<IntegerImpactConfig>> = additionalOwnIntegerImpacts ?: mapOf()
+    val additionalEnemyIntegerImpacts: Map<Int, List<IntegerImpactConfig>> = additionalEnemyIntegerImpacts ?: mapOf()
     val logic: (roomHolder: RoomHolder, caster: HeroHolder) -> RoomHolder = logic ?: { holder, _ -> holder }
     val suspend: Int = suspend ?: 0
     val cooldown: Int = cooldown ?: 0

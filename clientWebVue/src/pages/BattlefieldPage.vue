@@ -11,12 +11,12 @@
         <queue :queue="queue"></queue>
 
         <div class="team">
-            <div class="myTeam">
-                <div class="hero my"
-                     v-for="battleHero in myHeroes"
+            <div class="ownTeam">
+                <div class="hero own"
+                     v-for="battleHero in ownHeroes"
                      v-on:click="onHeroClick(battleHero)"
                      v-on:mouseover="onHeroHover(battleHero)"
-                     :style="getHeroStyle(battleHero)">
+                     :style="getHeroStyle(battleHero, false)">
                     {{ battleHero.id }}
                 </div>
             </div>
@@ -27,7 +27,7 @@
                      v-for="battleHero in enemyHeroes"
                      v-on:click="onHeroClick(battleHero)"
                      v-on:mouseover="onHeroHover(battleHero)"
-                     :style="getHeroStyle(battleHero)"></div>
+                     :style="getHeroStyle(battleHero, true)"></div>
             </div>
         </div>
 
@@ -76,7 +76,7 @@
                 login: Auth.getLogin(),
                 battleLogMessages: [],
                 queue: [],
-                myHeroes: [],
+                ownHeroes: [],
                 enemyHeroes: [],
                 currentHero: {},
                 chosenHero: {},
@@ -95,9 +95,9 @@
             handleNotification(notification) {
                 // IGNORED PROPERTIES because Vuejs doesn't support 'key = undefined' or 'delete key'
                 let ignoredProperties = [];
-                if (notification.myHeroes) {
-                    this.myHeroes = notification.myHeroes;
-                    ignoredProperties.push('myHeroes');
+                if (notification.ownHeroes) {
+                    this.ownHeroes = notification.ownHeroes;
+                    ignoredProperties.push('ownHeroes');
                 }
                 if (notification.enemyHeroes) {
                     this.enemyHeroes = notification.enemyHeroes;
@@ -111,7 +111,7 @@
                     this.queue = notification.queue;
                     ignoredProperties.push('queue');
                     if (this.queue.length > 0) {
-                        let currentHero = this.myHeroes.find(it => it.id === this.queue[0].id);
+                        let currentHero = this.ownHeroes.find(it => it.id === this.queue[0].id);
                         if (!currentHero) {
                             currentHero = this.enemyHeroes.find(it => it.id === this.queue[0].id);
                         }
@@ -143,12 +143,13 @@
                 }
                 if (this.gameState === 'PLAYING') {
                     const chosenSpellId = this.$refs.currentHeroBlock.chosenSpell.id;
-                    if (this.myHeroes.some(it => it.id === this.currentHero.id)) {
-                        Ws.sendMessage('CAST_SPELL', {spellPosition: chosenSpellId, targetPosition: hero.position})
+                    if (this.ownHeroes.some(it => it.id === this.currentHero.id)) {
+                        const targetEnemy = !this.ownHeroes.some(it => it.id === hero.id);
+                        Ws.sendMessage('CAST_SPELL', {spellId: chosenSpellId, targetPosition: hero.position, targetEnemy: targetEnemy})
                     }
                 }
             },
-            getHeroStyle(hero) {
+            getHeroStyle(hero, targetEnemy) {
                 if (this.gameState === 'MULLIGAN') {
                     if (this.mulliganHeroesIds.includes(hero.id)) {
                         return {'background-color': 'cyan'};
@@ -156,7 +157,7 @@
                 }
                 if (this.gameState === 'PLAYING') {
                     const chosenSpell = this.$refs.currentHeroBlock.chosenSpell;
-                    if (chosenSpell.id && chosenSpell.targetPositions.includes(hero.position)) {
+                    if (chosenSpell.id && chosenSpell.targetPositions.includes(hero.position) && targetEnemy) {
                         return {'background-color': 'yellow'}
                     }
                 }
@@ -193,7 +194,7 @@
         margin-bottom: 50px;
     }
 
-    .team .myTeam {
+    .team .ownTeam {
         padding-right: 20px;
     }
 
@@ -210,7 +211,7 @@
         background-color: brown;
     }
 
-    .team .hero.my {
+    .team .hero.own {
         float: right;
     }
 

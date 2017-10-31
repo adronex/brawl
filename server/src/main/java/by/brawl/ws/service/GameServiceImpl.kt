@@ -31,7 +31,7 @@ internal class GameServiceImpl constructor(private val gameSessionsPool: GameSes
             throw IllegalArgumentException("Wrong heroes in battle count. Expected: $BATTLEFIELD_HEROES_COUNT, actual: ${battleHeroesIds.size}")
         }
 
-        val mulliganHeroes: List<HeroHolder> = roomHolder.mulliganHolder.myHeroes(session.username)
+        val mulliganHeroes: List<HeroHolder> = roomHolder.mulliganHolder.ownHeroes(session.username)
         val battleHeroes = mutableListOf<HeroHolder>()
 
         for (heroId in battleHeroesIds) {

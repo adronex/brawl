@@ -5,7 +5,7 @@ import java.util.*
 
 class BattlefieldDto(roomHolder: RoomHolder, receiverName: String) : AbstractDto(), JsonDto {
 
-    val myHeroes = roomHolder.battleHolder.myHeroes(receiverName).map { HeroDto(it) }
+    val ownHeroes = roomHolder.battleHolder.ownHeroes(receiverName).map { HeroDto(it) }
     val enemyHeroes = roomHolder.battleHolder.enemyHeroes(receiverName).map { HeroDto(it) }
     val queue: Queue<HeroInQueueDto> = LinkedList()
     val currentStep = roomHolder.currentStep
@@ -13,7 +13,7 @@ class BattlefieldDto(roomHolder: RoomHolder, receiverName: String) : AbstractDto
     val gameState = roomHolder.gameState
 
     init {
-        myHeroes.forEach { it.position = it.position * (-1) - 1 }
+        ownHeroes.forEach { it.position = it.position * (-1) - 1 }
         enemyHeroes.forEach { it.position++ }
         enemyHeroes.forEach { enemyHero ->
             run {
@@ -25,30 +25,14 @@ class BattlefieldDto(roomHolder: RoomHolder, receiverName: String) : AbstractDto
                 }
             }
         }
-//        roomHolder.getBattleHeroes(receiverName, true)
-//                .forEach { heroHolder ->
-//                    heroSpells.put(heroHolder.id,
-//                                   heroHolder.allSpells
-//                                           .filter { spellHolder ->
-//                                               roomHolder
-//                                                       .battleLog
-//                                                       .any { stepLog ->
-//                                                           stepLog.spellId == spellHolder
-//                                                                   .id && stepLog.casterId == heroHolder
-//                                                                   .id
-//                                                       }
-//                                           }
-//                                           .map { SpellDto(it) }
-//                                           .toSet())
-//                }
 
         roomHolder.queue.forEach { s ->
-            val my = myHeroes.any { it.id == s.id }
-            val exposed = my || roomHolder.battleLog.any { stepLog -> stepLog.casterId == s.id }
+            val own = ownHeroes.any { it.id == s.id }
+            val exposed = own || roomHolder.battleLog.any { stepLog -> stepLog.casterId == s.id }
             if (exposed) {
-                queue.add(HeroInQueueDto(s.id, !my))
+                queue.add(HeroInQueueDto(s.id, !own))
             } else {
-                queue.add(HeroInQueueDto(null, !my))
+                queue.add(HeroInQueueDto(null, !own))
             }
         }
     }

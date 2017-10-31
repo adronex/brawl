@@ -28,7 +28,7 @@ class BattlefieldHolder() {
 
     fun isReady():Boolean = firstSquadHuevich && secondSquadHuevich
 
-    fun myHeroes(receiverName: String): List<HeroHolder> {
+    fun ownHeroes(receiverName: String): List<HeroHolder> {
         return when (receiverName) {
             heroes[0].ownerName -> heroes[0].heroes
             heroes[1].ownerName -> heroes[1].heroes

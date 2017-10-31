@@ -17,7 +17,8 @@ class SpellsPool {
             TARGET_POSITIONS,
             CASTER_IMPACTS,
             TARGET_IMPACTS,
-            ADDITIONAL_IMPACTS,
+            ADDITIONAL_OWN_IMPACTS,
+            ADDITIONAL_ENEMY_IMPACTS,
 
             TYPE,
             FROM,
@@ -33,6 +34,7 @@ class SpellsPool {
 
         val spellsMap: Map<String, SpellConfig>
 
+        // todo: multiple targets positions (self, enemy)
         init {
             val tempMap = mutableMapOf<String, SpellConfig>()
             val mapper = jacksonObjectMapper()
@@ -44,14 +46,23 @@ class SpellsPool {
                 val targetPositions: List<Int>? = spell.get(KEYS.TARGET_POSITIONS)?.map { it.intValue() }
                 val casterImpacts: List<IntegerImpactConfig>? = spell.get(KEYS.CASTER_IMPACTS)?.map { getImpacts(it, id) }
                 val targetImpacts: List<IntegerImpactConfig>? = spell.get(KEYS.TARGET_IMPACTS)?.map { getImpacts(it, id) }
-                val additionalImpacts = mutableMapOf<Int, List<IntegerImpactConfig>>()
+                val additionalOwnImpacts = mutableMapOf<Int, List<IntegerImpactConfig>>()
 
-                spell.get(KEYS.ADDITIONAL_IMPACTS)?.forEach { impact ->
+                spell.get(KEYS.ADDITIONAL_OWN_IMPACTS)?.forEach { impact ->
                     val key = impact.get(KEYS.TARGET)?.intValue()
                             ?: throw IllegalStateException("Target of additional impact is absent for spell $id")
                     val value = impact.get(KEYS.IMPACTS)?.map { getImpacts(it, id) }
                             ?: throw IllegalStateException("Impacts object of additional impact are absent for spell $id")
-                    additionalImpacts.put(key, value)
+                    additionalOwnImpacts.put(key, value)
+                }
+                val additionalEnemyImpacts = mutableMapOf<Int, List<IntegerImpactConfig>>()
+
+                spell.get(KEYS.ADDITIONAL_ENEMY_IMPACTS)?.forEach { impact ->
+                    val key = impact.get(KEYS.TARGET)?.intValue()
+                            ?: throw IllegalStateException("Target of additional impact is absent for spell $id")
+                    val value = impact.get(KEYS.IMPACTS)?.map { getImpacts(it, id) }
+                            ?: throw IllegalStateException("Impacts object of additional impact are absent for spell $id")
+                    additionalOwnImpacts.put(key, value)
                 }
                 val suspend: Int? = spell.get(KEYS.SUSPEND)?.intValue()
                 val cooldown: Int? = spell.get(KEYS.COOLDOWN)?.intValue()
@@ -61,7 +72,8 @@ class SpellsPool {
                                          targetPositions,
                                          casterImpacts,
                                          targetImpacts,
-                                         additionalImpacts,
+                                         additionalOwnImpacts,
+                                         additionalEnemyImpacts,
                                          null,
                                          suspend,
                                          cooldown,

@@ -12,7 +12,7 @@ class SquadHolder {
     constructor(ownerName: String,
                 heroes: List<HeroHolder>) {
         this.ownerName = ownerName
-        this.heroes = heroes
+        this.heroes = heroes.map { HeroHolder(it, this) }
     }
 
     val ownerName: String

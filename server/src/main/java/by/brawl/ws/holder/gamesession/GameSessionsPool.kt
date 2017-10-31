@@ -31,7 +31,7 @@ open class GameSessionsPool {
         getAllReceiversByBattlefield(room).forEach { receiver ->
             val mulliganHolder = receiver.roomHolder.mulliganHolder
             val dto = MulliganDto(
-                    mulliganHolder.myHeroes(receiver.username).map { HeroDto(it) },
+                    mulliganHolder.ownHeroes(receiver.username).map { HeroDto(it) },
                     mulliganHolder.enemyHeroes(receiver.username).map { HeroDto(it) },
                     receiver.roomHolder.gameState
             )
