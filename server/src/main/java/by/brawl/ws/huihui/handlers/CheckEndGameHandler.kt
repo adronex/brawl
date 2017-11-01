@@ -4,7 +4,7 @@ import by.brawl.ws.holder.RoomHolder
 import org.springframework.stereotype.Component
 
 @Component
-class CheckEndGameHandler: HuiHandler {
+class CheckEndGameHandler {
 
     fun check(roomHolder: RoomHolder): Boolean {
         return roomHolder.isGameFinished()

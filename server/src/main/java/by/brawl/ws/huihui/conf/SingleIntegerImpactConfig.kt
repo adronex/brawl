@@ -1,9 +1,7 @@
 package by.brawl.ws.huihui.conf
 
-class SingleIntegerImpactConfig(private val type: ImpactType,
-                                private val value: Int): IntegerImpactConfig {
-
-    override fun getType(): ImpactType = type
-
-    override fun calculateValue(): Int = value
+class SingleIntegerImpactConfig(override val type: ImpactType,
+                                value: Int): IntegerImpactConfig {
+    override val from = value
+    override val to = value
 }

@@ -157,8 +157,19 @@
                 }
                 if (this.gameState === 'PLAYING') {
                     const chosenSpell = this.$refs.currentHeroBlock.chosenSpell;
-                    if (chosenSpell.id && chosenSpell.targetPositions.includes(hero.position) && targetEnemy) {
+                    if (this.currentHero.id === hero.id) {
+                        return  {'background-color': 'red'};
+                    }
+                    if (!chosenSpell.id) {
+                        return {'background-color': 'brown'};
+                    }
+                    if (chosenSpell.targetOwnPositions.includes(hero.position) && !targetEnemy) {
                         return {'background-color': 'yellow'}
+                    } else if (chosenSpell.targetEnemyPositions.includes(hero.position) && targetEnemy) {
+                        return {'background-color': 'yellow'}
+                    }
+                    if (chosenSpell.casterPositions.includes(hero.position) && !targetEnemy) {
+                        return {'background-color': 'blue'}
                     }
                 }
                 return {'background-color': 'brown'};
@@ -169,8 +180,8 @@
             }
         }
     }
-
 </script>
+
 <style>
     .page {
         width: 100%;

@@ -1,11 +1,14 @@
 package by.brawl.ws.huihui.handlers.preconditions
 
+import by.brawl.ws.holder.HeroHolder
 import by.brawl.ws.holder.SpellHolder
-import by.brawl.ws.huihui.handlers.HuiHandler
+import by.brawl.ws.huihui.handlers.PreconditionsAbstractHandler
 
-class CheckSpellOnSuspendHandler: HuiHandler {
+class CheckSpellOnSuspendHandler: PreconditionsAbstractHandler("Spell is on suspend") {
 
-    fun check(spellHolder: SpellHolder): Boolean {
+    override fun check(caster: HeroHolder,
+                       target: HeroHolder,
+                       spellHolder: SpellHolder): Boolean {
         return spellHolder.suspend == 0
     }
 }

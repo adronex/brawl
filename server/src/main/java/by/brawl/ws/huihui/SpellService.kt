@@ -7,6 +7,7 @@ import by.brawl.ws.huihui.conf.ImpactType
 import by.brawl.ws.huihui.conf.IntegerImpactConfig
 import by.brawl.ws.huihui.conf.SpellConfig
 import by.brawl.ws.huihui.handlers.CheckEndGameHandler
+import by.brawl.ws.utils.Calculator
 import org.springframework.stereotype.Service
 
 @Service
@@ -56,40 +57,19 @@ class SpellService(private val preconditionsPool: HandlersPool,
 
     private fun checkPreConditions(caster: HeroHolder,
                                    target: HeroHolder,
-                                   spellHolder: SpellHolder): Boolean {
-        if (!preconditionsPool.checkCasterAvailabilityHandler.check(caster)) {
-            throw IllegalStateException("Caster is not available (under stun etc)")
-        }
-        if (!preconditionsPool.checkCasterPositionHandler.check(spellHolder, caster)) {
-            throw IllegalStateException("Caster position check failed")
-        }
-        if (!preconditionsPool.checkSpellHasChargesHandler.check(spellHolder)) {
-            throw IllegalStateException("Spell is out of charges")
-        }
-        if (!preconditionsPool.checkSpellOnCooldownHandler.check(spellHolder)) {
-            throw IllegalStateException("Spell is on cooldown")
-        }
-        if (!preconditionsPool.checkSpellOnSuspendHandler.check(spellHolder)) {
-            throw IllegalStateException("Spell is on suspend")
-        }
-        if (!preconditionsPool.checkTargetAvailabilityHandler.check(target)) {
-            throw IllegalStateException("Target is not available (invisible etc)")
-        }
-        if (!preconditionsPool.checkTargetPositionHandler.check(spellHolder, caster, target)) {
-            throw IllegalStateException("Incorrect target position")
-        }
-        return true
+                                   spellHolder: SpellHolder) {
+        preconditionsPool.handlers.forEach { it.handle(caster, target, spellHolder) }
     }
 
     private fun apply(impactsMap: Map<HeroHolder, List<IntegerImpactConfig>>) {
         impactsMap.forEach { hero, impacts ->
             run {
                 impacts.forEach { impact ->
-                    when (impact.getType()) {
-                        ImpactType.DAMAGE -> hero.hit(impact.calculateValue())
-                        ImpactType.HEAL -> hero.heal(impact.calculateValue())
-                        ImpactType.BARRIER -> hero.barrier(impact.calculateValue())
-                        ImpactType.MOVE -> hero.move(impact.calculateValue())
+                    when (impact.type) {
+                        ImpactType.DAMAGE -> hero.hit(Calculator.calculate(impact))
+                        ImpactType.HEAL -> hero.heal(Calculator.calculate(impact))
+                        ImpactType.BARRIER -> hero.barrier(Calculator.calculate(impact))
+                        ImpactType.MOVE -> hero.move(Calculator.calculate(impact))
                     //                 ImpactType.EFFECT -> hero.effects.add(impact.calculateValue() as EffectHolder)
                     }
                 }

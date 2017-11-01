@@ -1,11 +1,14 @@
 package by.brawl.ws.huihui.handlers.preconditions
 
+import by.brawl.ws.holder.HeroHolder
 import by.brawl.ws.holder.SpellHolder
-import by.brawl.ws.huihui.handlers.HuiHandler
+import by.brawl.ws.huihui.handlers.PreconditionsAbstractHandler
 
-class CheckSpellHasChargesHandler: HuiHandler {
+class CheckSpellHasChargesHandler: PreconditionsAbstractHandler("Spell is out of charges") {
 
-    fun check(spellHolder: SpellHolder): Boolean {
+    override fun check(caster: HeroHolder,
+                       target: HeroHolder,
+                       spellHolder: SpellHolder): Boolean {
         return !spellHolder.config.chargeable || spellHolder.charges > 0
     }
 }

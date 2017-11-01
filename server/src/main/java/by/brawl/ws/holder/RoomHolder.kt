@@ -1,6 +1,5 @@
 package by.brawl.ws.holder
 
-import by.brawl.entity.Squad
 import by.brawl.ws.holder.gamesession.GameSession
 import java.util.*
 

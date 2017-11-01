@@ -21,8 +21,8 @@
             </div>
             <div class="spellDescription">
                 <p>{{chosenSpell.id}}</p>
-                <p>MNOGA-MNOGA BYKAFFF</p>
-                <p>MNOGA-MNOGA BYKAFFF</p>
+                <p>{{chosenSpell.casterPositions}}</p>
+                <p>{{chosenSpell.targetOwnPositions}} {{chosenSpell.targetEnemyPositions}}</p>
                 <p>MNOGA-MNOGA BYKAFFF</p>
                 <p>MNOGA-MNOGA BYKAFFF</p>
                 <p>MNOGA-MNOGA BYKAFFF</p>

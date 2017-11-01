@@ -13,8 +13,6 @@ class BattlefieldDto(roomHolder: RoomHolder, receiverName: String) : AbstractDto
     val gameState = roomHolder.gameState
 
     init {
-        ownHeroes.forEach { it.position = it.position * (-1) - 1 }
-        enemyHeroes.forEach { it.position++ }
         enemyHeroes.forEach { enemyHero ->
             run {
                 val iterator = enemyHero.spells.iterator()
