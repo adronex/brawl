@@ -5,7 +5,7 @@
                  :style="cssHeroAvatar"></div>
             <div class="heroDescription">
                 <p>{{hero.name}}</p>
-                <p>MNOGA-MNOGA BYKAFFF</p>
+                <p>{{hero.id}}</p>
                 <p>MNOGA-MNOGA BYKAFFF</p>
                 <p>MNOGA-MNOGA BYKAFFF</p>
             </div>

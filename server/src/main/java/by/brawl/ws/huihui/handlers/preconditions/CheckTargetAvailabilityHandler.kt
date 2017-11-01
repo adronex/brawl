@@ -10,6 +10,6 @@ class CheckTargetAvailabilityHandler: PreconditionsAbstractHandler("Target is no
     override fun check(caster: HeroHolder,
                        target: HeroHolder,
                        spellHolder: SpellHolder): Boolean {
-        return target.effects.any { it.effect.type == EffectType.INVISIBILITY }
+        return !target.effects.any { it.effect.type == EffectType.INVISIBILITY }
     }
 }

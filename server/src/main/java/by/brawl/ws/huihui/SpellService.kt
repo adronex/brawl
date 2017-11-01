@@ -3,6 +3,7 @@ package by.brawl.ws.huihui
 import by.brawl.ws.holder.HeroHolder
 import by.brawl.ws.holder.SpellHolder
 import by.brawl.ws.holder.gamesession.GameSession
+import by.brawl.ws.holder.gamesession.GameSessionsPool
 import by.brawl.ws.huihui.conf.ImpactType
 import by.brawl.ws.huihui.conf.IntegerImpactConfig
 import by.brawl.ws.huihui.conf.SpellConfig
@@ -12,7 +13,8 @@ import org.springframework.stereotype.Service
 
 @Service
 class SpellService(private val preconditionsPool: HandlersPool,
-                   private val checkEndGameHandler: CheckEndGameHandler) {
+                   private val checkEndGameHandler: CheckEndGameHandler,
+                   private val gameSessionsPool: GameSessionsPool) {
 
     fun cast(gameSession: GameSession,
              spellId: String,
@@ -53,6 +55,7 @@ class SpellService(private val preconditionsPool: HandlersPool,
         checkEndGameHandler.check(roomHolder)
         // todo: run endTurnHandler
         // todo: run startTurnHandler
+        gameSessionsPool.sendBattlefieldData(roomHolder)
     }
 
     private fun checkPreConditions(caster: HeroHolder,
