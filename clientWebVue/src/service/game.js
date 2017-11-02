@@ -22,6 +22,7 @@ let gameState = GAME_STATES.UNKNOWN;
 let ownHeroes = [];
 let enemyHeroes = [];
 let queue = [];
+let battleLogMessages = [];
 
 export default {
     GAME_STATES,
@@ -32,7 +33,8 @@ export default {
         gameState,
         ownHeroes,
         enemyHeroes,
-        queue
+        queue,
+        battleLogMessages
     },
 
     subscribe, // publisher
@@ -45,31 +47,39 @@ export default {
 };
 
 function handleNotification(notification) {
+    // IGNORED PROPERTIES because Vuejs doesn't support 'key = undefined' or 'delete key'
+    let ignoredProperties = [];
     if (notification.ownHeroes) {
         ownHeroes = notification.ownHeroes;
-        console.log(ownHeroes);
-        delete notification.ownHeroes;
+        ignoredProperties.push('ownHeroes');
     }
     if (notification.enemyHeroes) {
         enemyHeroes = notification.enemyHeroes;
-        console.log(enemyHeroes);
-        delete notification.enemyHeroes;
+        ignoredProperties.push('enemyHeroes');
     }
     if (notification.gameState) {
         gameState = notification.gameState;
-        delete notification.gameState;
+        ignoredProperties.push('gameState');
     }
     if (notification.queue) {
         queue = notification.queue;
-        if (this.queue.length > 0) {
-            currentHero = this.ownHeroes.find(it => it.id === this.queue[0].id);
+        ignoredProperties.push('queue');
+        if (queue.length > 0) {
+            currentHero = ownHeroes.find(it => it.id === queue[0].id);
             if (!currentHero) {
-                currentHero = this.enemyHeroes.find(it => it.id === this.queue[0].id);
+                currentHero = enemyHeroes.find(it => it.id === queue[0].id);
             }
         }
-        delete notification.queue;
     }
-    notifySubscribers();
+    Object.keys(notification).forEach(key => {
+        if (ignoredProperties.indexOf(key) === -1) {
+            const message = {
+                [key]: notification[key]
+            };
+            battleLogMessages.push(message);
+        }
+    });
+   notifySubscribers();
 }
 
 function isConnectionEstablished() {
@@ -86,7 +96,7 @@ function notifySubscribers() {
 }
 
 function findGame(squadId) {
-    Ws.openConnection(MESSAGE_TYPES.INITIAL, squadId)
+    Ws.openConnection(MESSAGE_TYPES.INITIAL, {squadId})
 }
 
 function addMulliganHero(heroId) {

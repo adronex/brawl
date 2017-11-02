@@ -61,16 +61,18 @@
             }
         },
         mounted: function () {
-// todo: apply transform to one avatar
+    //        this.chosenSpell = this.hero.spells[0];
+            // todo: apply transform to one avatar
 // this.targetHeroAvatarCss = {'transform': 'scaleX(-1)'};
         },
         methods: {
             onSpellClick(spell) {
                 StaticData.getSpellsPromise().then(it => {
-                    this.chosenSpell = it[spell.id];
-                    if (!this.spell) {
-                        this.spell = {};
-                        console.warn(`Spell static data for id ${this.spellId} is absent.}`)
+                    this.chosenSpell = spell;
+                    this.chosenSpell.config = it[spell.id];
+                    if (!this.chosenSpell.config) {
+                        this.chosenSpell.config = {};
+                        console.warn(`Spell static data for id ${spell.id} is absent.}`)
                     }
                 });
             }

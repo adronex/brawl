@@ -73,7 +73,7 @@
         data: function () {
             return {
                 login: Auth.getLogin(),
-                battleLogMessages: [],
+                battleLogMessages: Game.data.battleLogMessages,
                 queue: [],
                 ownHeroes: [],
                 enemyHeroes: [],
@@ -91,10 +91,11 @@
         },
         methods: {
             handleNotification() {
-                this.gameState = Game.data.gameState;
-                this.ownHeroes = Game.data.ownHeroes;
-                this.enemyHeroes = Game.data.enemyHeroes;
-                this.queue = Game.data.queue;
+                console.log(this.gameState);
+//                this.gameState = Game.data.gameState;
+//                this.ownHeroes = Game.data.ownHeroes;
+//                this.enemyHeroes = Game.data.enemyHeroes;
+//                this.queue = Game.data.queue;
             },
             onHeroHover(hero) {
                 this.chosenHero = hero;
