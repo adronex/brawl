@@ -1,9 +1,10 @@
+'use strict';
 import Auth from './auth';
 import Urls from './urls';
 
 export default {
     isConnected,
-    findGame,
+    openConnection,
     sendMessage,
     subscribeOnMessageEvent
 }
@@ -15,18 +16,18 @@ function isConnected() {
     return webSocket !== undefined && webSocket.readyState !== WebSocket.CLOSED;
 }
 
-function findGame(squadId) {
+function openConnection(type, body) {
     if (isConnected()) {
         throw new Error("WebSocket is already opened.");
     }
     webSocket = new WebSocket(`${Urls.ws.game}?access_token=${Auth.getAccessToken()}`);
     webSocket.onopen = function (event) {
 
-        webSocket.send(JSON.stringify({type: 'INITIAL', body: {squadId: squadId}}));
+        sendMessage(type, body);
     };
 
     webSocket.onmessage = function (response) {
-        handleMessage(response.data);
+        notifySubscribers(response.data);
     }
 }
 
@@ -38,11 +39,7 @@ function subscribeOnMessageEvent(subscriber) {
     subscribers.push(subscriber);
 }
 
-function notifyAll(response){
-    subscribers.forEach(it => it.handleNotification(response));
-}
-
-function handleMessage(responseAsText) {
+function notifySubscribers(responseAsText) {
     let response = JSON.parse(responseAsText);
-    notifyAll(response);
+    subscribers.forEach(it => it.handleNotification(response));
 }

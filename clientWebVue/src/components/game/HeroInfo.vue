@@ -1,5 +1,5 @@
 <template>
-    <div class="heroBlock">
+    <div class="heroInfo">
         <div class="heroInfo">
             <div class="heroAvatar"
                  :style="cssHeroAvatar"></div>
@@ -38,7 +38,7 @@
 <script>
     'use strict';
     import StaticData from '../../service/staticData.js'
-    import Spell from '../battlefield/Spell.vue'
+    import Spell from './Spell.vue'
 
     export default {
         components: {
@@ -80,32 +80,32 @@
 
 <style>
 
-    .heroBlock {
+    .heroInfo {
         float: left;
         width: 50%;
         max-height: 300px;
         overflow-y: auto;
     }
 
-    .heroBlock .heroInfo {
+    .heroInfo .heroInfo {
         max-width: 300px;
         float: left;
     }
 
-    .heroBlock .spellBlock {
+    .heroInfo .spellBlock {
         float: left;
     }
 
-    .heroBlock .spellBlock .spellBar {
+    .heroInfo .spellBlock .spellBar {
         margin-top: 15px;
     }
 
-    .heroBlock .spellBlock .spellBar .spell {
+    .heroInfo .spellBlock .spellBar .spell {
         width: 50px;
         height: 50px;
     }
 
-    .heroBlock .heroAvatar {
+    .heroInfo .heroAvatar {
         width: 200px;
         height: 200px;
         float: left;
@@ -113,13 +113,13 @@
         background-size: 100% 100%;
     }
 
-    .heroBlock .heroDescription {
+    .heroInfo .heroDescription {
         width: 200px;
         float: left;
         margin-left: 40px;
     }
 
-    .heroBlock .spellBlock .spellDescription {
+    .heroInfo .spellBlock .spellDescription {
         width: 200px;
         margin-left: 40px;
     }

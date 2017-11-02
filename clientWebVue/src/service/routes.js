@@ -3,7 +3,7 @@ export default {
     '/squadEdit': 'SquadEditPage',
     '/heroEdit': 'HeroEditPage',
     '/play': 'PlayPage',
-    '/battlefield': `BattlefieldPage`,
+    '/game': `GamePage`,
     go
 }
 

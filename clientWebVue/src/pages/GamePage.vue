@@ -34,18 +34,17 @@
         <div class="startButton">
             <input type="button"
                    value="Start"
-                   v-show="mulliganHeroesIds.length === 4"
-                   v-on:click="startGame()"/>
+                   v-on:click="onStartButtonClick()"/>
         </div>
 
-        <hero-block class="currentHeroBlock"
-                    :hero="currentHero"
-                    ref="currentHeroBlock">
-        </hero-block>
-        <hero-block class="chosenHeroBlock"
-                    :hero="chosenHero"
-                    v-show="chosenHero.id">
-        </hero-block>
+        <hero-info class="currentHeroBlock"
+                   :hero="currentHero"
+                   ref="currentHeroBlock">
+        </hero-info>
+        <hero-info class="chosenHeroBlock"
+                   :hero="chosenHero"
+                   v-show="chosenHero.id">
+        </hero-info>
 
         <div class="battleLogBlock">
             <p v-for="message in battleLogMessages">{{message}}</p>
@@ -57,19 +56,19 @@
     'use strict';
     import Routes from '../service/routes'
     import Auth from '../service/auth'
-    import Ws from '../service/ws'
+    import Game from '../service/game'
 
     import VLink from '../components/Link.vue'
-    import Spell from '../components/battlefield/Spell.vue'
-    import Queue from '../components/battlefield/Queue.vue'
-    import HeroBlock from '../components/battlefield/HeroBlock.vue'
+    import Spell from '../components/game/Spell.vue'
+    import Queue from '../components/game/Queue.vue'
+    import HeroInfo from '../components/game/HeroInfo.vue'
 
     export default {
         components: {
             VLink,
             Spell,
             Queue,
-            HeroBlock
+            HeroInfo
         },
         data: function () {
             return {
@@ -80,85 +79,45 @@
                 enemyHeroes: [],
                 currentHero: {},
                 chosenHero: {},
-                gameState: {},
-                mulliganHeroesIds: []
+                gameState: {}
             }
         },
         mounted: function () {
-            if (!Ws.isConnected()) {
+            if (!Game.isConnectionEstablished()) {
                 Routes.go(this, '/play');
                 console.log('Websocket connection lost. Redirecting to play screen.');
             }
-            Ws.subscribeOnMessageEvent(this);
+            Game.subscribe(this);
         },
         methods: {
-            handleNotification(notification) {
-                // IGNORED PROPERTIES because Vuejs doesn't support 'key = undefined' or 'delete key'
-                let ignoredProperties = [];
-                if (notification.ownHeroes) {
-                    this.ownHeroes = notification.ownHeroes;
-                    ignoredProperties.push('ownHeroes');
-                }
-                if (notification.enemyHeroes) {
-                    this.enemyHeroes = notification.enemyHeroes;
-                    ignoredProperties.push('enemyHeroes');
-                }
-                if (notification.gameState) {
-                    this.gameState = notification.gameState;
-                    ignoredProperties.push('gameState');
-                }
-                if (notification.queue) {
-                    this.queue = notification.queue;
-                    ignoredProperties.push('queue');
-                    if (this.queue.length > 0) {
-                        let currentHero = this.ownHeroes.find(it => it.id === this.queue[0].id);
-                        if (!currentHero) {
-                            currentHero = this.enemyHeroes.find(it => it.id === this.queue[0].id);
-                        }
-                        this.currentHero = currentHero;
-                    }
-                }
-                Object.keys(notification).forEach(key => {
-                    if (ignoredProperties.indexOf(key) === -1) {
-                        const message = {
-                            [key]: notification[key]
-                        };
-                        this.battleLogMessages.push(message);
-                    }
-                });
+            handleNotification() {
+                this.gameState = Game.data.gameState;
+                this.ownHeroes = Game.data.ownHeroes;
+                this.enemyHeroes = Game.data.enemyHeroes;
+                this.queue = Game.data.queue;
             },
             onHeroHover(hero) {
                 this.chosenHero = hero;
             },
             onHeroClick(hero) {
-                if (this.gameState === 'MULLIGAN') {
-                    if (this.mulliganHeroesIds.includes(hero.id)) {
-                        this.mulliganHeroesIds = this.mulliganHeroesIds.filter(item => item !== hero.id);
-                    } else {
-                        this.mulliganHeroesIds.push(hero.id);
-                    }
-                    if (this.mulliganHeroesIds.length > 4) {
-                        this.mulliganHeroesIds = this.mulliganHeroesIds.slice(1);
-                    }
+                if (Game.gameState === Game.GAME_STATES.MULLIGAN) {
+                    Game.addMulliganHero(hero.id)
                 }
-                if (this.gameState === 'PLAYING') {
+                if (Game.gameState === Game.GAME_STATES.PLAYING) {
                     const chosenSpellId = this.$refs.currentHeroBlock.chosenSpell.id;
-                    if (this.ownHeroes.some(it => it.id === this.currentHero.id)) {
-                        const targetEnemy = !this.ownHeroes.some(it => it.id === hero.id);
-                        Ws.sendMessage('CAST_SPELL', {spellId: chosenSpellId, targetPosition: hero.position, targetEnemy: targetEnemy})
-                    }
+                    Game.castSpell(chosenSpellId, hero);
                 }
             },
             getHeroStyle(hero, targetEnemy) {
-                if (this.gameState === 'MULLIGAN') {
-                    if (this.mulliganHeroesIds.includes(hero.id)) {
+                if (Game.gameState === Game.GAME_STATES.MULLIGAN) {
+                    if (Game.mulliganHeroesIds.includes(hero.id)) {
                         return {'background-color': 'cyan'};
                     }
                 }
-                if (this.gameState === 'PLAYING') {
+                if (Game.gameState === Game.GAME_STATES.PLAYING) {
                     const chosenSpell = this.$refs.currentHeroBlock.chosenSpell;
-                    if (this.currentHero.id === hero.id) {
-                        return  {'background-color': 'red'};
+                    if (Game.currentHero.id === hero.id) {
+                        return {'background-color': 'red'};
                     }
                     if (!chosenSpell.id) {
                         return {'background-color': 'brown'};
@@ -174,9 +133,8 @@
                 }
                 return {'background-color': 'brown'};
             },
-            startGame() {
-                Ws.sendMessage('CHOOSE_HEROES', { heroes: this.mulliganHeroesIds });
-                this.mulliganHeroesIds = [];
+            onStartButtonClick() {
+                Game.submitMulliganHeroes();
             }
         }
     }
