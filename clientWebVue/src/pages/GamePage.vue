@@ -8,12 +8,12 @@
             <v-link href="/play">Menu</v-link>
         </div>
 
-        <queue :queue="queue"></queue>
+        <queue :queue="getGameData().queue"></queue>
 
         <div class="team">
             <div class="ownTeam">
                 <div class="hero own"
-                     v-for="battleHero in ownHeroes"
+                     v-for="battleHero in getGameData().ownHeroes"
                      v-on:click="onHeroClick(battleHero)"
                      v-on:mouseover="onHeroHover(battleHero)"
                      :style="getHeroStyle(battleHero, false)">
@@ -24,7 +24,7 @@
         <div class="team">
             <div class="enemyTeam">
                 <div class="hero enemy"
-                     v-for="battleHero in enemyHeroes"
+                     v-for="battleHero in getGameData().enemyHeroes"
                      v-on:click="onHeroClick(battleHero)"
                      v-on:mouseover="onHeroHover(battleHero)"
                      :style="getHeroStyle(battleHero, true)"></div>
@@ -38,16 +38,16 @@
         </div>
 
         <hero-info class="currentHeroBlock"
-                   :hero="currentHero"
+                   :hero="getGameData().currentHero"
                    ref="currentHeroBlock">
         </hero-info>
         <hero-info class="chosenHeroBlock"
-                   :hero="chosenHero"
-                   v-show="chosenHero.id">
+                   :hero="getGameData().chosenHero"
+                   v-show="getGameData().chosenHero.id">
         </hero-info>
 
         <div class="battleLogBlock">
-            <p v-for="message in battleLogMessages">{{message}}</p>
+            <p v-for="message in getGameData().battleLogMessages">{{message}}</p>
         </div>
     </div>
 </template>
@@ -72,14 +72,7 @@
         },
         data: function () {
             return {
-                login: Auth.getLogin(),
-                battleLogMessages: Game.data.battleLogMessages,
-                queue: [],
-                ownHeroes: [],
-                enemyHeroes: [],
-                currentHero: {},
-                chosenHero: {},
-                gameState: {}
+                login: Auth.getLogin()
             }
         },
         mounted: function () {
@@ -90,34 +83,35 @@
             Game.subscribe(this);
         },
         methods: {
+            getGameData() {
+                return Game.getData();
+            },
             handleNotification() {
-                console.log(this.gameState);
-//                this.gameState = Game.data.gameState;
-//                this.ownHeroes = Game.data.ownHeroes;
-//                this.enemyHeroes = Game.data.enemyHeroes;
-//                this.queue = Game.data.queue;
+                this.$forceUpdate();
             },
             onHeroHover(hero) {
-                this.chosenHero = hero;
+                Game.chooseHero(hero);
+                this.$forceUpdate();
             },
             onHeroClick(hero) {
-                if (Game.gameState === Game.GAME_STATES.MULLIGAN) {
-                    Game.addMulliganHero(hero.id)
+                if (Game.getData().gameState === Game.GAME_STATES.MULLIGAN) {
+                    Game.addMulliganHero(hero.id);
                 }
-                if (Game.gameState === Game.GAME_STATES.PLAYING) {
+                if (Game.getData().gameState === Game.GAME_STATES.PLAYING) {
                     const chosenSpellId = this.$refs.currentHeroBlock.chosenSpell.id;
                     Game.castSpell(chosenSpellId, hero);
                 }
+                this.$forceUpdate();
             },
             getHeroStyle(hero, targetEnemy) {
-                if (Game.gameState === Game.GAME_STATES.MULLIGAN) {
-                    if (Game.mulliganHeroesIds.includes(hero.id)) {
+                if (Game.getData().gameState === Game.GAME_STATES.MULLIGAN) {
+                    if (Game.getData().mulliganHeroesIds.includes(hero.id)) {
                         return {'background-color': 'cyan'};
                     }
                 }
-                if (Game.gameState === Game.GAME_STATES.PLAYING) {
+                if (Game.getData().gameState === Game.GAME_STATES.PLAYING) {
                     const chosenSpell = this.$refs.currentHeroBlock.chosenSpell;
-                    if (Game.currentHero.id === hero.id) {
+                    if (Game.getData().currentHero.id === hero.id) {
                         return {'background-color': 'red'};
                     }
                     if (!chosenSpell.id) {

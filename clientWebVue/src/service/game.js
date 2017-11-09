@@ -17,6 +17,8 @@ let subscribers = [];
 
 let mulliganHeroesIds = [];
 let currentHero = {};
+let chosenHero = {};
+let chosenSpell = {};
 
 let gameState = GAME_STATES.UNKNOWN;
 let ownHeroes = [];
@@ -26,60 +28,55 @@ let battleLogMessages = [];
 
 export default {
     GAME_STATES,
-    data: {
-        mulliganHeroesIds,
-        currentHero,
+    getData() {
+        return {
+            mulliganHeroesIds,
+            currentHero,
+            chosenHero,
+            chosenSpell,
 
-        gameState,
-        ownHeroes,
-        enemyHeroes,
-        queue,
-        battleLogMessages
+            gameState,
+            ownHeroes,
+            enemyHeroes,
+            queue,
+            battleLogMessages
+        }
     },
 
-    subscribe, // publisher
-    handleNotification, // as subscriber
+    subscribe, // on this as publisher
+    handleNotification, // as subscriber of smth else
     isConnectionEstablished,
     findGame,
     addMulliganHero,
     submitMulliganHeroes,
+    chooseHero,
     castSpell
 };
 
 function handleNotification(notification) {
-    // IGNORED PROPERTIES because Vuejs doesn't support 'key = undefined' or 'delete key'
-    let ignoredProperties = [];
     if (notification.ownHeroes) {
         ownHeroes = notification.ownHeroes;
-        ignoredProperties.push('ownHeroes');
+        delete notification.ownHeroes;
     }
     if (notification.enemyHeroes) {
         enemyHeroes = notification.enemyHeroes;
-        ignoredProperties.push('enemyHeroes');
+        delete notification.enemyHeroes;
     }
     if (notification.gameState) {
         gameState = notification.gameState;
-        ignoredProperties.push('gameState');
+        delete notification.gameState;
     }
     if (notification.queue) {
         queue = notification.queue;
-        ignoredProperties.push('queue');
         if (queue.length > 0) {
             currentHero = ownHeroes.find(it => it.id === queue[0].id);
             if (!currentHero) {
-                currentHero = enemyHeroes.find(it => it.id === queue[0].id);
+                currentHero = this.enemyHeroes.find(it => it.id === this.queue[0].id);
             }
         }
+        delete notification.queue;
     }
-    Object.keys(notification).forEach(key => {
-        if (ignoredProperties.indexOf(key) === -1) {
-            const message = {
-                [key]: notification[key]
-            };
-            battleLogMessages.push(message);
-        }
-    });
-   notifySubscribers();
+    notifySubscribers();
 }
 
 function isConnectionEstablished() {
@@ -99,17 +96,6 @@ function findGame(squadId) {
     Ws.openConnection(MESSAGE_TYPES.INITIAL, {squadId})
 }
 
-function addMulliganHero(heroId) {
-    if (mulliganHeroesIds.includes(heroId)) {
-        mulliganHeroesIds = mulliganHeroesIds.filter(item => item !== heroId);
-    } else {
-        mulliganHeroesIds.push(heroId);
-    }
-    if (mulliganHeroesIds.length > 4) {
-        mulliganHeroesIds = mulliganHeroesIds.slice(1);
-    }
-}
-
 function submitMulliganHeroes() {
     Ws.sendMessage(MESSAGE_TYPES.CHOOSE_HEROES, {heroes: mulliganHeroesIds});
     mulliganHeroesIds = [];
@@ -122,4 +108,19 @@ function castSpell(spellId, hero) {
         targetPosition: hero.position,
         targetEnemy: targetEnemy
     })
+}
+
+function addMulliganHero(heroId) {
+    if (mulliganHeroesIds.includes(heroId)) {
+        mulliganHeroesIds = mulliganHeroesIds.filter(item => item !== heroId);
+    } else {
+        mulliganHeroesIds.push(heroId);
+    }
+    if (mulliganHeroesIds.length > 4) {
+        mulliganHeroesIds = mulliganHeroesIds.slice(1);
+    }
+}
+
+function chooseHero(hero) {
+    chosenHero = hero;
 }
