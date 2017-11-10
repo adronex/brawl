@@ -1,4 +1,5 @@
 'use strict';
+import StaticData from './staticData';
 import Ws from './ws';
 
 const GAME_STATES = {
@@ -50,8 +51,18 @@ export default {
     addMulliganHero,
     submitMulliganHeroes,
     chooseHero,
+    chooseSpell,
     castSpell
 };
+
+function subscribe(subscriber) {
+    Ws.subscribeOnMessageEvent(this);
+    subscribers.push(subscriber);
+}
+
+function notifySubscribers() {
+    subscribers.forEach(it => it.handleNotification())
+}
 
 function handleNotification(notification) {
     if (notification.ownHeroes) {
@@ -68,46 +79,30 @@ function handleNotification(notification) {
     }
     if (notification.queue) {
         queue = notification.queue;
-        if (queue.length > 0) {
-            currentHero = ownHeroes.find(it => it.id === queue[0].id);
-            if (!currentHero) {
-                currentHero = this.enemyHeroes.find(it => it.id === this.queue[0].id);
-            }
-        }
+        setCurrentHero(queue);
         delete notification.queue;
     }
     notifySubscribers();
+}
+
+function setCurrentHero(queue) {
+    if (queue.length > 0) {
+        currentHero = ownHeroes.find(it => it.id === queue[0].id);
+        if (!currentHero) {
+            currentHero = enemyHeroes.find(it => it.id === queue[0].id);
+        }
+        if (!currentHero) {
+            currentHero = {};
+        }
+    }
 }
 
 function isConnectionEstablished() {
     return Ws.isConnected();
 }
 
-function subscribe(subscriber) {
-    Ws.subscribeOnMessageEvent(this);
-    subscribers.push(subscriber);
-}
-
-function notifySubscribers() {
-    subscribers.forEach(it => it.handleNotification())
-}
-
 function findGame(squadId) {
     Ws.openConnection(MESSAGE_TYPES.INITIAL, {squadId})
-}
-
-function submitMulliganHeroes() {
-    Ws.sendMessage(MESSAGE_TYPES.CHOOSE_HEROES, {heroes: mulliganHeroesIds});
-    mulliganHeroesIds = [];
-}
-
-function castSpell(spellId, hero) {
-    const targetEnemy = !ownHeroes.some(it => it.id === hero.id);
-    Ws.sendMessage(MESSAGE_TYPES.CAST_SPELL, {
-        spellId,
-        targetPosition: hero.position,
-        targetEnemy: targetEnemy
-    })
 }
 
 function addMulliganHero(heroId) {
@@ -121,6 +116,32 @@ function addMulliganHero(heroId) {
     }
 }
 
+function submitMulliganHeroes() {
+    Ws.sendMessage(MESSAGE_TYPES.CHOOSE_HEROES, {heroes: mulliganHeroesIds});
+    mulliganHeroesIds = [];
+}
+
 function chooseHero(hero) {
     chosenHero = hero;
+}
+
+function chooseSpell(spell) {
+    StaticData.getSpellsPromise().then(it => {
+        chosenSpell = spell;
+        chosenSpell.config = it[spell.id];
+        if (!chosenSpell.config) {
+            chosenSpell.config = {};
+            console.warn(`Spell static data for id ${spell.id} is absent.}`)
+        }
+        notifySubscribers();
+    });
+}
+
+function castSpell(spellId, hero) {
+    const targetEnemy = !ownHeroes.some(it => it.id === hero.id);
+    Ws.sendMessage(MESSAGE_TYPES.CAST_SPELL, {
+        spellId,
+        targetPosition: hero.position,
+        targetEnemy: targetEnemy
+    })
 }

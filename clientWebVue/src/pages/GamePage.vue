@@ -111,18 +111,21 @@
                 }
                 if (Game.getData().gameState === Game.GAME_STATES.PLAYING) {
                     const chosenSpell = this.$refs.currentHeroBlock.chosenSpell;
+                    if (!Game.getData().currentHero) {
+                        return {'background-color': 'brown'};
+                    }
                     if (Game.getData().currentHero.id === hero.id) {
                         return {'background-color': 'red'};
                     }
                     if (!chosenSpell.id) {
                         return {'background-color': 'brown'};
                     }
-                    if (chosenSpell.targetOwnPositions.includes(hero.position) && !targetEnemy) {
+                    if (chosenSpell.config.targetOwnPositions.includes(hero.position) && !targetEnemy) {
                         return {'background-color': 'yellow'}
-                    } else if (chosenSpell.targetEnemyPositions.includes(hero.position) && targetEnemy) {
+                    } else if (chosenSpell.config.targetEnemyPositions.includes(hero.position) && targetEnemy) {
                         return {'background-color': 'yellow'}
                     }
-                    if (chosenSpell.casterPositions.includes(hero.position) && !targetEnemy) {
+                    if (chosenSpell.config.casterPositions.includes(hero.position) && !targetEnemy) {
                         return {'background-color': 'blue'}
                     }
                 }

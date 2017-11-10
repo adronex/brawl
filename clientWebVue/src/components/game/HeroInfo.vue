@@ -20,16 +20,20 @@
                 </div>
             </div>
             <div class="spellDescription">
-                <p>{{chosenSpell.id}}</p>
-                <p>{{chosenSpell.casterPositions}}</p>
-                <p>{{chosenSpell.targetOwnPositions}} {{chosenSpell.targetEnemyPositions}}</p>
-                <p>MNOGA-MNOGA BYKAFFF</p>
-                <p>MNOGA-MNOGA BYKAFFF</p>
-                <p>MNOGA-MNOGA BYKAFFF</p>
-                <p>MNOGA-MNOGA BYKAFFF</p>
-                <p>MNOGA-MNOGA BYKAFFF</p>
-                <p>MNOGA-MNOGA BYKAFFF</p>
-                <p>MNOGA-MNOGA BYKAFF</p>
+                <div v-if="chosenSpell.id">
+                    <p>{{chosenSpell.id}}</p>
+                    <p>{{chosenSpell.config.casterPositions}}</p>
+                    <p>{{chosenSpell.config.targetOwnPositions}} {{chosenSpell.config.targetEnemyPositions}}</p>
+                </div>
+                <div v-else>
+                    <p>MNOGA-MNOGA BYKAFFF</p>
+                    <p>MNOGA-MNOGA BYKAFFF</p>
+                    <p>MNOGA-MNOGA BYKAFFF</p>
+                    <p>MNOGA-MNOGA BYKAFFF</p>
+                    <p>MNOGA-MNOGA BYKAFFF</p>
+                    <p>MNOGA-MNOGA BYKAFFF</p>
+                    <p>MNOGA-MNOGA BYKAFF</p>
+                </div>
             </div>
         </div>
     </div>
@@ -37,7 +41,7 @@
 
 <script>
     'use strict';
-    import StaticData from '../../service/staticData.js'
+    import StaticData from '../../service/staticData'
     import Spell from './Spell.vue'
 
     export default {
@@ -56,8 +60,10 @@
         },
         watch: {
             hero: function (val) {
-                let head = this.hero.bodyparts.find(it => it.type === 'HEAD');
-                this.cssHeroAvatar = StaticData.getBodypartCss(head.id);
+                if (this.hero.id) {
+                    let head = this.hero.bodyparts.find(it => it.type === 'HEAD');
+                    this.cssHeroAvatar = StaticData.getBodypartCss(head.id);
+                }
             }
         },
         mounted: function () {
