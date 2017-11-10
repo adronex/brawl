@@ -34,6 +34,7 @@
         <div class="startButton">
             <input type="button"
                    value="Start"
+                   v-show="isPlayButtonAvailable()"
                    v-on:click="onStartButtonClick()"/>
         </div>
 
@@ -83,6 +84,10 @@
             Game.subscribe(this);
         },
         methods: {
+            isPlayButtonAvailable() {
+                return Game.getData().gameState === Game.GAME_STATES.MULLIGAN &&
+                        Game.getData().mulliganHeroesIds.length === 4;
+            },
             getGameData() {
                 return Game.getData();
             },

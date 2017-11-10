@@ -60,6 +60,7 @@
         },
         watch: {
             hero: function (val) {
+                this.chosenSpell = {};
                 if (this.hero.id) {
                     let head = this.hero.bodyparts.find(it => it.type === 'HEAD');
                     this.cssHeroAvatar = StaticData.getBodypartCss(head.id);
