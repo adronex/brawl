@@ -51,7 +51,6 @@ export default {
     addMulliganHero,
     submitMulliganHeroes,
     chooseHero,
-    chooseSpell,
     castSpell
 };
 
@@ -106,6 +105,9 @@ function findGame(squadId) {
 }
 
 function addMulliganHero(heroId) {
+    if (!ownHeroes.some(it => it.id === heroId)) {
+        return;
+    }
     if (mulliganHeroesIds.includes(heroId)) {
         mulliganHeroesIds = mulliganHeroesIds.filter(item => item !== heroId);
     } else {
@@ -123,18 +125,6 @@ function submitMulliganHeroes() {
 
 function chooseHero(hero) {
     chosenHero = hero;
-}
-
-function chooseSpell(spell) {
-    StaticData.getSpellsPromise().then(it => {
-        chosenSpell = spell;
-        chosenSpell.config = it[spell.id];
-        if (!chosenSpell.config) {
-            chosenSpell.config = {};
-            console.warn(`Spell static data for id ${spell.id} is absent.}`)
-        }
-        notifySubscribers();
-    });
 }
 
 function castSpell(spellId, hero) {
