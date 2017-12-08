@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="farmApp">
+<head>
+    <meta charset="UTF-8">
+    <title>FarmPrototype</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.6/angular.min.js"></script>
+    <script src="js/field.js"></script>
+    <script>
+        angular.module('farmApp', [])
+            .controller('FarmController', function ($http) {
+                var farm = this;
+                farm.field = [];
+
+                commandHandler(JSON.stringify({command: "BUY", x: 3, y: 6}));
+                function init() {
+                    $http.post("http://localhost:4567/farm/execute", {command: "BUY", x: 3, y: 6})
+                        .then(function(response) {
+                            farm.field = response.data;
+                        });
+                }
+
+                init();
+            });
+    </script>
+    <style>
+        .row {
+            overflow: auto;
+        }
+        .cell {
+            background-color: #ded9ff;
+            height: 100px;
+            width: 100px;
+            margin-top: 5px;
+            margin-left: 5px;
+            display: block;
+            float: left;
+        }
+    </style>
+</head>
+<body>
+<div ng-controller="FarmController as farm"
+     class="farm">
+    <div ng-repeat="row in farm.field"
+         class="row">
+        <div ng-repeat="cell in row"
+             class="cell">
+            {{cell.name}}
+        </div>
+        <br/>
+    </div>
+</div>
+</body>
+</html>
