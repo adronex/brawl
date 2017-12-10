@@ -6,6 +6,7 @@ var objects = {
     }
 };
 var commands = {
+    get: "GET",
     buy: "BUY"
 };
 
@@ -21,10 +22,17 @@ for (var i = 0; i < FIELD_HEIGHT; i++) {
 
 function commandHandler(requestString) {
     var requestObject = JSON.parse(requestString);
+    if (requestObject.command === commands.get) {
+        return getField();
+    }
     if (requestObject.command === commands.buy) {
         return buyField(requestObject.x, requestObject.y);
     }
     throw "Request body was not parsed successfully: " + JSON.stringify(requestObject);
+}
+
+function getField() {
+    return JSON.stringify(farmField);
 }
 
 function buyField(x, y) {
@@ -33,5 +41,5 @@ function buyField(x, y) {
     }
     softMoney -= objects.field.buyPrice;
     farmField[x][y] = objects.field;
-    return JSON.stringify(farmField);
+    return getField();
 }

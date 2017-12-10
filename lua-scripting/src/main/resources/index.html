@@ -11,15 +11,23 @@
                 var farm = this;
                 farm.field = [];
 
-                commandHandler(JSON.stringify({command: "BUY", x: 3, y: 6}));
-                function init() {
-                    $http.post("http://localhost:4567/farm/execute", {command: "BUY", x: 3, y: 6})
-                        .then(function(response) {
-                            farm.field = response.data;
-                        });
+                function getField() {
+                    return $http.post("http://localhost:4567/farm/execute", {command: "GET"});
                 }
 
-                init();
+                function buyField(x, y) {
+                    return $http.post("http://localhost:4567/farm/execute", {command: "BUY", x: x, y: y});
+                }
+
+                getField().then(function (response) {
+                    farm.field = response.data;
+                });
+
+                farm.onFieldClick = function (x, y) {
+                    buyField(x, y).then(function(response) {
+                        farm.field = response.data;
+                    })
+                }
             });
     </script>
     <style>
@@ -40,9 +48,10 @@
 <body>
 <div ng-controller="FarmController as farm"
      class="farm">
-    <div ng-repeat="row in farm.field"
+    <div ng-repeat="row in farm.field track by $index"
          class="row">
-        <div ng-repeat="cell in row"
+        <div ng-repeat="cell in row track by $index"
+             ng-click="farm.onFieldClick($parent.$index, $index)"
              class="cell">
             {{cell.name}}
         </div>
