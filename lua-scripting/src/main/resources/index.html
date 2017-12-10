@@ -10,23 +10,26 @@
             .controller('FarmController', function ($http) {
                 var farm = this;
                 farm.field = [];
+                farm.commands = [getField, buyField];
 
                 function getField() {
-                    return $http.post("http://localhost:4567/farm/execute", {command: "GET"});
+                    return $http.post("http://localhost:4567/farm/execute", {command: "GET"})
+                        .then(function (response) {
+                            farm.field = response.data;
+                        });
                 }
 
                 function buyField(x, y) {
-                    return $http.post("http://localhost:4567/farm/execute", {command: "BUY", x: x, y: y});
+                    return $http.post("http://localhost:4567/farm/execute", {command: "BUY", x: x, y: y})
+                        .then(function (response) {
+                            farm.field = response.data;
+                        });
                 }
 
-                getField().then(function (response) {
-                    farm.field = response.data;
-                });
+                getField();
 
                 farm.onFieldClick = function (x, y) {
-                    buyField(x, y).then(function(response) {
-                        farm.field = response.data;
-                    })
+                    buyField(x, y);
                 }
             });
     </script>
@@ -34,6 +37,7 @@
         .row {
             overflow: auto;
         }
+
         .cell {
             background-color: #ded9ff;
             height: 100px;
@@ -48,6 +52,10 @@
 <body>
 <div ng-controller="FarmController as farm"
      class="farm">
+    <label for="singleSelect"> Single select: </label><br>
+    <select id="singleSelect" ng-model="farm.chosenCommand">
+        <option value="option-1">Option 1</option>
+    </select><br>
     <div ng-repeat="row in farm.field track by $index"
          class="row">
         <div ng-repeat="cell in row track by $index"

@@ -1,13 +1,30 @@
 var softMoney = 10;
-var objects = {
+var commands = {
+    get: "GET",
+    buy: "BUY",
+    sow: "SOW",
+    reap: "REAP"
+};
+
+var objectTypes = {
+    building: "building",
+    seed: "seed"
+};
+
+var buildings = {
     field: {
-        name: "thisIsTheField",
+        type: objectTypes.building,
+        name: "field",
         buyPrice: 4
     }
 };
-var commands = {
-    get: "GET",
-    buy: "BUY"
+
+var seeds = {
+    wheat: {
+        type: objectTypes.seed,
+        name: "wheat",
+        buyPrice: 1
+    }
 };
 
 var farmField = [];
@@ -16,7 +33,7 @@ var FIELD_WIDTH = 10;
 for (var i = 0; i < FIELD_HEIGHT; i++) {
     farmField.push([]);
     for (var j = 0; j < FIELD_WIDTH; j++) {
-        farmField[i].push({});
+        farmField[i].push(undefined);
     }
 }
 
@@ -28,6 +45,9 @@ function commandHandler(requestString) {
     if (requestObject.command === commands.buy) {
         return buyField(requestObject.x, requestObject.y);
     }
+    if (requestObject.command === commands.sow) {
+        return sowField(requestObject.x, requestObject.y, requestObject.seed);
+    }
     throw "Request body was not parsed successfully: " + JSON.stringify(requestObject);
 }
 
@@ -36,10 +56,28 @@ function getField() {
 }
 
 function buyField(x, y) {
-    if (farmField[x][y].length > 0) {
-        throw "Not allowed, cell is not empty, there is a " + farmField[x][y] + " here";
+    if (farmField[x][y]) {
+        throw "Not allowed, cell is not empty, there is a " + JSON.stringify(farmField[x][y]) + " here";
     }
-    softMoney -= objects.field.buyPrice;
-    farmField[x][y] = objects.field;
+    var field = buildings.field;
+    if (softMoney < field.buyPrice) {
+        throw "Not enough money to buy " + field.name + ", you have " + softMoney + " and you need " + field.buyPrice;
+    }
+    softMoney -= field.buyPrice;
+    farmField[x][y] = field;
     return getField();
+}
+
+function sowField(x, y, seed){
+    var field = farmField[x][y];
+    if (field.type !== objectTypes.building || field.name !== buildings.field.name) {
+        throw "Can't sow: selected cell is not a field";
+    }
+    if (seed.type !== objectTypes.seed) {
+        throw "Object is not a seed";
+    }
+    if (field.plant) {
+        throw "Already sowed with " + JSON.stringify(field.plant);
+    }
+    field.plant = seed.name;
 }
