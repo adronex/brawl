@@ -15,6 +15,7 @@ var buildings = {
         type: objectTypes.building,
         name: "field",
         buyPrice: 4,
+        currentProductionTimeLeft: 0,
         queue: []
     }
 };
@@ -66,7 +67,24 @@ function commandHandler(requestString) {
 }
 
 function getData() {
+    updateTimersDeltas();
     return JSON.stringify({bag: bag, field: farmField});
+}
+
+function updateTimersDeltas() {
+    for (var x = 0; x < farmField.length; x++) {
+        for (var y = 0; y < farmField[x].length; y++) {
+            if (!farmField[x][y]) {
+                continue;
+            }
+            var delta = farmField[x][y].endTime - new Date().getTime();
+            if (delta > 0) {
+                farmField[x][y].currentProductionTimeLeft = delta;
+            } else {
+                farmField[x][y].currentProductionTimeLeft = 0;
+            }
+        }
+    }
 }
 
 function buyField(x, y) {

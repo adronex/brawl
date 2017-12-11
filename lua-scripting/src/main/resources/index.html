@@ -25,10 +25,21 @@
                 };
 
                 farm.getCellStyle = function (x, y) {
+                    var style = 'cell';
                     if (farm.chosenCell.x === x && farm.chosenCell.y === y) {
-                        return 'cell chosen';
+                        style += ' chosen';
                     }
-                    return 'cell default';
+                    var cell = farm.field[x][y];
+                    if (!cell || !cell.queue) {
+                        return style + ' empty';
+                    }
+                    if (cell.queue.length === 0) {
+                        return style + ' waiting';
+                    }
+                    if (cell.endTime > new Date().getTime()) {
+                        return style + ' producing';
+                    }
+                    return style + ' ready';
                 };
 
                 farm.onCellClick = function (x, y, cell) {
@@ -38,7 +49,7 @@
                     farm.chosenCell.x = x;
                     farm.chosenCell.y = y;
                     farm.chosenCell.value = cell;
-                }
+                };
             });
     </script>
     <style>
@@ -55,12 +66,24 @@
             float: left;
         }
 
-        .cell.default {
+        .cell.empty {
+            background-color: #c6c4c4;
+        }
+
+        .cell.waiting {
             background-color: #ded9ff;
         }
 
-        .cell.chosen {
+        .cell.producing {
             background-color: #ff9599;
+        }
+
+        .cell.ready {
+            background-color: #afffcc;
+        }
+
+        .cell.chosen {
+            box-shadow: -3px -3px 2px 6px rgba(241, 167, 73, 0.6) inset;
         }
     </style>
 </head>
@@ -82,7 +105,13 @@
         <div ng-repeat="cell in row track by $index"
              ng-click="farm.onCellClick($parent.$index, $index, cell)"
              ng-class="farm.getCellStyle($parent.$index, $index)">
-            {{cell.name}}
+            <div ng-show="cell">B: {{cell.name}}</div>
+            <div ng-show="cell">T:
+                {{cell.currentProductionTimeLeft}}
+                <!-- todo: countdown -->
+               <!-- <timer countdown="300" interval="1" finish-callback="callbackTimer.finished()">{{seconds}} second{{secondsS}}</timer>-->
+            </div>
+            <div ng-repeat="product in cell.queue">Q: {{product.type}} {{product.name}}</div>
         </div>
         <br/>
     </div>
