@@ -7,12 +7,15 @@
     <script src="js/field.js"></script>
     <script>
         angular.module('farmApp', [])
-            .controller('FarmController', function ($http) {
+            .controller('FarmController', function ($http, $scope, $timeout) {
                 var farm = this;
+                var updateDelta = 100;
                 farm.commands = ["GET", "BUY", "SOW", "REAP"];
                 farm.chosenCell = {};
+                farm.chosenCommand = {};
 
-                farm.execute = function () {
+                farm.execute = function (command) {
+                    farm.chosenCommand.command = command;
                     $http.post("http://localhost:4567/farm/execute", farm.chosenCommand)
                         .then(function (response) {
                             farm.bag = response.data.bag;
@@ -21,8 +24,31 @@
                             if (typeof farm.chosenCell.x === 'number' && typeof farm.chosenCell.y === 'number') {
                                 farm.chosenCell.value = farm.field[farm.chosenCell.x][farm.chosenCell.y];
                             }
+                            runTimers();
                         });
                 };
+
+                function runTimers() {
+                    var firstInterval = new Date().getTime();
+                    var now = new Date().getTime();
+                    if (now - firstInterval < updateDelta) {
+                        $timeout(runTimers, updateDelta);
+                    }
+                    for (var x = 0; x < farm.field.length; x++) {
+                        for (var y = 0; y < farm.field[x].length; y++) {
+                            if (!farm.field[x][y]) {
+                                continue;
+                            }
+                            if (farm.field[x][y].currentProductionTimeLeft > 0) {
+                                var timeLeft = farm.field[x][y].endTime - now;
+                                farm.field[x][y].currentProductionTimeLeft = timeLeft > 0 ? timeLeft : 0;
+                            }
+                        }
+                    }
+                    if (!$scope.$$phase) {
+                        $scope.$apply();
+                    }
+                }
 
                 farm.getCellStyle = function (x, y) {
                     var style = 'cell';
@@ -92,13 +118,12 @@
      class="farm">
     <div ng-show="farm.bag">Bag: {{farm.bag}}</div>
     <div ng-show="farm.field">Chosen cell: {{farm.chosenCell}}</div>
-    <label> Command:
-        <select ng-model="farm.chosenCommand.command" ng-options="command for command in farm.commands">
-        </select>
-    </label><br>
+    <button ng-repeat="command in farm.commands"
+            ng-click="farm.execute(command)">{{command}}
+    </button>
+
     <div ng-show="farm.chosenCommand">
         <div>Chosen command: {{farm.chosenCommand}}</div>
-        <button ng-click="farm.execute()">Call</button>
     </div>
     <div ng-repeat="row in farm.field track by $index"
          class="row">
@@ -107,9 +132,7 @@
              ng-class="farm.getCellStyle($parent.$index, $index)">
             <div ng-show="cell">B: {{cell.name}}</div>
             <div ng-show="cell">T:
-                {{cell.currentProductionTimeLeft}}
-                <!-- todo: countdown -->
-               <!-- <timer countdown="300" interval="1" finish-callback="callbackTimer.finished()">{{seconds}} second{{secondsS}}</timer>-->
+                {{cell.currentProductionTimeLeft / 1000}}
             </div>
             <div ng-repeat="product in cell.queue">Q: {{product.type}} {{product.name}}</div>
         </div>

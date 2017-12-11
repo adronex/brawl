@@ -134,6 +134,7 @@ function reapField(x, y) {
     }
     var reaped = field.queue.shift();
     field.endTime = undefined;
+    field.currentProductionTimeLeft = undefined;
     bag.seeds.wheat += reaped.harvestValue;
     return getData();
 }
