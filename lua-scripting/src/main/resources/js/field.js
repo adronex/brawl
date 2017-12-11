@@ -1,4 +1,3 @@
-var softMoney = 10;
 var commands = {
     get: "GET",
     buy: "BUY",
@@ -15,7 +14,8 @@ var buildings = {
     field: {
         type: objectTypes.building,
         name: "field",
-        buyPrice: 4
+        buyPrice: 4,
+        queue: []
     }
 };
 
@@ -23,7 +23,18 @@ var seeds = {
     wheat: {
         type: objectTypes.seed,
         name: "wheat",
-        buyPrice: 1
+        preparationTime: 10000,
+        buyPrice: 1,
+        harvestValue: 3
+    }
+};
+
+var bag = {
+    softMoney: {
+        value: 10
+    },
+    seeds: {
+        wheat: 2
     }
 };
 
@@ -40,7 +51,7 @@ for (var i = 0; i < FIELD_HEIGHT; i++) {
 function commandHandler(requestString) {
     var requestObject = JSON.parse(requestString);
     if (requestObject.command === commands.get) {
-        return getField();
+        return getData();
     }
     if (requestObject.command === commands.buy) {
         return buyField(requestObject.x, requestObject.y);
@@ -48,11 +59,14 @@ function commandHandler(requestString) {
     if (requestObject.command === commands.sow) {
         return sowField(requestObject.x, requestObject.y, requestObject.seed);
     }
+    if (requestObject.command === commands.reap) {
+        return reapField(requestObject.x, requestObject.y);
+    }
     throw "Request body was not parsed successfully: " + JSON.stringify(requestObject);
 }
 
-function getField() {
-    return JSON.stringify(farmField);
+function getData() {
+    return JSON.stringify({bag: bag, field: farmField});
 }
 
 function buyField(x, y) {
@@ -60,24 +74,48 @@ function buyField(x, y) {
         throw "Not allowed, cell is not empty, there is a " + JSON.stringify(farmField[x][y]) + " here";
     }
     var field = buildings.field;
-    if (softMoney < field.buyPrice) {
-        throw "Not enough money to buy " + field.name + ", you have " + softMoney + " and you need " + field.buyPrice;
+    if (bag.softMoney.value < field.buyPrice) {
+        throw "Not enough money to buy " + field.name + ", you have " + bag.softMoney.value + " and you need " + field.buyPrice;
     }
-    softMoney -= field.buyPrice;
-    farmField[x][y] = field;
-    return getField();
+    bag.softMoney.value -= field.buyPrice;
+    farmField[x][y] = JSON.parse(JSON.stringify(field));
+    return getData();
 }
 
 function sowField(x, y, seed){
     var field = farmField[x][y];
-    if (field.type !== objectTypes.building || field.name !== buildings.field.name) {
+    if (!field || field.type !== objectTypes.building || field.name !== buildings.field.name) {
         throw "Can't sow: selected cell is not a field";
     }
-    if (seed.type !== objectTypes.seed) {
-        throw "Object is not a seed";
+    // if (seed.type !== objectTypes.seed) {
+    //     throw "Object is not a seed";
+    // }
+    if (field.queue.length > 0) {
+        throw "Already sowed with " + JSON.stringify(field.queue);
     }
-    if (field.plant) {
-        throw "Already sowed with " + JSON.stringify(field.plant);
+    if (bag.seeds.wheat <= 0) {
+        throw "There is no available seeds in bag";
     }
-    field.plant = seed.name;
+    bag.seeds.wheat--;
+    seed = seeds.wheat;
+    field.queue.push(seed);
+    field.endTime = new Date().getTime() + seed.preparationTime;
+    return getData();
+}
+
+function reapField(x, y) {
+    var field = farmField[x][y];
+    if (!field || field.type !== objectTypes.building || field.name !== buildings.field.name) {
+        throw "Can't sow: selected cell is not a field";
+    }
+    if (field.queue.length === 0) {
+        throw "Production queue is empty";
+    }
+    if (new Date().getTime() < field.endTime) {
+        throw "Field is not ready yet. It will be ready after " + (field.endTime - new Date().getTime()) + " milliseconds";
+    }
+    var reaped = field.queue.shift();
+    field.endTime = undefined;
+    bag.seeds.wheat += reaped.harvestValue;
+    return getData();
 }

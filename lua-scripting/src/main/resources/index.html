@@ -9,27 +9,35 @@
         angular.module('farmApp', [])
             .controller('FarmController', function ($http) {
                 var farm = this;
-                farm.field = [];
-                farm.commands = [getField, buyField];
+                farm.commands = ["GET", "BUY", "SOW", "REAP"];
+                farm.chosenCell = {};
 
-                function getField() {
-                    return $http.post("http://localhost:4567/farm/execute", {command: "GET"})
+                farm.execute = function () {
+                    $http.post("http://localhost:4567/farm/execute", farm.chosenCommand)
                         .then(function (response) {
-                            farm.field = response.data;
+                            farm.bag = response.data.bag;
+                            farm.field = response.data.field;
+
+                            if (typeof farm.chosenCell.x === 'number' && typeof farm.chosenCell.y === 'number') {
+                                farm.chosenCell.value = farm.field[farm.chosenCell.x][farm.chosenCell.y];
+                            }
                         });
-                }
+                };
 
-                function buyField(x, y) {
-                    return $http.post("http://localhost:4567/farm/execute", {command: "BUY", x: x, y: y})
-                        .then(function (response) {
-                            farm.field = response.data;
-                        });
-                }
+                farm.getCellStyle = function (x, y) {
+                    if (farm.chosenCell.x === x && farm.chosenCell.y === y) {
+                        return 'cell chosen';
+                    }
+                    return 'cell default';
+                };
 
-                getField();
-
-                farm.onFieldClick = function (x, y) {
-                    buyField(x, y);
+                farm.onCellClick = function (x, y, cell) {
+                    farm.chosenCommand.x = x;
+                    farm.chosenCommand.y = y;
+                    farm.chosenCell = {};
+                    farm.chosenCell.x = x;
+                    farm.chosenCell.y = y;
+                    farm.chosenCell.value = cell;
                 }
             });
     </script>
@@ -39,7 +47,6 @@
         }
 
         .cell {
-            background-color: #ded9ff;
             height: 100px;
             width: 100px;
             margin-top: 5px;
@@ -47,20 +54,34 @@
             display: block;
             float: left;
         }
+
+        .cell.default {
+            background-color: #ded9ff;
+        }
+
+        .cell.chosen {
+            background-color: #ff9599;
+        }
     </style>
 </head>
 <body>
 <div ng-controller="FarmController as farm"
      class="farm">
-    <label for="singleSelect"> Single select: </label><br>
-    <select id="singleSelect" ng-model="farm.chosenCommand">
-        <option value="option-1">Option 1</option>
-    </select><br>
+    <div ng-show="farm.bag">Bag: {{farm.bag}}</div>
+    <div ng-show="farm.field">Chosen cell: {{farm.chosenCell}}</div>
+    <label> Command:
+        <select ng-model="farm.chosenCommand.command" ng-options="command for command in farm.commands">
+        </select>
+    </label><br>
+    <div ng-show="farm.chosenCommand">
+        <div>Chosen command: {{farm.chosenCommand}}</div>
+        <button ng-click="farm.execute()">Call</button>
+    </div>
     <div ng-repeat="row in farm.field track by $index"
          class="row">
         <div ng-repeat="cell in row track by $index"
-             ng-click="farm.onFieldClick($parent.$index, $index)"
-             class="cell">
+             ng-click="farm.onCellClick($parent.$index, $index, cell)"
+             ng-class="farm.getCellStyle($parent.$index, $index)">
             {{cell.name}}
         </div>
         <br/>
