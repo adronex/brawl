@@ -4,15 +4,19 @@
     <meta charset="UTF-8">
     <title>FarmPrototype</title>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.6/angular.min.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/objects.js"></script>
+    <script src="js/bag.js"></script>
     <script src="js/field.js"></script>
     <script>
         angular.module('farmApp', [])
             .controller('FarmController', function ($http, $scope, $timeout) {
                 var farm = this;
-                var updateDelta = 100;
+                var updateDelta = 50;
                 farm.commands = ["GET", "BUY", "SOW", "REAP"];
                 farm.chosenCell = {};
                 farm.chosenCommand = {};
+                farm.field = [[]];
 
                 farm.execute = function (command) {
                     farm.chosenCommand.command = command;
@@ -29,11 +33,7 @@
                 };
 
                 function runTimers() {
-                    var firstInterval = new Date().getTime();
                     var now = new Date().getTime();
-                    if (now - firstInterval < updateDelta) {
-                        $timeout(runTimers, updateDelta);
-                    }
                     for (var x = 0; x < farm.field.length; x++) {
                         for (var y = 0; y < farm.field[x].length; y++) {
                             if (!farm.field[x][y]) {
@@ -48,6 +48,7 @@
                     if (!$scope.$$phase) {
                         $scope.$apply();
                     }
+                    $timeout(runTimers, updateDelta);
                 }
 
                 farm.getCellStyle = function (x, y) {
