@@ -5,28 +5,29 @@
     <title>FarmPrototype</title>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.6/angular.min.js"></script>
     <script src="js/api.js"></script>
-    <script src="js/objects.js"></script>
+    <script src="js/items.js"></script>
+    <script src="js/shop.js"></script>
     <script src="js/bag.js"></script>
-    <script src="js/field.js"></script>
+    <script src="js/farm.js"></script>
     <script>
         angular.module('farmApp', [])
-            .controller('FarmController', function ($http, $scope, $timeout) {
-                var farm = this;
+            .controller('GameController', function ($http, $scope, $timeout) {
+                var game = this;
                 var updateDelta = 50;
-                farm.commands = ["GET", "BUY", "SOW", "REAP"];
-                farm.chosenCell = {};
-                farm.chosenCommand = {};
-                farm.field = [[]];
+                game.commands = ["GET", "BUY", "SOW", "REAP"];
+                game.chosenCell = {};
+                game.chosenCommand = {};
+                game.farm = [[]];
 
-                farm.execute = function (command) {
-                    farm.chosenCommand.command = command;
-                    $http.post("http://localhost:4567/farm/execute", farm.chosenCommand)
+                game.execute = function (command) {
+                    game.chosenCommand.command = command;
+                    $http.post("http://localhost:4567/game/execute", game.chosenCommand)
                         .then(function (response) {
-                            farm.bag = response.data.bag;
-                            farm.field = response.data.field;
+                            game.bag = response.data.bag;
+                            game.farm = response.data.farm;
 
-                            if (typeof farm.chosenCell.x === 'number' && typeof farm.chosenCell.y === 'number') {
-                                farm.chosenCell.value = farm.field[farm.chosenCell.x][farm.chosenCell.y];
+                            if (typeof game.chosenCell.x === 'number' && typeof game.chosenCell.y === 'number') {
+                                game.chosenCell.value = game.farm[game.chosenCell.x][game.chosenCell.y];
                             }
                             runTimers();
                         });
@@ -34,14 +35,14 @@
 
                 function runTimers() {
                     var now = new Date().getTime();
-                    for (var x = 0; x < farm.field.length; x++) {
-                        for (var y = 0; y < farm.field[x].length; y++) {
-                            if (!farm.field[x][y]) {
+                    for (var x = 0; x < game.farm.length; x++) {
+                        for (var y = 0; y < game.farm[x].length; y++) {
+                            if (!game.farm[x][y]) {
                                 continue;
                             }
-                            if (farm.field[x][y].currentProductionTimeLeft > 0) {
-                                var timeLeft = farm.field[x][y].endTime - now;
-                                farm.field[x][y].currentProductionTimeLeft = timeLeft > 0 ? timeLeft : 0;
+                            if (game.farm[x][y].currentProductionTimeLeft > 0) {
+                                var timeLeft = game.farm[x][y].endTime - now;
+                                game.farm[x][y].currentProductionTimeLeft = timeLeft > 0 ? timeLeft : 0;
                             }
                         }
                     }
@@ -51,12 +52,12 @@
                     $timeout(runTimers, updateDelta);
                 }
 
-                farm.getCellStyle = function (x, y) {
+                game.getCellStyle = function (x, y) {
                     var style = 'cell';
-                    if (farm.chosenCell.x === x && farm.chosenCell.y === y) {
+                    if (game.chosenCell.x === x && game.chosenCell.y === y) {
                         style += ' chosen';
                     }
-                    var cell = farm.field[x][y];
+                    var cell = game.farm[x][y];
                     if (!cell || !cell.queue) {
                         return style + ' empty';
                     }
@@ -69,13 +70,13 @@
                     return style + ' ready';
                 };
 
-                farm.onCellClick = function (x, y, cell) {
-                    farm.chosenCommand.x = x;
-                    farm.chosenCommand.y = y;
-                    farm.chosenCell = {};
-                    farm.chosenCell.x = x;
-                    farm.chosenCell.y = y;
-                    farm.chosenCell.value = cell;
+                game.onCellClick = function (x, y, cell) {
+                    game.chosenCommand.x = x;
+                    game.chosenCommand.y = y;
+                    game.chosenCell = {};
+                    game.chosenCell.x = x;
+                    game.chosenCell.y = y;
+                    game.chosenCell.value = cell;
                 };
             });
     </script>
@@ -115,27 +116,27 @@
     </style>
 </head>
 <body>
-<div ng-controller="FarmController as farm"
-     class="farm">
-    <div ng-show="farm.bag">Bag: {{farm.bag}}</div>
-    <div ng-show="farm.field">Chosen cell: {{farm.chosenCell}}</div>
-    <button ng-repeat="command in farm.commands"
-            ng-click="farm.execute(command)">{{command}}
+<div ng-controller="GameController as game"
+     class="game">
+    <div ng-show="game.bag">Bag: {{game.bag}}</div>
+    <div ng-show="game.farm">Chosen cell: {{game.chosenCell}}</div>
+    <button ng-repeat="command in game.commands"
+            ng-click="game.execute(command)">{{command}}
     </button>
 
-    <div ng-show="farm.chosenCommand">
-        <div>Chosen command: {{farm.chosenCommand}}</div>
+    <div ng-show="game.chosenCommand">
+        <div>Chosen command: {{game.chosenCommand}}</div>
     </div>
-    <div ng-repeat="row in farm.field track by $index"
+    <div ng-repeat="row in game.farm track by $index"
          class="row">
         <div ng-repeat="cell in row track by $index"
-             ng-click="farm.onCellClick($parent.$index, $index, cell)"
-             ng-class="farm.getCellStyle($parent.$index, $index)">
-            <div ng-show="cell">B: {{cell.name}}</div>
+             ng-click="game.onCellClick($parent.$index, $index, cell)"
+             ng-class="game.getCellStyle($parent.$index, $index)">
+            <div ng-show="cell">B: {{cell.id}}</div>
             <div ng-show="cell">T:
                 {{cell.currentProductionTimeLeft / 1000}}
             </div>
-            <div ng-repeat="product in cell.queue">Q: {{product.type}} {{product.name}}</div>
+            <div ng-repeat="product in cell.queue">Q: {{product.type}} {{product.id}}</div>
         </div>
         <br/>
     </div>

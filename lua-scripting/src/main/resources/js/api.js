@@ -22,3 +22,17 @@ function commandHandler(requestString) {
     }
     throw "Request body was not parsed successfully: " + JSON.stringify(requestObject);
 }
+
+function Utils() {
+
+    this.findInArray = function (array, fun) {
+        for (var i = 0; i < array.length; i++) {
+            if (fun(array[i])) {
+                return array[i];
+            }
+        }
+        return undefined;
+    }
+}
+
+var utils = new Utils();

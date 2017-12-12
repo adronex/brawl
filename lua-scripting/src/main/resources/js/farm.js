@@ -10,7 +10,11 @@ for (var i = 0; i < FIELD_HEIGHT; i++) {
 
 function getData() {
     updateTimersDeltas();
-    return JSON.stringify({bag: bag, field: farm});
+    var bagDto = {
+        softMoney: bag.getCount(items.softMoney.id),
+        seeds: bag.getCount(items.wheat.id)
+    };
+    return JSON.stringify({bag: bagDto, farm: farm});
 }
 
 function updateTimersDeltas() {
@@ -34,29 +38,23 @@ function buyField(x, y) {
         throw "Not allowed, cell is not empty, there is a " + JSON.stringify(farm[x][y]) + " here";
     }
     var field = buildings.field;
-    if (bag.softMoney.value < field.buyPrice) {
-        throw "Not enough money to buy " + field.name + ", you have " + bag.softMoney.value + " and you need " + field.buyPrice;
-    }
-    bag.softMoney.value -= field.buyPrice;
+    bag.decreaseCount(items.softMoney.id, field.buyPrice);
     farm[x][y] = JSON.parse(JSON.stringify(field));
     return getData();
 }
 
 function sowField(x, y, seed){
     var field = farm[x][y];
-    if (!field || field.type !== buildings.field.type || field.name !== buildings.field.name) {
+    if (!field || field.type !== buildings.field.type || field.id !== buildings.field.id) {
         throw "Can't sow: selected cell is not a field";
     }
-    // if (seed.type !== objectTypes.seed) {
+    // if (seed.type !== itemTypes.seed) {
     //     throw "Object is not a seed";
     // }
     if (field.queue.length > 0) {
         throw "Already sowed with " + JSON.stringify(field.queue);
     }
-    if (bag.seeds.wheat <= 0) {
-        throw "There is no available seeds in bag";
-    }
-    bag.seeds.wheat--;
+    bag.decreaseCount(items.wheat.id, 1);
     seed = items.wheat;
     field.queue.push(seed);
     field.endTime = new Date().getTime() + seed.preparationTime;
@@ -65,7 +63,7 @@ function sowField(x, y, seed){
 
 function reapField(x, y) {
     var field = farm[x][y];
-    if (!field || field.type !== buildings.field.type || field.name !== buildings.field.name) {
+    if (!field || field.type !== buildings.field.type || field.id !== buildings.field.id) {
         throw "Can't sow: selected cell is not a field";
     }
     if (field.queue.length === 0) {
@@ -77,6 +75,6 @@ function reapField(x, y) {
     var reaped = field.queue.shift();
     field.endTime = undefined;
     field.currentProductionTimeLeft = undefined;
-    bag.seeds.wheat += reaped.harvestValue;
+    bag.increaseCount(items.wheat.id, reaped.harvestValue);
     return getData();
 }
