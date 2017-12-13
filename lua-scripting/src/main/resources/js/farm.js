@@ -30,18 +30,18 @@ function updateTimersDeltas() {
 }
 
 function applyHandToCell(hand, target) {
-    if (!hand || !hand.itemId) {
+    if (!hand || !hand.id) {
         if (!hand) hand = {};
-        throw "Invalid hand object: " + JSON.stringify(hand);
+        throw "Invalid object in hand: " + JSON.stringify(hand);
     }
     if (!target || target.x === undefined || target.y === undefined) {
         if (!target) target = {};
         throw "Invalid target object: " + JSON.stringify(target);
     }
-    if (bag.getOrCreate(hand.itemId).count <= 0) {
-        throw "Not enough '" + hand.itemId + "' items to apply them on '" + farm[target.x][target.y].itemId +"'";
+    if (bag.getOrCreate(hand.id).count <= 0) {
+        throw "Not enough '" + hand.id + "' items to apply them on '" + farm[target.x][target.y].itemId +"'";
     }
-    var item = staticData.getItems()[hand.itemId];
+    var item = staticData.getItems()[hand.id];
     farm[target.x][target.y] = item.use(farm[target.x][target.y]);
-    bag.decreaseCount(hand.itemId, 1);
+    bag.decreaseCount(hand.id, 1);
 }

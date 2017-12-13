@@ -14,11 +14,13 @@ function StaticData() {
         },
         wateringCan: {
             id: "wateringCan",
-            type: itemTypes.tool
+            type: itemTypes.tool,
+            uncountable: true
         },
         sickle: {
             id: "sickle",
             type: itemTypes.tool,
+            uncountable: true,
             use: function (target) {
                 if (!target || target.id !== items.field.id) {
                     var targetString = target ? JSON.stringify(target) : undefined;

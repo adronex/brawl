@@ -11,23 +11,17 @@ function commandHandler(requestString) {
         return getData();
     }
     if (requestObject.command === commands.buy) {
-        shop.buy(requestObject.hand.itemId);
+        shop.buy(requestObject.hand.id);
         return getData();
     }
     if (requestObject.command === commands.sell) {
-        shop.sell(requestObject.hand.itemId);
+        shop.sell(requestObject.hand.id);
         return getData();
     }
     if (requestObject.command === commands.apply) {
         applyHandToCell(requestObject.hand, requestObject.target);
         return getData();
     }
-    // if (requestObject.command === commands.sow) {
-    //     return sowField(requestObject.body.x, requestObject.body.y, requestObject.seed);
-    // }
-    // if (requestObject.command === commands.reap) {
-    //     return reapField(requestObject.body.x, requestObject.body.y);
-    // }
     throw "API didn't recognised request: " + JSON.stringify(requestObject);
 }
 
@@ -42,6 +36,16 @@ function Utils() {
         }
         return undefined;
     };
+
+    // ES6 Array.map substitution
+    this.mapArray = function (source, fun) {
+        var target = [];
+        for (var i = 0; i < source.length; i++) {
+            target.push(fun(source[i]));
+        }
+        return target;
+    };
+
     // ES6 Object.assign substitution
     this.copy = function (obj) {
         if (null === obj || "object" !== typeof obj) return obj;
@@ -52,7 +56,7 @@ function Utils() {
             out[key] = (typeof v === "object") ? this.copy(v) : v;
         }
         return out;
-    }
+    };
 }
 
 var utils = new Utils();
