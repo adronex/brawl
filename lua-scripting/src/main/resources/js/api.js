@@ -1,9 +1,8 @@
 var commands = {
     get: "GET",
     buy: "BUY",
-    sow: "SOW",
-    reap: "REAP",
-    sell: "SELL"
+    sell: "SELL",
+    apply: "APPLY"
 };
 
 function commandHandler(requestString) {
@@ -12,15 +11,23 @@ function commandHandler(requestString) {
         return getData();
     }
     if (requestObject.command === commands.buy) {
-        return buyField(requestObject.x, requestObject.y);
+        shop.buy(requestObject.hand.itemId);
+        return getData();
     }
-    if (requestObject.command === commands.sow) {
-        return sowField(requestObject.x, requestObject.y, requestObject.seed);
+    if (requestObject.command === commands.sell) {
+        shop.sell(requestObject.hand.itemId);
+        return getData();
     }
-    if (requestObject.command === commands.reap) {
-        return reapField(requestObject.x, requestObject.y);
+    if (requestObject.command === commands.apply) {
+
     }
-    throw "Request body was not parsed successfully: " + JSON.stringify(requestObject);
+    // if (requestObject.command === commands.sow) {
+    //     return sowField(requestObject.body.x, requestObject.body.y, requestObject.seed);
+    // }
+    // if (requestObject.command === commands.reap) {
+    //     return reapField(requestObject.body.x, requestObject.body.y);
+    // }
+    throw "API didn't recognised request: " + JSON.stringify(requestObject);
 }
 
 function Utils() {

@@ -14,21 +14,26 @@
             .controller('GameController', function ($http, $scope, $timeout) {
                 var game = this;
                 var updateDelta = 50;
-                game.commands = ["GET", "BUY", "SOW", "REAP"];
-                game.chosenCell = {};
-                game.chosenCommand = {};
+                game.commands = ["GET", "BUY", "SELL", "APPLY"];
+                game.focus = undefined;
+                game.hand = {};
+                game.target = {};
                 game.farm = [[]];
 
                 game.execute = function (command) {
-                    game.chosenCommand.command = command;
-                    $http.post("http://localhost:4567/game/execute", game.chosenCommand)
+                    var request = {};
+                    request.command = command;
+                    request.hand = game.hand;
+                    request.target = game.target;
+                    $http.post("http://localhost:4567/game/execute", request)
                         .then(function (response) {
                             game.bag = response.data.bag;
+                            game.shop = response.data.shop;
                             game.farm = response.data.farm;
 
-                            if (typeof game.chosenCell.x === 'number' && typeof game.chosenCell.y === 'number') {
-                                game.chosenCell.value = game.farm[game.chosenCell.x][game.chosenCell.y];
-                            }
+                            // if (typeof game.target.x === 'number' && typeof game.target.y === 'number') {
+                            //     game.chosenCell.value = game.farm[game.chosenCell.x][game.chosenCell.y];
+                            // }
                             runTimers();
                         });
                 };
@@ -52,9 +57,36 @@
                     $timeout(runTimers, updateDelta);
                 }
 
-                game.getCellStyle = function (x, y) {
-                    var style = 'cell';
-                    if (game.chosenCell.x === x && game.chosenCell.y === y) {
+                game.getShopItemStyle = function (shopItemId) {
+                    var style = 'shop item';
+                    var item = shop.getCopy(shopItemId);
+                    if (game.focus === "shop" && game.hand.itemId === item.itemId) {
+                        style += ' chosen';
+                    }
+                    var softMoney = utils.findInArray(game.bag, function (it) {
+                        return it.itemId === staticData.getItems().softMoney.id;
+                    });
+                    if (item.buyPrice > softMoney.count) {
+                        return style + ' unavailable';
+                    }
+                    return style + ' available';
+                };
+
+                game.getBagItemStyle = function (index) {
+                    var style = 'bag item';
+                    var item = game.bag[index];
+                    if (game.focus === "bag" && game.hand.itemId === item.itemId) {
+                        style += ' chosen';
+                    }
+                    if (item.count > 0) {
+                        return style + ' available';
+                    }
+                    return style + ' unavailable';
+                };
+
+                game.getFarmCellStyle = function (x, y) {
+                    var style = 'farm cell';
+                    if (game.target.x === x && game.target.y === y) {
                         style += ' chosen';
                     }
                     var cell = game.farm[x][y];
@@ -70,22 +102,75 @@
                     return style + ' ready';
                 };
 
-                game.onCellClick = function (x, y, cell) {
-                    game.chosenCommand.x = x;
-                    game.chosenCommand.y = y;
-                    game.chosenCell = {};
-                    game.chosenCell.x = x;
-                    game.chosenCell.y = y;
-                    game.chosenCell.value = cell;
+                game.onShopCellClick = function (index) {
+                    game.focus = "shop";
+                    game.hand = game.shop[index];
+                };
+
+                game.onBagCellClick = function (index) {
+                    game.focus = "bag";
+                    game.hand = game.bag[index];
+                };
+
+                game.onFarmCellClick = function (x, y, cell) {
+                    game.target = {
+                        x: x,
+                        y: y,
+                        cell: cell
+                    };
                 };
             });
     </script>
     <style>
-        .row {
+        .shop {
+            overflow: auto;
+            width: 800px;
+        }
+
+        .shop.item {
+            height: 70px;
+            width: 70px;
+            margin-top: 5px;
+            margin-left: 5px;
+            display: block;
+            float: left;
+        }
+
+        .shop.item.unavailable {
+            background-color: #ff9599;
+        }
+
+        .shop.item.available {
+            background-color: #afffcc;
+        }
+
+        .bag {
+            overflow: auto;
+            width: 300px;
+        }
+
+        .bag.item {
+            height: 70px;
+            width: 70px;
+            margin-top: 5px;
+            margin-left: 5px;
+            display: block;
+            float: left;
+        }
+
+        .bag.item.unavailable {
+            background-color: #c6c4c4;
+        }
+
+        .bag.item.available {
+            background-color: #afffcc;
+        }
+
+        .farm.row {
             overflow: auto;
         }
 
-        .cell {
+        .farm.cell {
             height: 100px;
             width: 100px;
             margin-top: 5px;
@@ -94,51 +179,84 @@
             float: left;
         }
 
-        .cell.empty {
+        .farm.cell.empty {
             background-color: #c6c4c4;
         }
 
-        .cell.waiting {
+        .farm.cell.waiting {
             background-color: #ded9ff;
         }
 
-        .cell.producing {
+        .farm.cell.producing {
             background-color: #ff9599;
         }
 
-        .cell.ready {
+        .farm.cell.ready {
             background-color: #afffcc;
         }
 
-        .cell.chosen {
-            box-shadow: -3px -3px 2px 6px rgba(241, 167, 73, 0.6) inset;
+        .chosen {
+            box-shadow: 0 0 20px 60px rgba(0, 0, 0, 0.3) inset;
         }
     </style>
 </head>
 <body>
 <div ng-controller="GameController as game"
      class="game">
-    <div ng-show="game.bag">Bag: {{game.bag}}</div>
-    <div ng-show="game.farm">Chosen cell: {{game.chosenCell}}</div>
+
+    <div ng-show="game.shop"
+         class="shop">Shop:
+        <div>
+            <div ng-repeat="item in game.shop track by $index"
+                 ng-class="game.getShopItemStyle(item.itemId)"
+                 ng-click="game.onShopCellClick($index)">
+                <div>{{item.itemId}}</div>
+                <div>buy/sell:</div>
+                <div>{{item.buyPrice}} / {{item.sellPrice}}</div>
+            </div>
+        </div>
+    </div>
+
+    <div ng-show="game.bag"
+         class="shop">Bag:
+        <div>
+            <div ng-repeat="item in game.bag track by $index"
+                 ng-class="game.getBagItemStyle($index)"
+                 ng-click="game.onBagCellClick($index)">
+                <div>{{item.itemId}}</div>
+                <div>count: {{item.count}}</div>
+            </div>
+        </div>
+    </div>
+
+    <!--<div ng-show="game.bag">Bag: {{game.bag}}</div>-->
+
     <button ng-repeat="command in game.commands"
             ng-click="game.execute(command)">{{command}}
     </button>
 
-    <div ng-show="game.chosenCommand">
-        <div>Chosen command: {{game.chosenCommand}}</div>
+    <div ng-show="game.focus">
+        <div>Hand: {{game.hand}}</div>
     </div>
-    <div ng-repeat="row in game.farm track by $index"
-         class="row">
-        <div ng-repeat="cell in row track by $index"
-             ng-click="game.onCellClick($parent.$index, $index, cell)"
-             ng-class="game.getCellStyle($parent.$index, $index)">
-            <div ng-show="cell">B: {{cell.id}}</div>
-            <div ng-show="cell">T:
-                {{cell.currentProductionTimeLeft / 1000}}
+    <div ng-show="game.target.x !== undefined">
+        <div>Target: {{game.target}}</div>
+    </div>
+
+    <div ng-show="game.farm[0].length > 0">
+        Farm:
+        <div ng-repeat="row in game.farm track by $index"
+             class="farm row">
+            <div ng-repeat="cell in row track by $index"
+                 ng-class="game.getFarmCellStyle($parent.$index, $index)"
+                 ng-click="game.onFarmCellClick($parent.$index, $index, cell)">
+                <div ng-show="cell">B: {{cell.id}}</div>
+                <div ng-show="cell">T:
+                    {{cell.currentProductionTimeLeft / 1000}}
+                </div>
+                <div ng-repeat="product in cell.queue">Q: {{product.type}} {{product.id}}</div>
             </div>
-            <div ng-repeat="product in cell.queue">Q: {{product.type}} {{product.id}}</div>
+            <br/>
         </div>
-        <br/>
     </div>
 </div>
 </body>

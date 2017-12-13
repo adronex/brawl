@@ -1,14 +1,16 @@
 function Bag() {
-    var tools = {wateringCan: 0};
-
     var bagItems = [
         {
-            itemId: items.softMoney.id,
+            itemId: staticData.getItems().softMoney.id,
             count: 10
         },
         {
-            itemId: items.wheat.id,
+            itemId: staticData.getItems().wheat.id,
             count: 2
+        },
+        {
+            itemId: staticData.getItems().wateringCan.id,
+            count: 1
         }
     ];
 
@@ -38,6 +40,10 @@ function Bag() {
     this.increaseCount = function (itemId, count) {
         getOrCreate(itemId).count += count;
     };
+
+    this.getCopyOfAllItems = function() {
+        return JSON.parse(JSON.stringify(bagItems));
+    }
 }
 
 var bag = new Bag();
