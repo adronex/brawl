@@ -39,7 +39,7 @@ function applyHandToCell(hand, target) {
         throw "Invalid target object: " + JSON.stringify(target);
     }
     if (bag.getOrCreate(hand.id).count <= 0) {
-        throw "Not enough '" + hand.id + "' items to apply them on '" + farm[target.x][target.y].itemId +"'";
+        throw "Not enough '" + hand.id + "' items to apply them on '" + farm[target.x][target.y].item.id +"'";
     }
     var item = staticData.getItems()[hand.id];
     farm[target.x][target.y] = item.use(farm[target.x][target.y]);

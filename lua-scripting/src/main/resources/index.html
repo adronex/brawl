@@ -5,6 +5,7 @@
     <title>FarmPrototype</title>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.6/angular.min.js"></script>
     <script src="js/api.js"></script>
+    <script src="js/item.js"></script>
     <script src="js/staticData.js"></script>
     <script src="js/shop.js"></script>
     <script src="js/bag.js"></script>
@@ -67,10 +68,10 @@
                     }
 
                     var bagItem = utils.findInArray(game.bag, function (it) {
-                        return it.itemId === item.id;
+                        return it.item.id === item.id;
                     });
                     var shopItem = utils.findInArray(game.shop, function (it) {
-                        return it.itemId === item.id;
+                        return it.item.id === item.id;
                     });
                     if (!bagItem) bagItem = {};
                     if (!shopItem) {
@@ -98,7 +99,7 @@
                         return style + ' unpurchasable';
                     }
                     var softMoney = utils.findInArray(game.bag, function (it) {
-                        return it.itemId === staticData.getItems().softMoney.id;
+                        return it.item.id === staticData.getItems().softMoney.id;
                     });
                     if (item.count > 0) {
                         return style + ' available';
@@ -150,8 +151,8 @@
         }
 
         .bag.item {
-            height: 70px;
-            width: 70px;
+            height: 100px;
+            width: 100px;
             margin-top: 5px;
             margin-left: 5px;
             display: block;

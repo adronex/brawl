@@ -1,39 +1,39 @@
 function Shop() {
     var shopItems = [
         {
-            itemId: staticData.getItems().field.id,
+            item: staticData.getItems().field,
             buyPrice: 4,
             sellPrice: 1
         },
         {
-            itemId: staticData.getItems().well.id,
+            item: staticData.getItems().well,
             buyPrice: 0,
             sellPrice: 0
         },
         {
-            itemId: staticData.getItems().wateringCan.id,
+            item: staticData.getItems().wateringCan,
             buyPrice: 0,
             sellPrice: 0
         },
         {
-            itemId: staticData.getItems().sickle.id,
+            item: staticData.getItems().sickle,
             buyPrice: 0,
             sellPrice: 0
         },
         {
-            itemId: staticData.getItems().wheat.id,
+            item: staticData.getItems().wheat,
             buyPrice: 3,
             sellPrice: 1
         },
         {
-            itemId: staticData.getItems().carrot.id,
+            item: staticData.getItems().carrot,
             buyPrice: 15,
             sellPrice: 3
         }
     ];
     var findShopItem = function (itemId) {
         return utils.findInArray(shopItems, function (it) {
-            return it.itemId === itemId;
+            return it.item.id === itemId;
         });
     };
 
@@ -42,11 +42,11 @@ function Shop() {
         if (!item) {
             return undefined;
         }
-        return JSON.parse(JSON.stringify(item));
+        return utils.copy(item);
     };
 
     this.getCopyOfAllItems = function() {
-        return JSON.parse(JSON.stringify(shopItems));
+        return utils.copy(shopItems);
     };
     
     this.buy = function (itemId) {
@@ -56,7 +56,7 @@ function Shop() {
         }
         // reduce count in shop if needed
         bag.decreaseCount(staticData.getItems().softMoney.id, item.buyPrice);
-        bag.increaseCount(item.itemId, 1);
+        bag.increaseCount(item.item.id, 1);
     };
 
     this.sell = function (itemId) {
@@ -69,7 +69,7 @@ function Shop() {
             throw "You can't sell item with id " + itemId + "because shop doesn't contain it";
         }
         // reduce count in shop if needed
-        bag.decreaseCount(item.itemId, 1);
+        bag.decreaseCount(item.item.id, 1);
         bag.increaseCount(staticData.getItems().softMoney.id, item.sellPrice);
     };
 }

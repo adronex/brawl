@@ -1,28 +1,34 @@
 function Bag() {
     var bagItems = [
         {
-            itemId: staticData.getItems().softMoney.id,
-            count: 10
+            item: staticData.getItems().softMoney,
+            count: 20
         },
         {
-            itemId: staticData.getItems().wheat.id,
+            item: staticData.getItems().wheat,
             count: 2
         },
         {
-            itemId: staticData.getItems().wateringCan.id,
+            item: staticData.getItems().wateringCan,
             count: 1
         }
     ];
 
     this.getOrCreate = function (itemId) {
         var found = utils.findInArray(bagItems, function (it) {
-            return it.itemId === itemId;
+            return it.item.id === itemId;
         });
-        if (!found) {
-            found = {itemId: itemId, count: 0};
-            bagItems.push(found);
+        if (found) {
+            return found;
+        } else {
+            found = staticData.getItems()[itemId];
         }
-        return found;
+        if (!found) {
+            throw "No item with id '" + itemId + "' have been found in application";
+        }
+        var newBagItem = {item: found, count: 0};
+        bagItems.push(newBagItem);
+        return newBagItem;
     };
 
     this.decreaseCount = function (itemId, count) {
@@ -37,8 +43,8 @@ function Bag() {
         this.getOrCreate(itemId).count += count;
     };
 
-    this.getCopyOfAllItems = function() {
-        return JSON.parse(JSON.stringify(bagItems));
+    this.getCopyOfAllItems = function () {
+        return utils.copy(bagItems);
     }
 }
 

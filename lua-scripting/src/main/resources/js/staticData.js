@@ -8,16 +8,16 @@ function StaticData() {
     };
 
     var items = {
-        softMoney: {
+        softMoney: new Item({
             id: "softMoney",
             type: itemTypes.currency
-        },
-        wateringCan: {
+        }),
+        wateringCan: new Item({
             id: "wateringCan",
             type: itemTypes.tool,
             uncountable: true
-        },
-        sickle: {
+        }),
+        sickle: new Item({
             id: "sickle",
             type: itemTypes.tool,
             uncountable: true,
@@ -38,51 +38,28 @@ function StaticData() {
                 bag.increaseCount(reaped.id, reaped.harvestValue);
                 return utils.copy(target);
             }
-        },
-        wheat: {
+        }),
+        wheat: new Plant({
             id: "wheat",
-            type: itemTypes.seed,
             preparationTime: 10000,
-            harvestValue: 3,
-            use: function (target) {
-                if (!target || target.id !== items.field.id) {
-                    var targetString = target ? JSON.stringify(target) : undefined;
-                    throw "Can't apply 'wheat', invalid target: " + targetString;
-                }
-                if (target.queue.length > 0) {
-                    throw "Already sowed with " + JSON.stringify(target.queue);
-                }
-                target.queue.push(utils.copy(items.wheat));
-                target.endTime = new Date().getTime() + items.wheat.preparationTime;
-                return utils.copy(target);
-            }
-        },
-        carrot: {
+            harvestValue: 3
+        }),
+        carrot: new Plant({
             id: "carrot",
-            type: itemTypes.seed,
             preparationTime: 50000,
             harvestValue: 3
-        },
-        ground: {
+        }),
+        ground: new Item({
             id: "ground",
             type: itemTypes.foundation
-        },
-        field: {
-            id: "field",
-            type: itemTypes.building,
-            queue: [],
-            use: function (target) {
-                if (!target || target.id !== items.ground.id) {
-                    var targetString = target ? JSON.stringify(target) : undefined;
-                    throw "Can't apply 'field', invalid target: " + targetString;
-                }
-                return utils.copy(items.field);
-            }
-        },
-        well: {
+        }),
+        field: new Field({
+            id: "field"
+        }),
+        well: new Item({
             id: "well",
             type: itemTypes.building
-        }
+        })
     };
 
     this.getItemTypes = function () {
