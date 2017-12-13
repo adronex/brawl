@@ -249,11 +249,11 @@
             <div ng-repeat="cell in row track by $index"
                  ng-class="game.getFarmCellStyle($parent.$index, $index)"
                  ng-click="game.onFarmCellClick($parent.$index, $index, cell)">
-                <div ng-show="cell">B: {{cell.id}}</div>
-                <div ng-show="cell">T:
+                <div ng-show="cell">{{cell.id}}</div>
+                <div ng-show="cell">cd:
                     {{cell.currentProductionTimeLeft / 1000}}
                 </div>
-                <div ng-repeat="product in cell.queue">Q: {{product.type}} {{product.id}}</div>
+                <div ng-repeat="product in cell.queue">queue: {{product.type}} {{product.id}}</div>
             </div>
             <br/>
         </div>

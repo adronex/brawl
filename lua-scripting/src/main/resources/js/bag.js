@@ -14,7 +14,7 @@ function Bag() {
         }
     ];
 
-    var getOrCreate = function (itemId) {
+    this.getOrCreate = function (itemId) {
         var found = utils.findInArray(bagItems, function (it) {
             return it.itemId === itemId;
         });
@@ -25,12 +25,8 @@ function Bag() {
         return found;
     };
 
-    this.getCount = function (itemId) {
-        return getOrCreate(itemId).count;
-    };
-
     this.decreaseCount = function (itemId, count) {
-        var found = getOrCreate(itemId);
+        var found = this.getOrCreate(itemId);
         if (found.count < count) {
             throw "Not enough '" + itemId + "', need: " + count + ", available: " + found.count;
         }
@@ -38,7 +34,7 @@ function Bag() {
     };
 
     this.increaseCount = function (itemId, count) {
-        getOrCreate(itemId).count += count;
+        this.getOrCreate(itemId).count += count;
     };
 
     this.getCopyOfAllItems = function() {

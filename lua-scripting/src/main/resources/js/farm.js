@@ -4,7 +4,7 @@ var FIELD_WIDTH = 10;
 for (var i = 0; i < FIELD_HEIGHT; i++) {
     farm.push([]);
     for (var j = 0; j < FIELD_WIDTH; j++) {
-        farm[i].push(staticData.getBuildings().ground);
+        farm[i].push(staticData.getItems().ground);
     }
 }
 
@@ -29,52 +29,19 @@ function updateTimersDeltas() {
     }
 }
 
-function applyHandToCell(x, y, hand) {
-
-}
-
-function buyField(x, y) {
-    if (farm[x][y]) {
-        throw "Not allowed, cell is not empty, there is a " + JSON.stringify(farm[x][y]) + " here";
+function applyHandToCell(hand, target) {
+    if (!hand || !hand.itemId) {
+        if (!hand) hand = {};
+        throw "Invalid hand object: " + JSON.stringify(hand);
     }
-    var field = buildings.field;
-    bag.decreaseCount(staticData.getItems().softMoney.id, field.buyPrice);
-    farm[x][y] = JSON.parse(JSON.stringify(field));
-    return getData();
-}
-
-function sowField(x, y, seed){
-    var field = farm[x][y];
-    if (!field || field.type !== staticData.getBuildings().field.type || field.id !== staticData.getBuildings().field.id) {
-        throw "Can't sow: selected cell is not a field";
+    if (!target || target.x === undefined || target.y === undefined) {
+        if (!target) target = {};
+        throw "Invalid target object: " + JSON.stringify(target);
     }
-    // if (seed.type !== itemTypes.seed) {
-    //     throw "Object is not a seed";
-    // }
-    if (field.queue.length > 0) {
-        throw "Already sowed with " + JSON.stringify(field.queue);
+    if (bag.getOrCreate(hand.itemId).count <= 0) {
+        throw "Not enough '" + hand.itemId + "' items to apply them on '" + farm[target.x][target.y].itemId +"'";
     }
-    bag.decreaseCount(staticData.getItems().wheat.id, 1);
-    seed = staticData.getItems().wheat;
-    field.queue.push(seed);
-    field.endTime = new Date().getTime() + seed.preparationTime;
-    return getData();
-}
-
-function reapField(x, y) {
-    var field = farm[x][y];
-    if (!field || field.type !== staticData.getBuildings().field.type || field.id !== staticData.getBuildings().field.id) {
-        throw "Can't sow: selected cell is not a field";
-    }
-    if (field.queue.length === 0) {
-        throw "Production queue is empty";
-    }
-    if (new Date().getTime() < field.endTime) {
-        throw "Field is not ready yet. It will be ready after " + (field.endTime - new Date().getTime()) + " milliseconds";
-    }
-    var reaped = field.queue.shift();
-    field.endTime = undefined;
-    field.currentProductionTimeLeft = undefined;
-    bag.increaseCount(staticData.getItems().wheat.id, reaped.harvestValue);
-    return getData();
+    var item = staticData.getItems()[hand.itemId];
+    farm[target.x][target.y] = item.use(farm[target.x][target.y]);
+    bag.decreaseCount(hand.itemId, 1);
 }

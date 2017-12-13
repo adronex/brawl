@@ -1,17 +1,22 @@
 function Shop() {
     var shopItems = [
         {
-            itemId: staticData.getBuildings().field.id,
+            itemId: staticData.getItems().field.id,
             buyPrice: 4,
             sellPrice: 1
         },
         {
-            itemId: staticData.getBuildings().well.id,
+            itemId: staticData.getItems().well.id,
             buyPrice: 0,
             sellPrice: 0
         },
         {
             itemId: staticData.getItems().wateringCan.id,
+            buyPrice: 0,
+            sellPrice: 0
+        },
+        {
+            itemId: staticData.getItems().sickle.id,
             buyPrice: 0,
             sellPrice: 0
         },
@@ -55,7 +60,7 @@ function Shop() {
     };
 
     this.sell = function (itemId) {
-        var count = bag.getCount(itemId);
+        var count = bag.getOrCreate(itemId).count;
         if (count === 0) {
             throw "Bag doesn't contain enough items with id " + itemId;
         }

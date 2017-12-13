@@ -19,7 +19,8 @@ function commandHandler(requestString) {
         return getData();
     }
     if (requestObject.command === commands.apply) {
-
+        applyHandToCell(requestObject.hand, requestObject.target);
+        return getData();
     }
     // if (requestObject.command === commands.sow) {
     //     return sowField(requestObject.body.x, requestObject.body.y, requestObject.seed);
@@ -32,6 +33,7 @@ function commandHandler(requestString) {
 
 function Utils() {
 
+    // ES6 Array.find substitution
     this.findInArray = function (array, fun) {
         for (var i = 0; i < array.length; i++) {
             if (fun(array[i])) {
@@ -39,6 +41,17 @@ function Utils() {
             }
         }
         return undefined;
+    };
+    // ES6 Object.assign substitution
+    this.copy = function (obj) {
+        if (null === obj || "object" !== typeof obj) return obj;
+        var out, v, key;
+        out = Array.isArray(obj) ? [] : {};
+        for (key in obj) {
+            v = obj[key];
+            out[key] = (typeof v === "object") ? this.copy(v) : v;
+        }
+        return out;
     }
 }
 
