@@ -15,7 +15,7 @@
             .controller('GameController', function ($http, $scope, $timeout) {
                 var game = this;
                 var updateScreenDelta = 50;
-                var commandsToSynchronize = 1;
+                var commandsToSynchronize = 10;
                 var commandsBuffer = [];
                 game.commands = ["GET", "BUY", "SELL", "APPLY"];
                 game.focus = undefined;
@@ -29,30 +29,29 @@
                     request.hand = game.hand;
                     request.target = game.target;
                     commandsBuffer.push(request);
+                    clientSideExecute([request]);
                     if (request.command === "GET") {
                         synchronize();
-                    } else if (commandsBuffer.length > 0 && commandsBuffer.length % commandsToSynchronize === 0) {
+                    } else if (commandsBuffer.length > 0 && commandsBuffer.length >= commandsToSynchronize) {
                         synchronize();
                     }
                 };
 
-                function synchronize() {
-                    $http.post("http://localhost:4567/game/execute", commandsBuffer)
-                        .then(function (response) {
-                            game.bag = response.data.bag;
-                            game.shop = response.data.shop;
-                            game.farm = response.data.farm;
+                function clientSideExecute(request) {
+                    commandHandler(JSON.stringify(request));
+                    refreshViewData();
+                }
 
-                            if (game.target.x !== undefined && game.target.y !== undefined) {
-                                game.target.cell = game.farm[game.target.x][game.target.y]
-                            }
-                            refreshItemInfo();
-                            runTimers();
-                            commandsBuffer = [];
-                        }, function (error) {
-                            alert("Error during request execution.");
-                            commandsBuffer = [];
-                        });
+                function refreshViewData() {
+                    var actualData = JSON.parse(getDataAsString());
+                    game.bag = actualData.bag;
+                    game.shop = actualData.shop;
+                    game.farm = actualData.farm;
+                    if (game.target.x !== undefined && game.target.y !== undefined) {
+                        game.target.cell = game.farm[game.target.x][game.target.y]
+                    }
+                    refreshItemInfo();
+                    runTimers();
                 }
 
                 function refreshItemInfo() {
@@ -75,6 +74,22 @@
                         }
                     }
                     $timeout(runTimers, updateScreenDelta);
+                }
+
+                function synchronize() {
+                    $http.post("http://localhost:4567/game/execute", commandsBuffer)
+                        .then(function (response) {
+                            setStateFromString(JSON.stringify(response.data));
+                            refreshViewData();
+                            commandsBuffer = [];
+                        }, function (error) {
+                            if (error.status !== -1) {
+                                alert(error.data);
+                                commandsBuffer = [];
+                            } else {
+                                console.warn("Server is not available, offline mode enabled.");
+                            }
+                        });
                 }
 
                 game.getItemInfo = function (item) {

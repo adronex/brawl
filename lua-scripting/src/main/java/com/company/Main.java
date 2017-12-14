@@ -26,6 +26,6 @@ public class Main {
 			return "OK";
 		});
 		before((request, response) -> response.header("Access-Control-Allow-Origin", "*"));
-		post("/game/execute", (req, res) -> requestHandler.handleRequest(req));
+		post("/game/execute", requestHandler::handleRequest);
 	}
 }

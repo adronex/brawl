@@ -5,14 +5,14 @@ var commands = {
     apply: "APPLY"
 };
 
-function setState(dataString) {
+function setStateFromString(dataString) {
     var data = JSON.parse(dataString);
     bag = new Bag(data.bag);
     farm = new Farm(data.farm);
     shop = new Shop();
 }
 
-function getData() {
+function getDataAsString() {
     return JSON.stringify({bag: bag.getCopyOfAllItems(), farm: farm.getOriginalFarmObject(), shop: shop.getCopyOfAllItems()});
 }
 
@@ -23,7 +23,7 @@ function commandHandler(requestString) {
             var requestObject = requestArray[i];
             switch (requestObject.command) {
                 case commands.get:
-                    return getData();
+                    return getDataAsString();
                 case commands.buy:
                     shop.buy(requestObject.hand.id);
                     break;
@@ -37,7 +37,7 @@ function commandHandler(requestString) {
                     throw "API didn't recognised request object: " + JSON.stringify(requestObject);
             }
         }
-        return getData();
+        return getDataAsString();
     }
     throw "API didn't recognised request array: " + JSON.stringify(requestArray);
 }

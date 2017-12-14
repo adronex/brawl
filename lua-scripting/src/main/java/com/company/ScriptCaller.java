@@ -24,9 +24,9 @@ public class ScriptCaller {
 
 	public void setState(String savedState) throws ScriptException, NoSuchMethodException {
 		if (savedState != null) {
-			invocable.invokeFunction("setState", savedState);
+			invocable.invokeFunction("setStateFromString", savedState);
 		} else {
-			invocable.invokeFunction("setState", "{}");
+			invocable.invokeFunction("setStateFromString", "{}");
 		}
 	}
 
