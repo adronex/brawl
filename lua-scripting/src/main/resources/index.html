@@ -14,7 +14,9 @@
         angular.module('farmApp', [])
             .controller('GameController', function ($http, $scope, $timeout) {
                 var game = this;
-                var updateDelta = 50;
+                var updateScreenDelta = 50;
+                var commandsToSynchronize = 2;
+                var commandsBuffer = [];
                 game.commands = ["GET", "BUY", "SELL", "APPLY"];
                 game.focus = undefined;
                 game.hand = {};
@@ -26,7 +28,16 @@
                     request.command = command;
                     request.hand = game.hand;
                     request.target = game.target;
-                    $http.post("http://localhost:4567/game/execute", request)
+                    commandsBuffer.push(request);
+                    if (request.command === "GET") {
+                        synchronize();
+                    } else if (commandsBuffer.length > 0 && commandsBuffer.length % commandsToSynchronize === 0) {
+                        synchronize();
+                    }
+                };
+
+                function synchronize() {
+                    $http.post("http://localhost:4567/game/execute", commandsBuffer)
                         .then(function (response) {
                             game.bag = response.data.bag;
                             game.shop = response.data.shop;
@@ -37,8 +48,12 @@
                             }
                             refreshItemInfo();
                             runTimers();
+                            commandsBuffer = [];
+                        }, function (error) {
+                            alert("Error during request execution.");
+                            commandsBuffer = [];
                         });
-                };
+                }
 
                 function refreshItemInfo() {
                     game.items = utils.mapArray(Object.values(staticData.getItems()), function (it) {
@@ -59,7 +74,7 @@
                             }
                         }
                     }
-                    $timeout(runTimers, updateDelta);
+                    $timeout(runTimers, updateScreenDelta);
                 }
 
                 game.getItemInfo = function (item) {

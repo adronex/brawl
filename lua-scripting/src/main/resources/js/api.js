@@ -6,23 +6,29 @@ var commands = {
 };
 
 function commandHandler(requestString) {
-    var requestObject = JSON.parse(requestString);
-    if (requestObject.command === commands.get) {
+    var requestArray = JSON.parse(requestString);
+    if (Array.isArray(requestArray)) {
+        for (var i = 0; i < requestArray.length; i++) {
+            var requestObject = requestArray[i];
+            switch (requestObject.command) {
+                case commands.get:
+                    return getData();
+                case commands.buy:
+                    shop.buy(requestObject.hand.id);
+                    break;
+                case commands.sell:
+                    shop.sell(requestObject.hand.id);
+                    break;
+                case commands.apply:
+                    applyHandToCell(requestObject.hand, requestObject.target);
+                    break;
+                default:
+                    throw "API didn't recognised request object: " + JSON.stringify(requestObject);
+            }
+        }
         return getData();
     }
-    if (requestObject.command === commands.buy) {
-        shop.buy(requestObject.hand.id);
-        return getData();
-    }
-    if (requestObject.command === commands.sell) {
-        shop.sell(requestObject.hand.id);
-        return getData();
-    }
-    if (requestObject.command === commands.apply) {
-        applyHandToCell(requestObject.hand, requestObject.target);
-        return getData();
-    }
-    throw "API didn't recognised request: " + JSON.stringify(requestObject);
+    throw "API didn't recognised request array: " + JSON.stringify(requestArray);
 }
 
 function Utils() {
