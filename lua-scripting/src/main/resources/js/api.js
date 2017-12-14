@@ -5,6 +5,17 @@ var commands = {
     apply: "APPLY"
 };
 
+function setState(dataString) {
+    var data = JSON.parse(dataString);
+    bag = new Bag(data.bag);
+    farm = new Farm(data.farm);
+    shop = new Shop();
+}
+
+function getData() {
+    return JSON.stringify({bag: bag.getCopyOfAllItems(), farm: farm.getOriginalFarmObject(), shop: shop.getCopyOfAllItems()});
+}
+
 function commandHandler(requestString) {
     var requestArray = JSON.parse(requestString);
     if (Array.isArray(requestArray)) {
@@ -20,7 +31,7 @@ function commandHandler(requestString) {
                     shop.sell(requestObject.hand.id);
                     break;
                 case commands.apply:
-                    applyHandToCell(requestObject.hand, requestObject.target);
+                    farm.applyHandToCell(requestObject.hand, requestObject.target);
                     break;
                 default:
                     throw "API didn't recognised request object: " + JSON.stringify(requestObject);

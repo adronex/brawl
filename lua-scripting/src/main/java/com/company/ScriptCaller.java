@@ -22,7 +22,15 @@ public class ScriptCaller {
 		this.invocable = (Invocable) engine;
 	}
 
-	public String callJs(String requestBody) throws ScriptException, NoSuchMethodException {
+	public void setState(String savedState) throws ScriptException, NoSuchMethodException {
+		if (savedState != null) {
+			invocable.invokeFunction("setState", savedState);
+		} else {
+			invocable.invokeFunction("setState", "{}");
+		}
+	}
+
+	public String executeCommand(String requestBody) throws ScriptException, NoSuchMethodException {
 		return (String)invocable.invokeFunction("commandHandler", requestBody);
 	}
 

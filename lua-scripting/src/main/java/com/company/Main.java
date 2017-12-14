@@ -7,11 +7,11 @@ import static spark.Spark.*;
 public class Main {
 
 	public static void main(String[] args) throws ScriptException {
-		ScriptCaller scriptCaller = new ScriptCaller();
-		initSpark(scriptCaller);
+		RequestHandler requestHandler = new RequestHandler();
+		initSpark(requestHandler);
 	}
 
-	private static void initSpark(ScriptCaller scriptCaller) {
+	private static void initSpark(RequestHandler requestHandler) {
 		options("/*", (request, response) -> {
 			String accessControlRequestHeaders = request.headers("Access-Control-Request-Headers");
 
@@ -26,6 +26,6 @@ public class Main {
 			return "OK";
 		});
 		before((request, response) -> response.header("Access-Control-Allow-Origin", "*"));
-		post("/game/execute", (req, res) -> scriptCaller.callJs(req.body()));
+		post("/game/execute", (req, res) -> requestHandler.handleRequest(req));
 	}
 }

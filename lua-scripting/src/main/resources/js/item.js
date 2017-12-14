@@ -22,7 +22,7 @@ function Plant(initializer) {
     it.preparationTime = initializer.preparationTime;
     it.harvestValue = initializer.harvestValue;
     it.use = function (target) {
-        if (!target || target.constructor !== Field) {
+        if (!target || target.type !== "field") { //todo: ids to enum
             var targetString = target ? JSON.stringify(target) : undefined;
             throw "Can't apply '" + it.id + "', invalid target: " + targetString;
         }

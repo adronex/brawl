@@ -1,18 +1,23 @@
-function Bag() {
-    var bagItems = [
-        {
-            item: staticData.getItems().softMoney,
-            count: 20
-        },
-        {
-            item: staticData.getItems().wheat,
-            count: 2
-        },
-        {
-            item: staticData.getItems().wateringCan,
-            count: 1
-        }
-    ];
+function Bag(exportData) {
+    var bagItems;
+    if (exportData && Array.isArray(exportData)) {
+        bagItems = exportData;
+    } else {
+        bagItems = [
+            {
+                item: staticData.getItems().softMoney,
+                count: 20
+            },
+            {
+                item: staticData.getItems().wheat,
+                count: 2
+            },
+            {
+                item: staticData.getItems().wateringCan,
+                count: 1
+            }
+        ];
+    }
 
     this.getOrCreate = function (itemId) {
         var found = utils.findInArray(bagItems, function (it) {
