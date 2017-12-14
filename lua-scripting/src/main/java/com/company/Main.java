@@ -12,6 +12,7 @@ public class Main {
 	}
 
 	private static void initSpark(RequestHandler requestHandler) {
+		staticFileLocation("/");
 		options("/*", (request, response) -> {
 			String accessControlRequestHeaders = request.headers("Access-Control-Request-Headers");
 
